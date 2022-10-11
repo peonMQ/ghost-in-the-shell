@@ -1,0 +1,24 @@
+[submodule "definitions/mq"]
+	path = definitions/mq
+	url = https://github.com/projecteon/mq-definitions.git
+	branch = master
+[submodule "definitions/imgui"]
+	path = definitions/imgui
+	url = https://github.com/projecteon/mq-imgui-definitions.git
+	branch = main
+[submodule "utils"]
+	path = utils
+	url = https://github.com/peonMQ/utils.git
+	branch = main
+[submodule "wait4rez"]
+	path = wait4rez
+	url = https://github.com/peonMQ/wait4rez.git
+	branch = main
+[submodule "autopilot"]
+	path = autopilot
+	url = https://github.com/peonMQ/autopilot.git
+	branch = main
+[submodule "broadcast"]
+	path = broadcast
+	url = https://github.com/peonMQ/broadcast.git
+	branch = main

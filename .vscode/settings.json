@@ -1,0 +1,23 @@
+{
+    "editor.bracketPairColorization.enabled": true,
+    "files.exclude": {
+        "lua/emmylua/": true
+    },
+    "workbench.colorCustomizations": {
+        "editorBracketHighlight.foreground1": "#5caeef",
+        "editorBracketHighlight.foreground2": "#dfb976",
+        "editorBracketHighlight.foreground3": "#c172d9",
+        "editorBracketHighlight.foreground4": "#4fb1bc",
+        "editorBracketHighlight.foreground5": "#97c26c",
+        "editorBracketHighlight.foreground6": "#abb2c0",
+        "editorBracketHighlight.unexpectedBracket.foreground": "#db6165"
+    },
+    "editor.detectIndentation": true,
+    "editor.insertSpaces": true,
+    "editor.tabSize": 2,
+    "Lua.runtime.version": "Lua 5.1",
+    "Lua.workspace.library": [
+        "./definitions/mq",
+        "./definitions/imgui"
+    ],
+}

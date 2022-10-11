@@ -1,0 +1,60 @@
+name: Continuous Delivery - Ghost in the Shell LUA
+
+on:
+  release:
+    types: [published]
+
+env:
+  PROJECT: "Ghost_in_the_Shell"
+
+jobs:
+  release:
+    runs-on: windows-latest
+    env:
+      BUNDLE_FILE_NAME: "Ghost_in_the_Shell.zip"
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        submodules: recursive
+
+    - name: Create Bundle  
+      shell: bash
+      run: |
+        $excludeDirs = @('.github','.vscode','definitions','utils','autopilot','wait4rez','broadcast')
+        $releaseDir = $env:PROJECT + "\"
+        $Directories = Get-ChildItem -Directory "." -Exclude $excludeDirs 
+
+        function CopyReleaseContents($parentDir, $directories){
+
+            foreach($dir in $directories) {
+                $currentDir = ($parentDir + $dir.Name + "\")
+                $childReleaseDir = ($releaseDir + $currentDir)
+                New-Item -Path $childReleaseDir -ItemType Directory
+                Copy ($currentDir + "*.lua") $childReleaseDir 
+
+
+                $ChildDirectories = Get-ChildItem -Directory $dir.Name 
+                CopyReleaseContents ($currentDir+"\") $ChildDirectories
+
+            }
+        }
+
+        New-Item -Path $releaseDir -ItemType Directory
+        Copy "*.lua" $releaseDir
+        CopyReleaseContents '.\' $Directories
+
+        7z a -tzip $env:BUNDLE_FILE_NAME -r ($env:PROJECT + "/*.lua")
+        7z a -tzip $env:BUNDLE_FILE_NAME utils/*.lua
+        7z a -tzip $env:BUNDLE_FILE_NAME autopilot/*.lua
+        7z a -tzip $env:BUNDLE_FILE_NAME wait4rez/*.lua
+        7z a -tzip $env:BUNDLE_FILE_NAME broadcast/*.lua
+
+    - name: Publish
+      uses: softprops/action-gh-release@v1
+      with:
+        files: Ghost_in_the_Shell.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+# https://github.com/marketplace/actions/easy-zip-files        
