@@ -1,7 +1,12 @@
 {
     "editor.bracketPairColorization.enabled": true,
     "files.exclude": {
-        "lua/emmylua/": true
+        "definitions/": true,
+        "autopilot/": true,
+        "broadcast/": true,
+        "hud/": true,
+        "utils/": true,
+        "wait4rez/": true,
     },
     "workbench.colorCustomizations": {
         "editorBracketHighlight.foreground1": "#5caeef",
@@ -18,6 +23,11 @@
     "Lua.runtime.version": "Lua 5.1",
     "Lua.workspace.library": [
         "./definitions/mq",
-        "./definitions/imgui"
+        "./definitions/imgui",
+        "./autopilot",
+        "./broadcast",
+        "./hud",
+        "./utils",
+        "./wait4rez",
     ],
 }

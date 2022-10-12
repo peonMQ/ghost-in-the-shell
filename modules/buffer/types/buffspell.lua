@@ -1,0 +1,102 @@
+--- @type Mq
+local mq = require('mq')
+---@type Spell
+local spell = require('lib/spells/types/spell')
+
+local function currentZoneIsNoLevitate()
+  local currentZone = mq.TLO.Zone.ShortName()
+  return currentZone == "airplane"
+end
+
+local function currentZoneIsIndoors()
+  local currentZone = mq.TLO.Zone.ShortName()
+  return string.find("befallen blackburrow gukbottom guktop neriaka neriakb neriakc paw permafrost qcat runnyeye soldunga soldungb soltemple akanon kaladima kaladimb kedge kurn", currentZone) ~= nil
+end
+
+---@class BuffSpell : Spell
+---@field public Id integer
+---@field public Name string
+---@field public DefaultGem integer
+---@field public MinManaPercent integer
+---@field public GiveUpTimer integer
+---@field public ClassRestrictions string
+local BuffSpell = spell:base()
+
+---@param name string
+---@param defaultGem integer
+---@param minManaPercent integer
+---@param giveUpTimer integer
+---@param classRestrictions string
+---@return BuffSpell
+function BuffSpell:new (name, defaultGem, minManaPercent, giveUpTimer, classRestrictions)
+  self.__index = self
+  local o = setmetatable(spell:new(name, defaultGem, minManaPercent, giveUpTimer), self)
+  o.ClassRestrictions = classRestrictions or ""
+  return o --[[@as BuffSpell]]
+end
+
+---@return boolean
+function BuffSpell:DoesLevitate()
+  return string.find("Spirit of Eagle,Flight of Eagles,Levitate,Levitation,Dead Man Floating,Dead Men Floating", self.Name) ~= nil
+end
+
+---@return boolean
+function BuffSpell:DoesIncreaseRunSpeed()
+  return string.find("Spirit of Wolf,Spirit of Eagle,Flight of Eagles", self.Name) ~= nil
+end
+
+---@return boolean
+function BuffSpell:CanCast()
+  local superCanCast = spell.CanCast(self)
+  if not superCanCast then
+    return false
+  end
+
+  local buffSpell = mq.TLO.Spell(self.Name)
+  if buffSpell.SpellType() ~= "Beneficial" then
+    return false
+  end
+
+  if self:DoesIncreaseRunSpeed() and currentZoneIsIndoors() then
+    return false
+  end
+
+  if self:DoesLevitate() and currentZoneIsNoLevitate() then
+    return false
+  end
+
+  return true
+end
+
+---@param shortClassName string
+---@return boolean
+function BuffSpell:CanCastOnClass(shortClassName)
+  if self.ClassRestrictions == "" then
+    return true
+  end
+
+  return string.find(self.ClassRestrictions, shortClassName:lower()) ~= nil
+end
+
+---@param spawn spawn
+---@return boolean
+function BuffSpell:CanCastOnspawn(spawn)
+  local buffSpell = mq.TLO.Spell(self.Name)
+  
+  if spawn.Distance() > buffSpell.Range() then
+    return false
+  end
+
+  if spawn.Type() == "Corpse" then
+    return false
+  end
+
+  return true
+end
+
+return BuffSpell
+-- https://stackoverflow.com/questions/64468184/lua-oop-with-metatables-problems-loading-function-from-file
+
+-- https://developpaper.com/lua-multiple-inheritance-code-instance/
+
+-- https://stackoverflow.com/questions/6927364/lua-class-inheritance-problem
