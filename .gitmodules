@@ -22,3 +22,7 @@
 	path = broadcast
 	url = https://github.com/peonMQ/broadcast.git
 	branch = main
+[submodule "hud"]
+	path = hud
+	url = https://github.com/peonMQ/hud.git
+	branch = main
