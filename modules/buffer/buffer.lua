@@ -36,6 +36,7 @@ local function checkSelfBuffs()
     if buffSpell:CanCast() then
       if not me.Buff(buffSpell.Name)() and (mq.TLO.Spell(buffSpell.Name).Stacks() or mq.TLO.Spell(buffSpell.Name).NewStacks()) then
         castBuff(buffSpell, me.ID())
+        return;
       end
     end
   end
@@ -62,6 +63,7 @@ local function checkNetBotBuffs()
           if netbot.InZone() and netbot.Class() and buffSpell:CanCastOnClass(netbot.Class.ShortName()) then
             if not netbot.Buff():find(""..buffSpell.Id) or netbot.Stacks(buffSpell.Id)() then
               castBuff(buffSpell, netbot.ID())
+              return;
             end
           end
         end
@@ -82,12 +84,14 @@ local function checkPetBuffs()
           if netbot.InZone() and netbot.PetID() > 0 then
             if netbot.PetBuff():find(""..buffSpell.Id) == 0 then
               castBuff(buffSpell, netbot.PetID())
+              return;
             end
           end
         end
       elseif spell.TargetType() == "Pet" then
         if me.Pet.ID() > 0 and mq.TLO.Spell(buffSpell.Name).StacksPet() and not me.Pet.Buff(buffSpell.Name)() then
           castBuff(buffSpell, me.Pet.ID())
+          return;
         end
       end
     end
@@ -103,7 +107,21 @@ local function doBuffs()
   end
 
   checkSelfBuffs()
+  if not config.DoBuffsWithNpcInCamp then
+    if mqUtils.NPCInRange() then
+      logger.Debug("NPCs in camp, cannot buff.")
+      return
+    end
+  end
+
   checkNetBotBuffs()
+  if not config.DoBuffsWithNpcInCamp then
+    if mqUtils.NPCInRange() then
+      logger.Debug("NPCs in camp, cannot buff.")
+      return
+    end
+  end
+
   checkPetBuffs()
 end
 
