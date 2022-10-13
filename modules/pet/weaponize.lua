@@ -4,13 +4,14 @@ local logger = require('utils/logging')
 local plugin = require('utils/plugins')
 local mqUtils = require('utils/mq')
 local moveUtils = require('lib/moveutils')
+local timer = require('lib/timer')
 local state = require('modules/pet/state')
 local types = require('modules/pet/config')
 
 local function weaponizePet(petId)
   local weaponizeSpell = types.WeaponizeSpell
   if not weaponizeSpell.Name then
-    logger.Info("No weaponize spell defined, unable to weaponize pet.", weaponizeSpell)
+    logger.Info("No weaponize spell defined, unable to weaponize pet.")
     return
   end
 
@@ -19,11 +20,11 @@ local function weaponizePet(petId)
   end
 
   local id = petId or mq.TLO.Me.Pet.ID()
-  if not id or not mq.TLO.Spawn("pet id "..id).ID() then 
+  if not id or not mq.TLO.Spawn("pet id "..id).ID() then
     return
   end
 
-  if not mq.TLO.Spawn("pcpet radius 100 id "..id).LineOfSight() then 
+  if not mq.TLO.Spawn("pcpet radius 100 id "..id).LineOfSight() then
     logger.Debug("Pet outside range or line of sight: <Spawn('pcpet radius 100 id %d)>", id)
     return
   end
@@ -33,8 +34,6 @@ local function weaponizePet(petId)
   if not mqUtils.EnsureTarget(id) then
     return
   end
-
-  local target = mq.TLO.Target
   for i=1,2 do
     if not mq.TLO.Me.SpellReady(weaponizeSpell.Name)() then
       local refreshTimer = mq.TLO.Spell(weaponizeSpell.Name).RecastTime() + 150
@@ -45,12 +44,19 @@ local function weaponizePet(petId)
     weaponizeSpell:Cast()
     mq.delay(500)
 
+    if not mqUtils.EnsureTarget(id) then
+      return
+    end
+
+    local target = mq.TLO.Target
+
     if (target.Distance() > 16 and target.DistanceZ() < 80) then
       moveUtils.MoveToLoc(target.X(), target.Y(), 20, 12)
     end
 
-    while not mq.TLO.Window("GiveWnd").Open() do
-      mq.cmd("/click left target") 
+    local retryTimer = timer:new(2000)
+    while not mq.TLO.Window("GiveWnd").Open() and retryTimer:IsRunning() do
+      mq.cmd("/click left target")
       mq.delay(500)
     end
 
@@ -60,10 +66,11 @@ local function weaponizePet(petId)
     end
 
     if mq.TLO.Cursor.ID() then
-      logger.Debug("Could not hand <%s> to <%s> <%d>", mq.TLO.Cursor(), mq.TLO.Target(), id) 
+      logger.Debug("Could not hand <%s> to <%s> <%d>", mq.TLO.Cursor(), mq.TLO.Target(), id)
       mq.cmd("/beep")
+      mqUtils.ClearCursor()
     end
-    
+
     state.Free()
   end
 end
