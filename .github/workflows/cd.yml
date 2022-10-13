@@ -33,7 +33,7 @@ jobs:
             Copy ($currentDir + "*.lua") $childReleaseDir 
 
 
-            $ChildDirectories = Get-ChildItem -Directory $dir.Name 
+            $ChildDirectories = Get-ChildItem -Directory $currentDir 
             CopyReleaseContents ($currentDir+"\") $ChildDirectories
           }
         }
