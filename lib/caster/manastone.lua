@@ -13,18 +13,18 @@ local hasManaStone = mq.TLO.FindItem("=Manastone")()
 
 local function doManastone()
   if not hasManaStone then
-    return 
+    return
   end
 
   local me = mq.TLO.Me
   if me.Invis() then
     return
   end
-  
+
   if me.PctMana() > config.StartManaPct then
     return
   end
-  
+
   if me.PctHPs() < config.EndHPPct then
     return
   end
