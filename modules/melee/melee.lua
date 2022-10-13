@@ -14,7 +14,6 @@ local function doEvents()
   mq.delay(100)
 end
 
-
 -- | https://www.mmobugs.com/wiki/index.php/MQ2MoveUtils:v11_FAQ
 -- | https://www.redguides.com/community/threads/mq2moveutils-question.70706/
 -- | https://www.redguides.com/community/threads/mq2-vanilla-max-melee-range.54990/
@@ -45,6 +44,7 @@ end
 local function doMeleeDps(meleeAbilityCallback)
   local me = mq.TLO.Me
 
+  doEvents()
   if state.enraged and me.Combat() then
     mq.cmd("/attack off")
     logger.Debug("Enraged, attack off")
@@ -57,8 +57,9 @@ local function doMeleeDps(meleeAbilityCallback)
       if meleeAbilityCallback then
         meleeAbilityCallback()
       end
+
       return
-    else 
+    else
       mq.cmd("/attack off")
       mq.cmd("/stick off")
       state.enraged = false
@@ -98,7 +99,7 @@ local function doMeleeDps(meleeAbilityCallback)
       logger.Debug("Attempting to stick to target")
       stickToTarget(mq.TLO.Target --[[@as target]], 0.75)
     end
-    
+
     mq.cmd("/attack on")
   end
 end
