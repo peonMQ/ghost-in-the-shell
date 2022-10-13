@@ -28,15 +28,15 @@ local function doManaConversion()
   end
 
   local me = mq.TLO.Me
-  if me.Invis() 
-     or me.Casting() 
-     or me.PctHPs() < config.StopHPPct 
-     or mq.TLO.Window("SpellBookWnd").Open() 
-     or mq.TLO.Stick.Active() 
+  if me.Invis()
+     or me.Casting()
+     or me.PctHPs() < config.StopHPPct
+     or mq.TLO.Window("SpellBookWnd").Open()
+     or mq.TLO.Stick.Active()
      or mq.TLO.Navigation.Active() then
         return
   end
-  
+
   if not mqutil.NPCInRange() and me.PctMana() < config.StartManaPct and conversionSpell:CanCast() then
     conversionSpell:Cast()
   elseif me.PctMana() < 2 then
