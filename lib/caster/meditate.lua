@@ -32,8 +32,8 @@ local function doMeditate()
   if me.Invis() or me.Casting() or mq.TLO.Window("SpellBookWnd").Open() or mq.TLO.Stick.Active() or mq.TLO.Navigation.Active() then
     return
   end
-  
-  if me.Sitting() and ((mqutil.NPCInRange(100) and not config.MeditateWithNpcInCamp) or me.CurrentMana() == me.MaxMana()) or tempDisableMeditateTimer:IsRunning() then
+
+  if me.Sitting() and ((mqutil.NPCInRange(100) and not config.MeditateWithNpcInCamp) or tempDisableMeditateTimer:IsRunning()) then
     mq.cmd("/stand")
     return
   elseif not me.Sitting() and me.PctMana() < config.MeditateManaPct then
