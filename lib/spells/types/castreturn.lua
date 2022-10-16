@@ -1,3 +1,5 @@
+local logger = require('utils/logging')
+
 ---@class CastReturn
 ---@field public Name string
 ---@field public AbilityRetry boolean
@@ -11,7 +13,7 @@ local CastReturn = {Name = "", AbilityRetry = false, SpellRetry = false}
 function CastReturn:new (name, spellRetry, abilityRetry)
   self.__index = self
   local o = setmetatable({}, self)
-  o.Name = name or error("Name is required for <CastReturn>")
+  o.Name = name or logger.Fatal("Name is required for <CastReturn>")
   o.AbilityRetry = abilityRetry or false
   o.SpellRetry = spellRetry or false
   return o

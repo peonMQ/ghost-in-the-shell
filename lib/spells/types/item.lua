@@ -19,12 +19,12 @@ function Item:new (itemName)
   self.__index = self
   local item = mq.TLO.FindItem("="..itemName)
   if not item() then
-    error("<"..itemName.."> is not in inventory.")
+    logger.Fatal("<"..itemName.."> is not in inventory.")
   end
 
   local itemspell = item.Clicky
   if not itemspell() then
-    error("<"..itemName.."> has no click effect.")
+    logger.Fatal("<"..itemName.."> has no click effect.")
   end
 
   local id = itemspell.SpellID()

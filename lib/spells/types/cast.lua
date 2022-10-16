@@ -26,8 +26,8 @@ end
 function Cast:new (id, name)
   self.__index = self
   local o = setmetatable({}, self)
-  o.Id = id or error("Id required.")
-  o.Name = name or error("Name is required.")
+  o.Id = id or logger.Fatal("Id required.")
+  o.Name = name or logger.Fatal("Name is required.")
   return o
 end
 

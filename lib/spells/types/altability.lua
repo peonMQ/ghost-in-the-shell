@@ -17,7 +17,7 @@ local AltAbility = cast:base()
 function AltAbility:new (name)
   self.__index = self
   if not mq.TLO.Me.AltAbilityReady(name)() then
-    error("<"..name.."> is not a valid alt ability.")
+    logger.Fatal("<%s> is not a valid alt ability.", name)
   end
 
   local id = mq.TLO.Me.AltAbility(name).ID()

@@ -1,5 +1,6 @@
 --- @type Mq
 local mq = require('mq')
+local logger = require('utils/logging')
 
 local configLoader = require('utils/configloader')
 ---@type BuffSpell
@@ -32,7 +33,7 @@ local function reMapBuffspell(buffSpells)
       local spell = buffSpell:new(value.Name, value.DefaultGem, value.MinManaPercent, value.GiveUpTimer, value.ClassRestrictions)
       table.insert(mappedBuffspells, spell)
     else
-      error("Unable to map <"..value.Name.."> to a valid buff.")
+      logger.Error("Unable to map <%s> to a valid buff.", value.Name)
     end
   end
   return mappedBuffspells
