@@ -18,12 +18,12 @@ local function startBots()
     if name ~= me.Name() then
       local netbot = mq.TLO.NetBots(name)
       logger.Info("Starting up %s >> %s", name, netbot.Class.Name())
-      mq.cmdf('/bct %s //lua run "bots/%s"', name, netbot.Class.Name())
+      mq.cmdf('/bct %s //lua run "bot"', name)
     end
   end
-  logger.Info("Bots ready.")
+  logger.Info("Bots initialized.")
 end
 
 startBots()
 
-mq.cmd("/lua run hud")
+mq.cmd("/lua run hud/hud")
