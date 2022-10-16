@@ -44,7 +44,7 @@ end
 
 local function summonPet()
   local me = mq.TLO.Me
-  if me.Pet() ~= "NO Pet" then
+  if me.Pet() ~= "NO PET" then
     logger.Info("Already have an active pet <%s>", me.Pet())
     return
   end

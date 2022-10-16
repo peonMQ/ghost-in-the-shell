@@ -30,7 +30,7 @@ function SpawnDeBuffs:Add(id, spell)
     self[id] =  {}
   end
 
-  local spa = spell.SPA()
+  local spa = spell.ID()
 
   self[id][spa] = timer:new(spell.Duration()*6 - 6)
 end
@@ -43,7 +43,7 @@ function SpawnDeBuffs:HasDebuff(id, spell)
     return false
   end
 
-  local spa = spell.SPA()
+  local spa = spell.ID()
   if not self[id][spa] then
     return false
   end
