@@ -1,6 +1,6 @@
 --- @type Mq
 local mq = require('mq')
-local plugins = require('utils/plugin')
+local plugins = require('utils/plugins')
 local doManaStone = require('lib/caster/manastone')
 local doMeditate = require('lib/caster/meditate')
 local doManaConversion = require('lib/caster/manaconversion')

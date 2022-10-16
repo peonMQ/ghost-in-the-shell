@@ -7,7 +7,6 @@ local configLoader = require('utils/configloader')
 local common = require('lib/common/common')
 local debuffspell = require('modules/debuffer/types/debuffspell')
 local debuffState = require('modules/debuffer/types/debuffstate')
-local spell = require('lib/spells/type/spell')
 local state = require('lib/spells/state')
 local castReturnTypes = require('lib/spells/types/castreturn')
 
@@ -18,8 +17,9 @@ local defaultConfig = {
 }
 
 local config = configLoader("general.crowdcontrol", defaultConfig)
-if not config.MezzSpell then
-  logger.Fatal("No mezz spell defined!")
+if config.MezzSpell == "" then
+  logger.Error("No mezz spell defined!")
+  return function () end
 end
 
 local mezzSpell = debuffspell:new(config.MezzSpell, 8, 0, 30, 3)
