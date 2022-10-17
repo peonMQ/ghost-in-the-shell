@@ -25,17 +25,17 @@ local classActions = {
   bard = {doBuffs, doMeleeDps},
   cleric = {doBuffs, doHealing, doNuking, doMeleeDps, doManaStone, doMeditate},
   druid = {doBuffs, doHealing, doNuking, doMeleeDps, doManaStone, doMeditate},
-  enchanter = {doMezz, doBuffs, doHealing, doMeleeDps, doNuking, doManaStone, doMeditate},
-  magician = {doBuffs, doDeBuffs, doNuking, doMeleeDps, doManaStone, doMeditate},
+  enchanter = {doMezz, doBuffs, doDeBuffs, doMeleeDps, doNuking, doManaStone, doMeditate},
+  magician = {doBuffs, doDeBuffs, doPet, doNuking, doMeleeDps, doManaStone, doMeditate},
   monk = {function() doMeleeDps(combatActions.DoPunchesAndKicks) end},
   necromancer = {doBuffs, doPet, doNuking, doMeleeDps, doManaStone, doMeditate},
   paladin = {doBuffs, doHealing, doNuking, doMeleeDps, doMeditate},
   ranger = {doBuffs, doHealing, doNuking, doMeleeDps, doMeditate},
   rogue = {function() doMeleeDps(combatActions.DoBackStab) end},
   shadowknight = {doBuffs, doPet, doNuking, doManaStone, doMeditate},
-  shaman = {doBuffs, doHealing, doPet, doNuking, doMeleeDps, doManaStone, doMeditate},
+  shaman = {doBuffs, doDeBuffs, doHealing, doPet, doNuking, doMeleeDps, doManaStone, doMeditate},
   warrior = {doMeleeDps},
-  wizard = {doBuffs, doNuking, doMeleeDps, doManaStone, doManaConversion}
+  wizard = {doBuffs, doNuking, doMeleeDps, doManaStone, doManaConversion, doMeditate}
 }
 
 local function isFollowing()

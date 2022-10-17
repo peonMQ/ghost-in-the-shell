@@ -94,17 +94,17 @@ end
 function Spell:CanCast()
   local me = mq.TLO.Me
   if me.Casting() then
-    logger.Warn("Unable to cast <%s>, already casting <%s>.", self.Name, me.Casting.Name())
+    logger.Debug("Unable to cast <%s>, already casting <%s>.", self.Name, me.Casting.Name())
     return false
   end
 
   if me.Gem(self.Name)() and not me.SpellReady(self.Name)() then
-    logger.Warn("Unable to cast <%s>, spell not ready.", self.Name)
+    logger.Debug("Unable to cast <%s>, spell not ready.", self.Name)
     return false
   end
 
   if me.PctMana() < self.MinManaPercent or mq.TLO.Spell(self.Name).Mana() > me.CurrentMana() then
-    logger.Warn("Unable to cast <%s>, not enough mana.", self.Name)
+    logger.Debug("Unable to cast <%s>, not enough mana.", self.Name)
     return false
   end
 

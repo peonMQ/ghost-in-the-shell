@@ -35,11 +35,14 @@ function SpawnDeBuffs:Add(id, spell)
   if not self[id] then
     self[id] =  {}
   end
-
-  local spellId = spell.ID()
+  
   local category = spell.CategoryID()
-  local subCategory = spell.SubcategoryID()
+  if not self[id][category] then
+    self[id][category] =  {}
+  end
 
+  local subCategory = spell.SubcategoryID()
+  local spellId = spell.ID()
   self[id][category][subCategory] = { spellID = spellId, duration = timer:new(spell.Duration()*6 - 6) }
 end
 
