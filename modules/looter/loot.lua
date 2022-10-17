@@ -4,7 +4,6 @@ local logger = require('utils/logging')
 local plugin = require('utils/plugins')
 local mqUtils = require('utils/mq')
 local moveUtils = require('lib/moveutils')
-local ensureTarget = require('lib/target')
 ---@type Timer
 local timer = require('lib/timer')
 --- @type LootItem
@@ -161,7 +160,7 @@ local function lootNearestCorpse()
     local seekRadius = 100
     local searchCorpseString = string.format("npc corpse zradius 50 radius %s", seekRadius)
     local closestCorpseID = mq.TLO.NearestSpawn(1, searchCorpseString).ID()
-    if mq.TLO.Spawn(closestCorpseID) and ensureTarget(closestCorpseID) then
+    if mq.TLO.Spawn(closestCorpseID) and mqUtils.EnsureTarget(closestCorpseID) then
       local target = mq.TLO.Target
       if target.Distance() > 16 and target.DistanceZ() < 80 then
         moveUtils.MoveToLoc(target.X(), target.Y(), 20, 12)

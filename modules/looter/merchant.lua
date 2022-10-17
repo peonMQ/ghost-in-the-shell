@@ -2,8 +2,8 @@
 local mq = require('mq')
 local logger = require('utils/logging')
 local plugin = require('utils/plugins')
+local mqUtils = require('utils/mq')
 local timer = require('lib/timer')
-local ensureTarget = require('lib/target')
 
 plugin.EnsureIsLoaded("mq2nav")
 
@@ -16,7 +16,7 @@ local function findMerchant()
     return false
   end
 
-  return ensureTarget(merchantSpawn.ID())
+  return mqUtils.EnsureTarget(merchantSpawn.ID())
 end
 
 ---@param target spawn

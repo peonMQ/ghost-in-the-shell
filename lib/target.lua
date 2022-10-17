@@ -5,7 +5,7 @@ local logger = require('utils/logging')
 local function ensureTarget(targetId)
   if not targetId then
     logger.Debug("Invalid <targetId>")
-    return
+    return false
   end
 
   if mq.TLO.Target.ID() ~= targetId then
