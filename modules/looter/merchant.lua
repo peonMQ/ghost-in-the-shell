@@ -11,7 +11,7 @@ local function findMerchant()
   local merchantSpawn = mq.TLO.Spawn("Merchant")
   local nav = mq.TLO.Navigation
 
-  if not merchantSpawn() or not nav.PathExists("id "..merchantSpawn.ID()) or merchantSpawn.Aggressive() then
+  if not merchantSpawn() or not nav.PathExists("id "..merchantSpawn.ID()) or mqUtils.IsMaybeAggressive(merchantSpawn --[[@as spawn]]) then
     logger.Warn("There are no merchants nearby!")
     return false
   end
@@ -33,7 +33,7 @@ local function openMerchant(target)
     logger.Warn("Failed to open trade with [%s].", target.CleanName())
     return false
   end
-  
+
   while not merchantWindow.Child("ItemList") and merchantWindow.Child("ItemList").Items() > 0 and openMerchantTimer:IsRunning() do
     mq.delay(2)
   end
@@ -55,14 +55,14 @@ local function closeMerchant(target)
     logger.Warn("Failed to close trade with [%s].", target.CleanName())
     return false
   end
-  
+
   return true
 end
 
-local MerchantLib = {}
-
-MerchantLib.FindMerchant = findMerchant
-MerchantLib.OpenMerchant = openMerchant
-MerchantLib.CloseMerchant = closeMerchant
+local MerchantLib = {
+  FindMerchant = findMerchant,
+  OpenMerchant = openMerchant,
+  CloseMerchant = closeMerchant,
+}
 
 return MerchantLib
