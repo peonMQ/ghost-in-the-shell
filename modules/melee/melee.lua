@@ -44,6 +44,10 @@ end
 local function doMeleeDps(meleeAbilityCallback)
   local me = mq.TLO.Me
 
+  if not ("Monk,Paladin,Ranger,Rogue,Shadowknight,Warrior"):find(me.Class()) and not commonConfig.DoMeleeAsNonMeleeClass then
+    return
+  end
+
   doEvents()
   if state.enraged and me.Combat() then
     mq.cmd("/attack off")
@@ -53,7 +57,7 @@ local function doMeleeDps(meleeAbilityCallback)
 
   local target = mq.TLO.Target
   if me.Combat() then
-    if target() and target.Type() ~= "Corpse" then
+    if target() and target.Type() ~= "Corpse" and target.Type() ~= "PC" then
       if meleeAbilityCallback then
         meleeAbilityCallback()
       end

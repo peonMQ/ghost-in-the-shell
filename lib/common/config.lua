@@ -10,7 +10,8 @@ local next = next
 local defaultConfig = {
   MainTanks = {},
   MainAssists = {},
-  AssistPct = 90
+  AssistPct = 90,
+  DoMeleeAsNonMeleeClass = false
 }
 
 ---@return CommonConfig

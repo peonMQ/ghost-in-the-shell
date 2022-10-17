@@ -22,20 +22,20 @@ require('lib/common/cleanBuffs')
 
 ---@type table<eqclass, fun()[]>
 local classActions = {
-  bard = {doBuffs},
-  cleric = {doBuffs, doHealing, doNuking, doManaStone, doMeditate},
-  druid = {doBuffs, doHealing, doNuking, doManaStone, doMeditate},
-  enchanter = {doMezz, doBuffs, doHealing, doNuking, doManaStone, doMeditate},
-  magician = {doBuffs, doDeBuffs, doNuking, doManaStone, doMeditate},
+  bard = {doBuffs, doMeleeDps},
+  cleric = {doBuffs, doHealing, doNuking, doMeleeDps, doManaStone, doMeditate},
+  druid = {doBuffs, doHealing, doNuking, doMeleeDps, doManaStone, doMeditate},
+  enchanter = {doMezz, doBuffs, doHealing, doMeleeDps, doNuking, doManaStone, doMeditate},
+  magician = {doBuffs, doDeBuffs, doNuking, doMeleeDps, doManaStone, doMeditate},
   monk = {function() doMeleeDps(combatActions.DoPunchesAndKicks) end},
-  necromancer = {doBuffs, doPet, doNuking, doManaStone, doMeditate},
+  necromancer = {doBuffs, doPet, doNuking, doMeleeDps, doManaStone, doMeditate},
   paladin = {doBuffs, doHealing, doNuking, doMeleeDps, doMeditate},
   ranger = {doBuffs, doHealing, doNuking, doMeleeDps, doMeditate},
   rogue = {function() doMeleeDps(combatActions.DoBackStab) end},
   shadowknight = {doBuffs, doPet, doNuking, doManaStone, doMeditate},
-  shaman = {doBuffs, doHealing, doPet, doNuking, doManaStone, doMeditate},
+  shaman = {doBuffs, doHealing, doPet, doNuking, doMeleeDps, doManaStone, doMeditate},
   warrior = {doMeleeDps},
-  wizard = {doBuffs, doNuking, doManaStone, doManaConversion}
+  wizard = {doBuffs, doNuking, doMeleeDps, doManaStone, doManaConversion}
 }
 
 local function isFollowing()
@@ -53,7 +53,7 @@ local function isFollowing()
   return false
 end
 
-local botActions = classActions[mq.TLO.Me.Class()] or {}
+local botActions = classActions[mq.TLO.Me.Class():lower()] or {}
 
 while true do
   if not isFollowing() then
