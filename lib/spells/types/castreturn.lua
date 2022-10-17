@@ -45,6 +45,7 @@ local castReturns = {
   Restart = CastReturn:new("CAST_RESTART", true, true),
   Stunned = CastReturn:new("CAST_STUNNED", true, true),
   Success = CastReturn:new("CAST_SUCCESS"),
+  NotTakeHold = CastReturn:new("CAST_NOT_TAKE_HOLD"),
   Unknown = CastReturn:new("CAST_UNKNOWNSPELL")
 
 }

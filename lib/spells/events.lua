@@ -91,6 +91,10 @@ local function stunnedEvent()
   state.setCastReturn(castReturnTypes.Stunned)
 end
 
+local function notTakeHoldEvent()
+  state.setCastReturn(castReturnTypes.NotTakeHold)
+end
+
 local events = {
   mqEvents:new("begincast", "You begin casting#*#", beginCastEvent),
   mqEvents:new("collapse", "Your gate is too unstable, and collapses.#*#", collapseEvent),
@@ -117,6 +121,9 @@ local events = {
   mqEvents:new("stunned", "You are stunned#*#", stunnedEvent),
   mqEvents:new("stunnedCast", "You can't cast spells while stunned!#*#", stunnedEvent),
   mqEvents:new("stunnedSilenced", "You *CANNOT* cast spells, you have been silenced!#*#", stunnedEvent),
+  mqEvents:new("notTakeHold", "#*# spell did not take hold.#*#", notTakeHoldEvent),
+  mqEvents:new("wouldNotTakeHold", "Your spell would not have taken hold.", notTakeHoldEvent),
+  mqEvents:new("toPowerful", "Your spell is to powerful for your intended target.", notTakeHoldEvent),
 }
 
 for key, value in pairs(events) do
