@@ -6,13 +6,19 @@ local logger = require('utils/logging')
 local timer = require('lib/timer')
 
 -- ---@type table<integer, table<string, Timer>>
----@type { [integer]: { [string]: Timer } }
+---@type { [integer]: { [integer]: { [integer]: { spellID: integer, duration: Timer } } } } 
 local SpawnDeBuffs = {}
 
 function SpawnDeBuffs:Clean()
   for k,v in ipairs(self) do
     for k2,v2 in ipairs(v) do
-      if v2.DurationTimer:IsComplete() then
+      for k3,v3 in ipairs(v2) do
+        if v3.duration:IsComplete() then
+          self[k3] = nil
+        end
+      end
+
+      if not next(v2) then
         self[k2] = nil
       end
     end
@@ -30,9 +36,11 @@ function SpawnDeBuffs:Add(id, spell)
     self[id] =  {}
   end
 
-  local spa = spell.ID()
+  local spellId = spell.ID()
+  local category = spell.CategoryID()
+  local subCategory = spell.SubcategoryID()
 
-  self[id][spa] = timer:new(spell.Duration()*6 - 6)
+  self[id][category][subCategory] = { spellID = spellId, duration = timer:new(spell.Duration()*6 - 6) }
 end
 
 ---@param id integer
@@ -43,12 +51,28 @@ function SpawnDeBuffs:HasDebuff(id, spell)
     return false
   end
 
-  local spa = spell.ID()
-  if not self[id][spa] then
+  local category = spell.CategoryID()
+  if not self[id][category] then
     return false
   end
 
-  return self[id][spa]:IsRunning()
+  local subCategory = spell.SubcategoryID()
+  if not self[id][category][subCategory] then
+    return false
+  end
+
+  local currentDebuff = self[id][category][subCategory]
+  if currentDebuff.duration:IsRunning() then
+    if currentDebuff.spellID == spell.ID() then
+      return false
+    end
+
+    if not mq.TLO.Spell(currentDebuff.spellID).WillStack(spell.Name()) then
+      return false
+    end
+  end
+
+  return true
 end
 
 return SpawnDeBuffs
