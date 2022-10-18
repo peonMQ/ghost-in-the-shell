@@ -54,7 +54,6 @@ local function sellItem(itemToSell)
       return
     end
   end
-  
 
   local quantityWindow = mq.TLO.Window("QuantityWnd")
   mq.cmd("/notify MerchantWnd MW_Sell_Button leftmouseup")

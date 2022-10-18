@@ -50,6 +50,10 @@ local function summonPet()
   end
 
   local petSpell = config.PetSpell
+  if not petSpell then
+    logger.Debug("No pet spell configured")
+    return
+  end
 
   if not petSpell:CanCast() then
     logger.Info("Cannott cast <%s>", petSpell.Name)

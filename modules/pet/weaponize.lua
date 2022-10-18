@@ -10,8 +10,8 @@ local types = require('modules/pet/config')
 
 local function weaponizePet(petId)
   local weaponizeSpell = types.WeaponizeSpell
-  if not weaponizeSpell.Name then
-    logger.Info("No weaponize spell defined, unable to weaponize pet.")
+  if not weaponizeSpell then
+    logger.Debug("No weaponize spell defined, unable to weaponize pet.")
     return
   end
 
