@@ -43,6 +43,10 @@ local function isFollowing()
     return true
   end
 
+  if plugins.IsLoaded("mq2advpath") and mq.TLO.AdvPath.Active() then
+    return true
+  end
+
   if plugins.IsLoaded("mq2moveutils") and mq.TLO.Stick.Active() then
     local stickSpawn = mq.getFilteredSpawns(function(spawn) return spawn.ID() == mq.TLO.Stick.StickTarget() and  spawn.Type() =="PC" end)
     if next(stickSpawn) then
@@ -52,6 +56,49 @@ local function isFollowing()
 
   return false
 end
+
+local function toggleFollowMe()
+  if not plugins.IsLoaded("mq2advpath") then
+    return
+  end
+
+  if mq.TLO.AdvPath.Following() then
+    mq.cmd("/afollow off")
+    return
+  end
+
+  if plugins.IsLoaded("mq2nav") and mq.TLO.Navigation.Active() then
+    mq.cmd("/nav stop")
+  end
+
+  mq.cmdf("/bca //afollow spawn %d", mq.TLO.Me.ID())
+end
+
+local function toggleNavToMe()
+  if not plugins.IsLoaded("mq2nav") then
+    return
+  end
+
+  if mq.TLO.Navigation.Active() then
+    mq.cmd("/nav stop")
+    return
+  end
+
+  if plugins.IsLoaded("mq2advpath") and mq.TLO.AdvPath.Following() then
+    mq.cmd("/afollow off")
+  end
+
+  mq.cmdf("/bca //nav id %d", mq.TLO.Me.ID())
+end
+
+local function createAliases()
+  mq.unbind('/followme')
+  mq.unbind('/navtome')
+  mq.bind("/followme", toggleFollowMe)
+  mq.bind("/navtome", toggleNavToMe)
+end
+
+createAliases()
 
 local botActions = classActions[mq.TLO.Me.Class():lower()] or {}
 
