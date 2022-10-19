@@ -11,7 +11,8 @@ plugins.EnsureIsLoaded("mq2eqbc")
 plugins.EnsureIsLoaded("mq2nav")
 
 local function arrivedAtDestination(xLoc, yLoc, distanceDelta)
-  return mq.TLO.Math.Distance(string.format('%d,%d', xLoc, yLoc))() <= distanceDelta
+  logger.Debug('%d,%d <%d>', (xLoc), (yLoc), mq.TLO.Math.Distance(string.format('%d,%d', (yLoc), (xLoc)))())
+  return mq.TLO.Math.Distance(string.format('%d,%d', (yLoc), (xLoc)))() <= distanceDelta
 end
 
 local function moveToMe()
@@ -36,7 +37,7 @@ local function moveToLoc_dep(xLoc, yLoc, maxTime, arrivalDist)
   local distanceDelta = arrivalDist or 10
   local maxTryTime = maxTime or 3
 
-  logger.Debug("Distance to loc <x:%d> <y:%d> => <%d>", xLoc, yLoc, mq.TLO.Math.Distance(string.format('%d,%d', xLoc, yLoc))())
+  logger.Debug("Distance to loc <x:%d> <y:%d> => <%d>", xLoc, yLoc, mq.TLO.Math.Distance(string.format('%d,%d', (yLoc), (xLoc)))())
   if arrivedAtDestination(xLoc, yLoc, distanceDelta) then
     return true
   end
@@ -57,14 +58,14 @@ local function moveToLoc_dep(xLoc, yLoc, maxTime, arrivalDist)
   return arrivedAtDestination(xLoc, yLoc, distanceDelta)
 end
 
-local function moveToLoc(xLoc, yLoc, maxTime, arrivalDist)
+local function moveToLoc(xLoc, yLoc, zLoc, maxTime, arrivalDist)
   if not xLoc or not yLoc then
     logger.Debug("Cannot move to location <x:%d> <y:%d>", xLoc, yLoc)
     return false
   end
 
-  if not mq.TLO.Navigation.PathExists(string.format("loc %d %d", yLoc, xLoc)) then
-    logger.Debug("Cannot navgiate to location <x:%d> <y:%d>, no path exists.", xLoc, yLoc)
+  if not mq.TLO.Navigation.PathExists(string.format("loc %d %d %d", yLoc, xLoc, zLoc)) then
+    logger.Debug("Cannot navgiate to location <x:%d> <y:%d>, no path exists.", xLoc, yLoc, zLoc)
     return false
   end
 
@@ -80,7 +81,7 @@ local function moveToLoc(xLoc, yLoc, maxTime, arrivalDist)
   local distanceDelta = arrivalDist or 10
   local maxTryTime = maxTime or 3
 
-  logger.Debug("Distance to loc <x:%d> <y:%d> => <%d>", xLoc, yLoc, mq.TLO.Math.Distance(string.format('%d,%d', xLoc, yLoc))())
+  logger.Debug("Distance to loc <x:%d> <y:%d> => <%d>", xLoc, yLoc, mq.TLO.Math.Distance(string.format('%d,%d', (yLoc), (xLoc)))())
   if arrivedAtDestination(xLoc, yLoc, distanceDelta) then
     return true
   end
@@ -91,7 +92,7 @@ local function moveToLoc(xLoc, yLoc, maxTime, arrivalDist)
 
   local timeOut = timer:new(maxTryTime)
 
-  local navCmd = string.format("/nav loc %d %d", yLoc, xLoc)
+  local navCmd = string.format("/nav loc %d %d %d", yLoc, xLoc, zLoc)
   while not arrivedAtDestination(xLoc, yLoc, distanceDelta) and timeOut:IsRunning() do
     if not mq.TLO.Navigation.Active() then
       mq.cmd(navCmd)

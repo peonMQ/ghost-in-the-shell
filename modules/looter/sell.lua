@@ -72,6 +72,7 @@ end
 local function sellItems()
   local startX = mq.TLO.Me.X()
   local startY = mq.TLO.Me.Y()
+  local startZ = mq.TLO.Me.Z()
 
   if not merchant.FindMerchant() then
     logger.Debug("Unable to find any merchants nearby")
@@ -83,7 +84,7 @@ local function sellItems()
     return
   end
 
-  if not moveUtils.MoveToLoc(target.X(), target.Y(), 20, 12) then
+  if not moveUtils.MoveToLoc(target.X(), target.Y(), target.Z(), 20, 12) then
     logger.Debug("Unable to reach merchant <%s>", target.Name())
     return
   end
@@ -108,7 +109,7 @@ local function sellItems()
     -- mq.cmd("/keypress CLOSE_INV_BAGS")
   end
 
-  moveUtils.MoveToLoc(startX, startY, 20, 12)
+  moveUtils.MoveToLoc(startX, startY, startZ, 20, 12)
   state = looterStates.Idle
   logger.Info("Completed selling items to [%s].", target.CleanName())
 end

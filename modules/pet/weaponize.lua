@@ -51,7 +51,7 @@ local function weaponizePet(petId)
     local target = mq.TLO.Target
 
     if (target.Distance() > 16 and target.DistanceZ() < 80) then
-      moveUtils.MoveToLoc(target.X(), target.Y(), 20, 12)
+      moveUtils.MoveToLoc(target.X(), target.Y(), target.Z(), 20, 12)
     end
 
     local retryTimer = timer:new(2000)

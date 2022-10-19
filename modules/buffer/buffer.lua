@@ -60,7 +60,7 @@ local function checkNetBotBuffs()
         for i=1,mq.TLO.NetBots.Counts() do
           local name = mq.TLO.NetBots.Client(i)()
           local netbot = mq.TLO.NetBots(name) --[[@as netbot]]
-          if netbot.InZone() and netbot.Class() and buffSpell:CanCastOnClass(netbot.Class.ShortName()) then
+          if netbot.InZone() == true and netbot.Class() ~= "NULL" and buffSpell:CanCastOnClass(netbot.Class.ShortName()) then
             if not netbot.Buff():find(""..buffSpell.Id) or netbot.Stacks(buffSpell.Id)() then
               castBuff(buffSpell, netbot.ID())
               return;

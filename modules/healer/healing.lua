@@ -155,7 +155,7 @@ local function checkAEGroupHeal()
   for i=1,mq.TLO.Group.Members() do
     local groupMember = mq.TLO.Group.Member(i) --[[@as groupmember]]
     if spell:CanCastOnGroupMember(groupMember) then
-      if groupMember.Distance < mq.TLO.Spell(spell.Id).AERange() then
+      if groupMember.Distance() < mq.TLO.Spell(spell.Id).AERange() then
         canHealCount = canHealCount + 1
       end
     end

@@ -44,7 +44,15 @@ local function alreadyHaveLoreItem(item)
   return mq.TLO.FindItemCount(findQuery)() > 0 or mq.TLO.FindItemBankCount(findQuery)() > 0
 end
 
+---@param item item
+---@return boolean
 local function canLootItem(item)
+  if item.NoDrop() then
+    logger.Debug("<%s> is [NO DROP], skipping.", item.Name())
+    mq.cmd("/beep")
+    return false
+  end
+
   if alreadyHaveLoreItem(item) then
     logger.Debug("<%s> is [Lore] and I already have one.", item.Name())
     mq.cmd("/beep")
@@ -150,6 +158,7 @@ end
 local function lootNearestCorpse()
   local startX = mq.TLO.Me.X()
   local startY = mq.TLO.Me.Y()
+  local startZ = mq.TLO.Me.Z()
   local isTwisting = plugin.IsLoaded("mq2twist") and mq.TLO.Twist.Twisting()
   if isTwisting then
     mq.cmd("/twist stop")
@@ -163,7 +172,7 @@ local function lootNearestCorpse()
     if mq.TLO.Spawn(closestCorpseID) and mqUtils.EnsureTarget(closestCorpseID) then
       local target = mq.TLO.Target
       if target.Distance() > 16 and target.DistanceZ() < 80 then
-        moveUtils.MoveToLoc(target.X(), target.Y(), 20, 12)
+        moveUtils.MoveToLoc(target.X(), target.Y(), target.Z(), 20, 12)
       end
 
       if target.Distance() <= 20 and target.DistanceZ() < 40 then
@@ -179,7 +188,7 @@ local function lootNearestCorpse()
     logger.Info("Unable to loot corpse, currently casting.")
   end 
 
-  moveUtils.MoveToLoc(startX, startY, 20, 12)
+  moveUtils.MoveToLoc(startX, startY, startZ, 20, 12)
   state = looterStates.Idle
 end
 
@@ -216,7 +225,7 @@ local function doLoot()
   end
 
   if state == looterStates.Looting then
-    lootNearestCorpse() 
+    lootNearestCorpse()
   end
 end
 
