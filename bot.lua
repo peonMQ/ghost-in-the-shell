@@ -1,6 +1,7 @@
 --- @type Mq
 local mq = require('mq')
 local plugins = require('utils/plugins')
+local logger = require('utils/logging')
 local doManaStone = require('lib/caster/manastone')
 local doMeditate = require('lib/caster/meditate')
 local doManaConversion = require('lib/caster/manaconversion')
@@ -43,7 +44,7 @@ local function isFollowing()
     return true
   end
 
-  if plugins.IsLoaded("mq2advpath") and mq.TLO.AdvPath.Active() then
+  if plugins.IsLoaded("mq2advpath") and mq.TLO.AdvPath.Following() then
     return true
   end
 
@@ -57,7 +58,7 @@ local function isFollowing()
   return false
 end
 
-local function toggleFollowMe()
+local function toggleFollow(targetId)
   if not plugins.IsLoaded("mq2advpath") then
     return
   end
@@ -71,10 +72,18 @@ local function toggleFollowMe()
     mq.cmd("/nav stop")
   end
 
-  mq.cmdf("/bca //afollow spawn %d", mq.TLO.Me.ID())
+  if not targetId then
+    logger.Warn("Missing <targetId> to follow.")
+    return
+  end
+
+  local stickSpawn = mq.getFilteredSpawns(function(spawn) return spawn.ID() == targetId and  spawn.Type() =="PC" end)
+  if next(stickSpawn) then
+    mq.cmdf("/afollow spawn %d", stickSpawn[0].ID())
+  end
 end
 
-local function toggleNavToMe()
+local function toggleNavTo(targetId)
   if not plugins.IsLoaded("mq2nav") then
     return
   end
@@ -88,14 +97,22 @@ local function toggleNavToMe()
     mq.cmd("/afollow off")
   end
 
-  mq.cmdf("/bca //nav id %d", mq.TLO.Me.ID())
+  if not targetId then
+    logger.Warn("Missing <targetId> to navigate to.")
+    return
+  end
+
+  local stickSpawn = mq.getFilteredSpawns(function(spawn) return spawn.ID() == targetId and  spawn.Type() =="PC" end)
+  if next(stickSpawn) and not mq.TLO.Navigation.PathExists("id "..stickSpawn[0].ID()) then
+    mq.cmdf("/nav id %d", stickSpawn[0].ID())
+  end
 end
 
 local function createAliases()
-  mq.unbind('/followme')
-  mq.unbind('/navtome')
-  mq.bind("/followme", toggleFollowMe)
-  mq.bind("/navtome", toggleNavToMe)
+  mq.unbind('/stalk')
+  mq.unbind('/navto')
+  mq.bind("/stalk", toggleFollow)
+  mq.bind("/navto", toggleNavTo)
 end
 
 createAliases()
