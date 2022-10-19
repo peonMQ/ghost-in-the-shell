@@ -127,7 +127,7 @@ local function lootCorpse()
   if corpse.Items() > 0 then
     logger.Debug("Looting <%s> with # of items: %d", mq.TLO.Target.Name(), corpse.Items())
     for i=1,corpse.Items() do
-      local itemToLoot = corpse.Item(i)
+      local itemToLoot = corpse.Item(i) --[[@as item]]
       logger.Debug("Looting %s from slot %d of %d", itemToLoot.Name(), i, corpse.Items())
 
       if canLootItem(itemToLoot) then
