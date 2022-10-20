@@ -65,7 +65,9 @@ local function doMeleeDps(meleeAbilityCallback)
       return
     else
       mq.cmd("/attack off")
-      mq.cmd("/stick off")
+      if mq.TLO.Stick.Active() then
+        mq.cmd("/stick off")
+      end
       state.enraged = false
       return
     end
@@ -73,8 +75,12 @@ local function doMeleeDps(meleeAbilityCallback)
 
   local mainAssist = common.GetMainAssist()
   if not mainAssist then
-    mq.cmd("/attack off")
-    mq.cmd("/stick off")
+    if me.Combat() then
+      mq.cmd("/attack off")
+    end
+    if mq.TLO.Stick.Active() then
+      mq.cmd("/stick off")
+    end
     state.enraged = false
     logger.Debug("Mainassist not found")
     return
