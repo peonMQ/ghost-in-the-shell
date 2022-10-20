@@ -11,22 +11,29 @@ local function findMerchant()
   local merchantSpawn = mq.TLO.Spawn("Merchant")
   local nav = mq.TLO.Navigation
 
-  if not merchantSpawn() or not nav.PathExists("id "..merchantSpawn.ID()) or mqUtils.IsMaybeAggressive(merchantSpawn --[[@as spawn]]) then
+  if not merchantSpawn() or not nav.PathExists("id "..merchantSpawn.ID()) then
     logger.Warn("There are no merchants nearby!")
     return false
   end
 
-  return mqUtils.EnsureTarget(merchantSpawn.ID())
+  if mqUtils.EnsureTarget(merchantSpawn.ID()) then
+    return not mq.TLO.Target.Aggressive()
+  end
+
+  return false
 end
 
 ---@param target spawn
 ---@return boolean
 local function openMerchant(target)
-  local merchantWindow = mq.TLO.Window("MerchantWindow")
-  local openMerchantTimer = timer:new(5)
-  while not merchantWindow.Open() and openMerchantTimer:IsRunning() do
+  local merchantWindow = mq.TLO.Window("MerchantWnd")
+  local openMerchantTimer = timer:new(10)
+
+  if not merchantWindow.Open() then
     mq.cmd("/click right target")
-    mq.delay(10)
+    mq.delay("5s", function ()
+      return merchantWindow.Open() or openMerchantTimer:IsComplete()
+    end)
   end
 
   if not merchantWindow.Open() then
@@ -34,9 +41,9 @@ local function openMerchant(target)
     return false
   end
 
-  while not merchantWindow.Child("ItemList") and merchantWindow.Child("ItemList").Items() > 0 and openMerchantTimer:IsRunning() do
-    mq.delay(2)
-  end
+  mq.delay("5s", function ()
+    return (merchantWindow.Child("ItemList") and merchantWindow.Child("ItemList").Items() > 0) or openMerchantTimer:IsComplete()
+  end)
 
   return merchantWindow.Child("ItemList").Items() > 0
 end
@@ -44,7 +51,7 @@ end
 ---@param target spawn
 ---@return boolean
 local function closeMerchant(target)
-  local merchantWindow = mq.TLO.Window("MerchantWindow")
+  local merchantWindow = mq.TLO.Window("MerchantWnd")
   local closeMerchantTimer = timer:new(5)
   while merchantWindow.Open() and closeMerchantTimer:IsRunning() do
     mq.cmd("/notify MerchantWnd MW_Done_Button leftmouseup")

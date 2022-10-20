@@ -1,5 +1,6 @@
 local logger = require('utils/logging')
 local config = require('utils/configloader')
+local debugUtils = require('utils/debug')
 --- @type LootItem
 local item = require('modules/looter/types/lootitem')
 

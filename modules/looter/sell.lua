@@ -1,6 +1,7 @@
 --- @type Mq
 local mq = require('mq')
 local logger = require('utils/logging')
+local debugUtils = require('utils/debug')
 local moveUtils = require('lib/moveutils')
 local timer = require('lib/timer')
 local merchant = require('modules/looter/merchant')
@@ -17,8 +18,12 @@ local state = looterStates.Idle
 ---@param itemName string
 ---@return boolean, LootItem
 local function canSellItem(itemId, itemName)
-  local _, itemToSell = repository:tryGet(itemId)
-  return item.DoSell, itemToSell or item:new(itemId, itemName)
+  local foundItem, itemToSell = repository:tryGet(itemId)
+  if not foundItem then
+    itemToSell = item:new(itemId, itemName)
+  end
+
+  return itemToSell.DoSell, itemToSell
 end
 
 ---@param itemToSell item
@@ -41,13 +46,15 @@ local function sellItem(itemToSell)
   local retryTimer = timer:new(3)
   local merchantWindow = mq.TLO.Window("MerchantWnd")
 
-  local packslot = itemToSell.ItemSlot - 22
+  local packslot = itemToSell.ItemSlot() - 22
   while merchantWindow.Child("MW_SelectedItemLabel").Text() ~= itemToSell.Name() do
-    if(itemToSell.ItemSlot2 >= 0) then
-      mq.cmdf("/itemnotify in pack%d %d leftmouseup", packslot, itemToSell.ItemSlot2+1)
+    if(itemToSell.ItemSlot2() >= 0) then
+      mq.cmdf("/itemnotify in pack%d %d leftmouseup", packslot, itemToSell.ItemSlot2() + 1)
     else
       mq.cmdf("/itemnotify in pack%d leftmouseup", packslot)
     end
+
+    mq.delay(retryTimer:TimeRemaining(), function() return merchantWindow.Child("MW_SelectedItemLabel").Text() == itemToSell.Name() end)
 
     if(retryTimer:IsComplete()) then
       logger.Error("Failed to select [%s], skipping.", itemToSell.Name())
@@ -55,15 +62,17 @@ local function sellItem(itemToSell)
     end
   end
 
-  local quantityWindow = mq.TLO.Window("QuantityWnd")
+  mq.delay("1s", function() return merchantWindow.Child("MW_Sell_Button").Enabled() end)
   mq.cmd("/notify MerchantWnd MW_Sell_Button leftmouseup")
+
+  local quantityWindow = mq.TLO.Window("QuantityWnd")
   mq.delay(30, function() return quantityWindow() and merchantWindow.Open() end)
   if(quantityWindow() and quantityWindow.Open()) then
     mq.cmd("/notify QuantityWnd QTYW_Accept_Button leftmouseup")
     mq.delay(30, function() return not quantityWindow() or not quantityWindow.Open() end)
-  end 
+  end
 
-  if(itemToSell.ItemSlot2 >= 0 and mq.TLO.Me.Inventory("pack"..packslot).Item(itemToSell.ItemSlot).Item())
+  if(itemToSell.ItemSlot2() >= 0 and mq.TLO.Me.Inventory("pack"..packslot).Item(itemToSell.ItemSlot).Item())
     or mq.TLO.Me.Inventory("pack"..packslot).Item() then
     logger.Error("Failed to sell [%s], skipping.", itemToSell.Name())
   end
@@ -84,14 +93,16 @@ local function sellItems()
     return
   end
 
+  local merchantName= target.CleanName()
+
   if not moveUtils.MoveToLoc(target.X(), target.Y(), target.Z(), 20, 12) then
-    logger.Debug("Unable to reach merchant <%s>", target.Name())
+    logger.Debug("Unable to reach merchant <%s>", merchantName)
     return
   end
 
   if merchant.OpenMerchant(target --[[@as target]]) then
     -- mq.cmd("/keypress OPEN_INV_BAGS")
-    
+
     for i=23,30,1 do
       local inventoryItem = mq.TLO.Me.Inventory(i)
       if inventoryItem() then
@@ -110,8 +121,7 @@ local function sellItems()
   end
 
   moveUtils.MoveToLoc(startX, startY, startZ, 20, 12)
-  state = looterStates.Idle
-  logger.Info("Completed selling items to [%s].", target.CleanName())
+  logger.Info("Completed selling items to [%s].", merchantName)
 end
 
 local function markItemForSelling()
@@ -146,8 +156,9 @@ local function doSell()
     return
   end
 
-  if state == looterStates.Looting then
+  if state == looterStates.Selling then
     sellItems()
+    state = looterStates.Idle
   end
 end
 
