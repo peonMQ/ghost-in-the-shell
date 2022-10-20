@@ -36,7 +36,7 @@ local function doMeditate()
   if me.Sitting() and ((mqutil.NPCInRange(100) and not config.MeditateWithNpcInCamp) or tempDisableMeditateTimer:IsRunning()) then
     mq.cmd("/stand")
     return
-  elseif not me.Sitting() and me.PctMana() < config.MeditateManaPct then
+  elseif not me.Sitting() and me.PctMana() < config.MeditateManaPct and (not mqutil.NPCInRange(100) or config.MeditateWithNpcInCamp) and tempDisableMeditateTimer:IsComplete() then
     mq.cmd("/sit")
     return
   end
