@@ -1,17 +1,20 @@
 local logger = require('utils/logging')
-local config = require('utils/configloader')
+local jsonUtil = require('utils/json')
 local debugUtils = require('utils/debug')
 --- @type LootItem
 local item = require('modules/looter/types/lootitem')
 
+local configDir = mq.configDir.."/"
+local serverName = mq.TLO.MacroQuest.Server()
+
 local function getFilePath()
-  local fileName = "Loot Settings"
-  return string.format("data/%s", fileName)
+  local fileName = "Loot Settings.json"
+  return string.format("%s/%s/data/%s", configDir, serverName, fileName)
 end
 
 local function loadStore()
   local filePath = getFilePath()
-  local loadedConfig = config("", nil, filePath)
+  local loadedConfig = jsonUtil.LoadJSON(filePath)
   local data = {}
   for key, value in pairs(loadedConfig) do
     table.insert(data, item:new(value.Id, value.Name, value.DoSell, value.DoDestroy))
@@ -52,8 +55,8 @@ function Repository:upsert (upsertItem)
   end
 
   self:add(upsertItem)
-    local filePath = getFilePath()
-    config.SaveConfig("", Repository.items, filePath)
+  local filePath = getFilePath()
+  jsonUtil.SaveJSON(filePath, Repository.items)
 end
 
 return Repository
