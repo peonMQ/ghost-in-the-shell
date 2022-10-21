@@ -28,7 +28,7 @@ local punchAbilities = {"Dragon Punch", "Tail Rake", "Tiger Claw", "Eagle Strike
 local function doPriorityAbility(abilities)
   local me = mq.TLO.Me
   for _, ability in ipairs(abilities) do
-    if me.AbilityReady(ability)() then
+    if me.SkillCap(ability)() > 0 and me.AbilityReady(ability)() then
       mq.cmdf('/doability "%s"', ability)
       return
     end
