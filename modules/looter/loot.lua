@@ -1,6 +1,7 @@
 --- @type Mq
 local mq = require('mq')
 local logger = require('utils/logging')
+local broadcast = require('broadcast/broadcast')
 local plugin = require('utils/plugins')
 local mqUtils = require('utils/mq')
 local moveUtils = require('lib/moveutils')
@@ -109,13 +110,16 @@ local function lootItem(slotNum)
   if shouldDestroy then
     while cursor() ~= nil and lootTimer:IsRunning() do
       mq.cmdf("/destroy")
+      mq.delay(100, function() return not cursor.ID() end)
       if cursor.ID() == 0 then
-        logger.Debug("Succesfully destroyed %s from slot# %s", item.Name, slotNum)
+        broadcast.Success("Succesfully destroyed %s from slot# %s", item.Name, slotNum)
+      else
+        broadcast.Fail("Failed destroying %s from slot# %s", item.Name, slotNum)
       end
     end
   else
     mqUtils.ClearCursor()
-    logger.Debug("Succesfully looted %s from slot# %s", item.Name, slotNum)
+    broadcast.Success("Succesfully looted %s from slot# %s", item.Name, slotNum)
   end
 end
 
@@ -141,12 +145,13 @@ local function lootCorpse()
 
   if corpse.Items() > 0 then
     mq.cmd("/keypress /")
-    mq.delay(1)
+    mq.delay(10)
     typeChrs("/bca %d - ", mq.TLO.Target.ID())
-    mq.delay(1)
+    mq.delay(10)
     mq.cmd("/notify LootWnd BroadcastButton leftmouseup")
-    mq.delay(1)
+    mq.delay(10)
     mq.cmd("/keypress enter chat")
+    mq.delay(10)
   end
 
   if mq.TLO.Corpse.Open() then
