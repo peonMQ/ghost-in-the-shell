@@ -51,7 +51,7 @@ function HealSpell:CanCastOnTarget(target)
   if not target.PctHPs() or target.PctHPs() > self.HealPercent then
     return false
   end
-  
+
   return self:CanCastOnSpawn(target)
 end
 

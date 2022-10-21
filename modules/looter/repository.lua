@@ -1,3 +1,5 @@
+--- @type Mq
+local mq = require('mq')
 local logger = require('utils/logging')
 local jsonUtil = require('utils/json')
 local debugUtils = require('utils/debug')

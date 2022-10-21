@@ -1,5 +1,6 @@
 --- @type Mq
 local mq = require('mq')
+local logger = require('utils/logging')
 local luaUtils = require('utils/lua')
 ---@type Spell
 local spell = require('lib/spells/types/spell')
@@ -99,9 +100,8 @@ end
 ---@return boolean
 function BuffSpell:WillStack(netbot)
   local netbotBuffs = luaUtils.Split(netbot.Buff(), "%s")
-
   for _, buffId in ipairs(netbotBuffs) do
-    if self.Id == buffId then
+    if self.Id == tonumber(buffId) then
       return false
     end
 

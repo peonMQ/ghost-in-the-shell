@@ -47,7 +47,7 @@ local function checkHealMainTank()
     return
   end
 
-  if mqUtils.EnsureTarget( mq.TLO.NetBots(mainTank).ID()) and config.MainTankHeal:CanCastOnTarget(mq.TLO.Target --[[@as target]]) then
+  if config.MainTankHeal:CanCastOnNetBot(mq.TLO.NetBots(mainTank) --[[@as netbot]]) and mqUtils.EnsureTarget(mq.TLO.NetBots(mainTank).ID())  then
     logger.Info("Healing maintain <%s>[%d]", mq.TLO.Target.Name(), mq.TLO.Target.PctHPs())
     config.MainTankHeal:Cast(checkInterrupt)
   end
