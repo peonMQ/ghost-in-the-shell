@@ -1,5 +1,6 @@
 --- @type Mq
 local mq = require('mq')
+local luaUtils = require('utils/lua')
 ---@type Item
 local item = require('lib/spells/types/item')
 
@@ -84,6 +85,25 @@ function BuffItem:CanCastOnspawn(spawn)
 
   if spawn.Type() == "Corpse" then
     return false
+  end
+
+  return true
+end
+
+---@param netbot netbot
+---@return boolean
+function BuffItem:WillStack(netbot)
+  local netbotBuffs = luaUtils.Split(netbot.Buff(), "%s")
+
+  for _, buffId in ipairs(netbotBuffs) do
+    if self.Id == buffId then
+      return false
+    end
+
+    local buffSpell = mq.TLO.Spell(buffId)
+    if buffSpell() and not mq.TLO.Spell(self.Name).WillStack(buffSpell.Name())() then
+      return false
+    end
   end
 
   return true
