@@ -32,8 +32,12 @@ end
 ---@param itemName string
 ---@return boolean, LootItem
 local function canDestroyItem(itemId, itemName)
-  local _, destroyItem = repository:tryGet(itemId)
-  return item.DoDestroy, destroyItem or item:new(itemId, itemName)
+  local foundItem, itemToDestroy = repository:tryGet(itemId)
+  if not foundItem then
+    itemToDestroy = item:new(itemId, itemName)
+  end
+
+  return itemToDestroy.DoDestroy, itemToDestroy
 end
 
 local function alreadyHaveLoreItem(item)
