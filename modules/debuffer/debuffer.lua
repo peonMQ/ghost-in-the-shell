@@ -7,7 +7,12 @@ local common = require('lib/common/common')
 local state = require('lib/spells/state')
 local castReturnTypes = require('lib/spells/types/castreturn')
 local config = require('modules/debuffer/config')
-local debuffState = require('modules/debuffer/types/debuffstate')
+local repository = require('modules/debuffer/types/debuffRepository')
+
+--- @type Timer
+local timer = require('lib/timer')
+
+local cleanTimer = timer:new(60)
 
 local immunities = {}
 
@@ -22,7 +27,7 @@ local function checkInterrupt(spellId)
   end
 end
 
-local function doDebuffs()  
+local function doDebuffs()
   local mainAssist = common.GetMainAssist()
   if not mainAssist then
     return
@@ -43,7 +48,11 @@ local function doDebuffs()
       return
   end
 
-  debuffState:Clean()
+  if cleanTimer:IsComplete() then
+    repository.Clean()
+    cleanTimer = cleanTimer:new(60)
+  end
+
   for key, debuffSpell in pairs(config.DeBuffs) do
     logger.Debug("Debuffing with <%s>", debuffSpell.Name)
     if debuffSpell:CanCast() then
@@ -61,7 +70,7 @@ local function doDebuffs()
           elseif castResult == castReturnTypes.Success then
             logger.Info("[%s] debuffed with <%s>.", targetSpawn.Name(), debuffSpell.Name)
             broadcast.Success("[%s] debuffed with <%s>.", targetSpawn.Name(), debuffSpell.Name)
-            debuffState:Add(targetSpawn.ID(), debuffSpell.MQSpell)
+            repository.Insert(targetSpawn.ID(), debuffSpell)
           else
             logger.Info("[%s] <%s> debuff failed with. [%s]", targetSpawn.Name(), debuffSpell.Name, castResult)
           end

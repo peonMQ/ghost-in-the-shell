@@ -3,13 +3,16 @@ local mq = require('mq')
 local logger = require('utils/logging')
 ---@type Spell
 local spell = require('lib/spells/types/spell')
-local debuffState = require('modules/debuffer/types/debuffstate')
+local repository = require('modules/debuffer/types/debuffRepository')
 
 ---@class DeBuffSpell : Spell
 ---@field public Id integer
 ---@field public Name string
 ---@field public DefaultGem integer
 ---@field public MinManaPercent integer
+---@field public CategoryId integer
+---@field public SubCategoryId integer
+---@field public Duration integer
 local DeBuffSpell = spell:base()
 
 ---@param name string
@@ -21,6 +24,9 @@ local DeBuffSpell = spell:base()
 function DeBuffSpell:new (name, defaultGem, minManaPercent, giveUpTimer, resistRetries)
   self.__index = self
   local o = setmetatable(spell:new(name, defaultGem, minManaPercent, giveUpTimer, resistRetries), self)
+  o.CategoryId = o.MQSpell.CategoryID()
+  o.SubCategoryId = o.MQSpell.SubcategoryID()
+  o.Duration = o.MQSpell.Duration()*6
   return o --[[@as DeBuffSpell]]
 end
 
@@ -50,8 +56,17 @@ function DeBuffSpell:CanCastOnTarget(target)
   --   return false
   -- end
 
-  if debuffState:HasDebuff(target.ID(), self.MQSpell) then
-    return false
+  local currentDebuffs = repository.GetDebuffs(target.ID(), self)
+  for _, currentDebuff in pairs(currentDebuffs) do
+    if currentDebuff.expireTimeStamp < os.time() then
+      return true
+    elseif currentDebuff.spellId == self.Id then
+      return false
+    elseif currentDebuff.spellCategoryId == self.CategoryId and currentDebuff.spellSubCategoryId == self.SubCategoryId then
+      if not mq.TLO.Spell(currentDebuff.spellId).WillStack(self.Name) then
+        return false
+      end
+    end
   end
 
   return true
