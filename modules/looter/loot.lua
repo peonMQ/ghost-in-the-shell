@@ -150,7 +150,7 @@ local function lootCorpse()
   if corpse.Items() > 0 then
     mq.cmd("/keypress /")
     mq.delay(10)
-    typeChrs("/bca %d - ", mq.TLO.Target.ID())
+    typeChrs("say %s<%d> - ", mq.TLO.Target.Name(), mq.TLO.Target.ID())
     mq.delay(10)
     mq.cmd("/notify LootWnd BroadcastButton leftmouseup")
     mq.delay(10)
