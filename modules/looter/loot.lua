@@ -114,16 +114,16 @@ local function lootItem(slotNum)
   if shouldDestroy then
     while cursor() ~= nil and lootTimer:IsRunning() do
       mq.cmdf("/destroy")
-      mq.delay(100, function() return not cursor.ID() end)
-      if cursor.ID() == 0 then
-        broadcast.Success("Succesfully destroyed %s from slot# %s", item.Name, slotNum)
+      mq.delay(100, function() return cursor() == nil end)
+      if cursor() == nil then
+        broadcast.Success("Destroyed %s from slot# %s", item.Name, slotNum)
       else
-        broadcast.Fail("Failed destroying %s from slot# %s", item.Name, slotNum)
+        broadcast.Fail("Destroying %s from slot# %s", item.Name, slotNum)
       end
     end
   else
     mqUtils.ClearCursor()
-    broadcast.Success("Succesfully looted %s from slot# %s", item.Name, slotNum)
+    broadcast.Success("Looted %s from slot# %s", item.Name, slotNum)
   end
 end
 

@@ -29,10 +29,10 @@ db:exec[[
 local function clean()
   local sql = [[
     DELETE FROM debuffs a
-      WHERE a.expireTimeStamp < %d
+      WHERE a.expireTimeStamp < %s
   ]]
 
-  local deleteSQL = sql:format(sql, os:time()-20)
+  local deleteSQL = sql:format(sql, os.time()-20)
   local retries = 0
   local result = db:exec(deleteSQL)
   while result ~= 0 and retries < 20 do
