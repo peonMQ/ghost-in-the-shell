@@ -94,7 +94,7 @@ local function lootItem(slotNum)
   local cursor = mq.TLO.Cursor
 
   while not cursor() and not cursor.ID() and lootTimer:IsRunning() do
-    mq.cmdf("/itemnotify loot%d leftmouseup", slotNum)
+    mq.cmdf("/nomodkey /itemnotify loot%d leftmouseup", slotNum)
     mq.delay("1s", function() return cursor() ~= nil end)
   end
 
@@ -150,7 +150,7 @@ local function lootCorpse()
   if corpse.Items() > 0 then
     mq.cmd("/keypress /")
     mq.delay(10)
-    typeChrs("say %s<%d> - ", mq.TLO.Target.Name(), mq.TLO.Target.ID())
+    typeChrs("say %s %d", mq.TLO.Target.Name(), mq.TLO.Target.ID())
     mq.delay(10)
     mq.cmd("/notify LootWnd BroadcastButton leftmouseup")
     mq.delay(10)
