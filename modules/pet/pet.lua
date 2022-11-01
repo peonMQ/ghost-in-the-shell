@@ -5,10 +5,12 @@ local plugin = require('utils/plugins')
 local mqUtils = require('utils/mq')
 local common = require('lib/common/common')
 local config = require('modules/pet/config')
-local state = require('modules/pet/state')
+local petstates = require('modules/pet/types/petstate')
 require('modules/pet/weaponize')
 ---@type PetSpell
 local petSpell = require('modules/pet/types/petspell')
+
+local state = petstates.Idle
 
 local function equipSummonFocusItem(petSummonFocusItem)
   if not petSummonFocusItem or petSummonFocusItem == "" then
@@ -46,21 +48,23 @@ local function summonPet()
   local me = mq.TLO.Me
   if me.Pet() ~= "NO PET" then
     logger.Info("Already have an active pet <%s>", me.Pet())
+    state = petstates.Idle
     return
   end
 
   local petSpell = config.PetSpell
   if not petSpell then
     logger.Debug("No pet spell configured")
+    state = petstates.Idle
     return
   end
 
   if not petSpell:CanCast() then
     logger.Info("Cannott cast <%s>", petSpell.Name)
+    state = petstates.Idle
     return
   end
 
-  state.Busy()
   local mainhand, offhand = equipSummonFocusItem(petSpell.FocusItem)
 
   petSpell:Cast()
@@ -74,7 +78,8 @@ local function summonPet()
     mq.cmdf('/exchange "%s" offhand', offhand)
     mq.delay(500)
   end
-  state.Free()
+
+  state = petstates.Idle
 end
 
 local function disbandPet()
@@ -114,8 +119,8 @@ end
 
 
 local function doPet()
-  while state.isBusy do
-    mq.delay(10)
+  if state == petstates.SummonPet then
+    summonPet()
   end
 
   if not mq.TLO.Me.Pet.ID() or mq.TLO.Me.Pet.ID() == 0 then
@@ -170,7 +175,7 @@ local function createAliases()
   mq.unbind('/summonpet')
   mq.unbind('/disbandpet')
   mq.bind("/setactivepet", setActivePetSpell)
-  mq.bind("/summonpet", summonPet)
+  mq.bind("/summonpet", function() state = petstates.SummonPet end)
   mq.bind("/disbandpet", disbandPet)
 end
 

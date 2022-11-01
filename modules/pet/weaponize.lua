@@ -5,46 +5,60 @@ local plugin = require('utils/plugins')
 local mqUtils = require('utils/mq')
 local moveUtils = require('lib/moveutils')
 local timer = require('lib/timer')
-local state = require('modules/pet/state')
-local types = require('modules/pet/config')
+local petstates = require('modules/pet/types/petstate')
+local config = require('modules/pet/config')
+
+local state = petstates.Idle
+local weaponizePetId = nil
 
 local function weaponizePet(petId)
-  local weaponizeSpell = types.WeaponizeSpell
+  local weaponizeSpell = config.WeaponizeSpell
   if not weaponizeSpell then
     logger.Debug("No weaponize spell defined, unable to weaponize pet.")
+    state = petstates.Idle
+    weaponizePetId = nil
     return
   end
 
   if not weaponizeSpell:CanCast() then
+    state = petstates.Idle
+    weaponizePetId = nil
     return
   end
 
-  local id = petId or mq.TLO.Me.Pet.ID()
-  if not id or not mq.TLO.Spawn("pet id "..id).ID() then
+  if not petId or not mq.TLO.Spawn("pcpet id "..petId).ID() then
+    state = petstates.Idle
+    weaponizePetId = nil
     return
   end
 
-  if not mq.TLO.Spawn("pcpet radius 100 id "..id).LineOfSight() then
-    logger.Debug("Pet outside range or line of sight: <Spawn('pcpet radius 100 id %d)>", id)
+  if not mq.TLO.Spawn("pcpet radius 100 id "..petId).LineOfSight() then
+    logger.Debug("Pet outside range or line of sight: <Spawn('pcpet radius 100 id %d)>", petId)
+    state = petstates.Idle
+    weaponizePetId = nil
     return
   end
 
   mqUtils.ClearCursor()
 
-  if not mqUtils.EnsureTarget(id) then
+  if not mqUtils.EnsureTarget(petId) then
+    state = petstates.Idle
+    weaponizePetId = nil
     return
   end
+
   for i=1,2 do
     if not mq.TLO.Me.SpellReady(weaponizeSpell.Name)() then
       local refreshTimer = mq.TLO.Spell(weaponizeSpell.Name).RecastTime() + 150
       mq.delay(refreshTimer)
     end
 
-    state.Busy()
     weaponizeSpell:Cast()
     mq.delay(500)
 
-    if not mqUtils.EnsureTarget(id) then
+    if not mqUtils.EnsureTarget(petId) then
+      state = petstates.Idle
+      weaponizePetId = nil
       return
     end
 
@@ -66,12 +80,13 @@ local function weaponizePet(petId)
     end
 
     if mq.TLO.Cursor.ID() then
-      logger.Debug("Could not hand <%s> to <%s> <%d>", mq.TLO.Cursor(), mq.TLO.Target(), id)
+      logger.Debug("Could not hand <%s> to <%s> <%d>", mq.TLO.Cursor(), mq.TLO.Target(), petId)
       mq.cmd("/beep")
       mqUtils.ClearCursor()
     end
 
-    state.Free()
+    state = petstates.Idle
+    weaponizePetId = nil
   end
 end
 
@@ -87,16 +102,24 @@ local function askForWeapons(characterName)
 
   if plugin.IsLoaded("mq2netbots") and mq.TLO.NetBots(characterName).InZone() then
     mq.cmdf("/bct %s //weaponizepet %d", characterName, mq.TLO.Me.Pet.ID())
-  else 
+  else
     logger.Debug("Cold not ask <%s> for weapons, NetBots not loaded or character not in zone.", characterName)
+  end
+end
+
+local function doWeaponize()
+  if state == petstates.WeaponizePet and weaponizePetId then
+    weaponizePet(weaponizePet)
   end
 end
 
 local function createAliases()
   mq.unbind('/weaponizepet')
   mq.unbind('/askforpetweapons')
-  mq.bind("/weaponizepet", weaponizePet)
+  mq.bind("/weaponizepet", function(petId) state = petstates.WeaponizePet; weaponizePetId = petId or mq.TLO.Me.Pet.ID() end)
   mq.bind("/askforpetweapons", askForWeapons)
 end
 
 createAliases()
+
+return doWeaponize
