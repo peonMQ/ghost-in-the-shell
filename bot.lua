@@ -78,9 +78,9 @@ local function toggleFollow(targetId)
     return
   end
 
-  local stickSpawn = mq.getFilteredSpawns(function(spawn) return spawn.ID() == targetId and  spawn.Type() =="PC" end)
-  if next(stickSpawn) then
-    mq.cmdf("/afollow spawn %d", stickSpawn[0].ID())
+  local stickSpawn = mq.getFilteredSpawns(function(spawn)  return spawn.ID() == tonumber(targetId) and spawn.Type() == "PC" end)
+  if stickSpawn[1] then
+    mq.cmdf("/afollow spawn %d", stickSpawn[1].ID())
   end
 end
 
@@ -103,9 +103,9 @@ local function toggleNavTo(targetId)
     return
   end
 
-  local stickSpawn = mq.getFilteredSpawns(function(spawn) return spawn.ID() == targetId and  spawn.Type() =="PC" end)
-  if next(stickSpawn) and not mq.TLO.Navigation.PathExists("id "..stickSpawn[0].ID()) then
-    mq.cmdf("/nav id %d", stickSpawn[0].ID())
+  local stickSpawn = mq.getFilteredSpawns(function(spawn) return spawn.ID() == tonumber(targetId) and spawn.Type() == "PC" end)
+  if stickSpawn[1] and not mq.TLO.Navigation.PathExists("id "..stickSpawn[1].ID()) then
+    mq.cmdf("/nav id %d", stickSpawn[1].ID())
   end
 end
 
