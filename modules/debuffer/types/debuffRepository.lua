@@ -51,7 +51,7 @@ end
 ---@return {id: integer, spellId: integer, spellCategoryId: integer, spellSubCategoryId: integer, expireTimeStamp: integer}[]
 local function getDebuffs(spawnId, debuffSpell)
   local sql = [[
-    SELECT * FROM debuffs 
+    SELECT * FROM debuffs a
       WHERE a.spawnId == %d AND a.spellCategoryId = %d AND a.spellSubCategoryId = %d
   ]]
 
