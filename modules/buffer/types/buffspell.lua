@@ -12,7 +12,7 @@ end
 
 local function currentZoneIsIndoors()
   local currentZone = mq.TLO.Zone.ShortName()
-  return string.find("befallen blackburrow gukbottom guktop neriaka neriakb neriakc paw permafrost qcat runnyeye soldunga soldungb soltemple akanon kaladima kaladimb kedge kurn", currentZone) ~= nil
+  return string.find("befallen blackburrow gukbottom guktop neriaka neriakb neriakc paw permafrost qcat runnyeye soldunga soldungb soltemple akanon kaladima kaladimb kedge kurn kaesora", currentZone) ~= nil
 end
 
 ---@class BuffSpell : Spell
