@@ -128,10 +128,21 @@ local function lootItem(slotNum)
 end
 
 local function lootCorpse()
+  local target = mq.TLO.Target
+  if not target() or target.Type() ~= "Corpse" then
+    broadcast.Fail("No corpse on target.")
+    return
+  end
+
   mqUtils.ClearCursor()
   mq.cmd("/loot")
   local corpse = mq.TLO.Corpse
   mq.delay("1s", function() return corpse() and corpse.Items() > 0 end)
+  if not corpse() then
+    broadcast.Fail("Unable to open corpse for looting.")
+    return
+  end
+
   if corpse.Items() > 0 then
     logger.Debug("Looting <%s> with # of items: %d", mq.TLO.Target.Name(), corpse.Items())
     for i=1,corpse.Items() do
@@ -178,7 +189,7 @@ local function lootNearestCorpse()
     local seekRadius = 100
     local searchCorpseString = string.format("npc corpse zradius 50 radius %s", seekRadius)
     local closestCorpseID = mq.TLO.NearestSpawn(1, searchCorpseString).ID()
-    if mq.TLO.Spawn(closestCorpseID) and mqUtils.EnsureTarget(closestCorpseID) then
+    if mq.TLO.Spawn(closestCorpseID)() and mqUtils.EnsureTarget(closestCorpseID) then
       local target = mq.TLO.Target
       if target.Distance() > 16 and target.DistanceZ() < 80 then
         moveUtils.MoveToLoc(target.X(), target.Y(), target.Z(), 20, 12)
