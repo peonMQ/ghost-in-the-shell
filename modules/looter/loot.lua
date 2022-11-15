@@ -137,8 +137,8 @@ local function lootCorpse()
   mqUtils.ClearCursor()
   mq.cmd("/loot")
   local corpse = mq.TLO.Corpse
-  mq.delay("1s", function() return corpse() and corpse.Items() > 0 end)
-  if not corpse() then
+  mq.delay("1s", function() return corpse.Open() and corpse.Items() > 0 end)
+  if not corpse.Open() then
     broadcast.Fail("Unable to open corpse for looting.")
     return
   end
