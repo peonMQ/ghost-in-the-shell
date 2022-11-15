@@ -28,7 +28,7 @@ end
 
 ---@return BuffConfig
 local function loadConfig()
-  local loadedConfig = configLoader("debuffs", nil) --[[@as DeBuffSpell[] ]]
+  local loadedConfig = configLoader("debuffs") --[[@as DeBuffSpell[] ]]
   defaultConfig.DeBuffs = reMapDeBuffspell(loadedConfig)
   return defaultConfig
 end
