@@ -28,8 +28,7 @@ db:exec[[
 
 local function clean()
   local sql = [[
-    DELETE FROM debuffs a
-      WHERE a.expireTimeStamp < %s
+    DELETE FROM debuffs WHERE expireTimeStamp < %s
   ]]
 
   local deleteSQL = sql:format(sql, os.time()-20)
@@ -63,7 +62,7 @@ end
 ---@param spawnId integer
 ---@param debuffSpell DeBuffSpell
 local function insert(spawnId, debuffSpell)
-  local insertStatement = string.format("INSERT INTO log(spawnId, spellId, spellCategoryId, spellSubCategoryId, expireTimeStamp) VALUES(%d, %d, %d, %d, %d)", spawnId, debuffSpell.Id, debuffSpell.CategoryId, debuffSpell.SubCategoryId, os.time() + debuffSpell.Duration)
+  local insertStatement = string.format("INSERT INTO debuffs(spawnId, spellId, spellCategoryId, spellSubCategoryId, expireTimeStamp) VALUES(%d, %d, %d, %d, %d)", spawnId, debuffSpell.Id, debuffSpell.CategoryId, debuffSpell.SubCategoryId, os.time() + debuffSpell.Duration)
   local retries = 0
   local result = db:exec(insertStatement)
   while result ~= 0 and retries < 20 do

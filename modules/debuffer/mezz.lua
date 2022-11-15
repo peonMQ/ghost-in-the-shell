@@ -6,9 +6,12 @@ local mqUtils = require('utils/mq')
 local configLoader = require('utils/configloader')
 local common = require('lib/common/common')
 local debuffspell = require('modules/debuffer/types/debuffspell')
-local debuffState = require('modules/debuffer/types/debuffstate')
+local repository = require('modules/debuffer/types/debuffRepository')
 local state = require('lib/spells/state')
 local castReturnTypes = require('lib/spells/types/castreturn')
+
+--- @type Timer
+local timer = require('lib/timer')
 
 ---@class MezzConfig
 local defaultConfig = {
@@ -21,6 +24,8 @@ if config.MezzSpell == "" then
   logger.Error("No mezz spell defined!")
   return function () end
 end
+
+local cleanTimer = timer:new(60)
 
 local mezzSpell = debuffspell:new(config.MezzSpell, 8, 0, 30, 3)
 
@@ -57,6 +62,11 @@ local function doMezz()
   local spawnQuery = "npc los targetable radius "..config.Radius
   local mezzTargetCount = mq.TLO.SpawnCount(spawnQuery)()
 
+  if cleanTimer:IsComplete() then
+    repository.Clean()
+    cleanTimer = cleanTimer:new(60)
+  end
+
   --[[
     should we use mq.getFilteredSpawns(predicate) instead? does range really matter...
     local predicate = function (spawn) 
@@ -65,7 +75,6 @@ local function doMezz()
     mq.getFilteredSpawns(predicate)
   ]]
 
-  debuffState:Clean()
   for i=1, mezzTargetCount do
     local mezzSpawn = mq.TLO.NearestSpawn(i, spawnQuery)
     if immunities and immunities[mezzSpawn.Name()] then
@@ -81,7 +90,7 @@ local function doMezz()
         elseif castResult == castReturnTypes.Success then
           logger.Info("[%s] mezzed with <%s>.", mezzSpawn.Name(), mezzSpell.Name)
           broadcast.Success("[%s] mezzed with <%s>.", mezzSpawn.Name(), mezzSpell.Name)
-          debuffState:Add(mezzSpawn.ID(), mezzSpell.MQSpell)
+          repository:Add(mezzSpawn.ID(), mezzSpell.MQSpell)
         else
           logger.Info("[%s] <%s> mezz failed with. [%s]", mezzSpawn.Name(), mezzSpell.Name, castResult)
         end
