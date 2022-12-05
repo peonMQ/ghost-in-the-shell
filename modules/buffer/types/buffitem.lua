@@ -96,7 +96,7 @@ function BuffItem:WillStack(netbot)
   local netbotBuffs = luaUtils.Split(netbot.Buff(), "%s")
 
   for _, buffId in ipairs(netbotBuffs) do
-    if self.Id == buffId then
+    if self.Id == tonumber(buffId) then
       return false
     end
 
