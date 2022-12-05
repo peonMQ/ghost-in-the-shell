@@ -6,6 +6,7 @@ local function DoSummon (itemName)
   mq.cmdf('/itemnotify "%s" rightmouseup', itemName)
   mq.delay("3s", function() return mq.TLO.Cursor.ID() and mq.TLO.Cursor.ID() > 0 end)
   if mq.TLO.Cursor.ID() then
+    mq.delay(500)
     mq.cmd('/autoinventory')
   end
   logger.Debug("Done sommon with cursor <%s>", mq.TLO.Cursor.ID())
