@@ -109,7 +109,7 @@ end
 
 local function doWeaponize()
   if state == petstates.WeaponizePet and weaponizePetId then
-    weaponizePet(weaponizePet)
+    weaponizePet(weaponizePetId)
   end
 end
 

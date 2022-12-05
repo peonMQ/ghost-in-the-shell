@@ -8,7 +8,7 @@ local config = require('modules/pet/config')
 local petstates = require('modules/pet/types/petstate')
 require('modules/pet/weaponize')
 ---@type PetSpell
-local petSpell = require('modules/pet/types/petspell')
+local petspell = require('modules/pet/types/petspell')
 
 local state = petstates.Idle
 
@@ -100,7 +100,7 @@ local function setActivePetSpell(newPetSpell, newSummonFocusItem)
     logger.Error("You do not know the spell <%s>.", newPetSpell)
     return
   else
-    config.PetSpell = petSpell:new(newPetSpell, petSpell.DefaultGem, petSpell.MinManaPercent, petSpell.GiveUpTimer, petSpell.FocusItem)
+    config.PetSpell = petspell:new(newPetSpell, petSpell.DefaultGem, petSpell.MinManaPercent, petSpell.GiveUpTimer, petSpell.FocusItem)
     logger.Info("New pet spell the spell <%s>.", newPetSpell)
   end
 
@@ -112,7 +112,7 @@ local function setActivePetSpell(newPetSpell, newSummonFocusItem)
     mq.cmd("/beep")
     logger.Error("You do not have the focus item <%s> on your character..", newSummonFocusItem)
   else
-    config.PetSpell = petSpell:new(petSpell.Name, petSpell.DefaultGem, petSpell.MinManaPercent, petSpell.GiveUpTimer, newSummonFocusItem)
+    config.PetSpell = petspell:new(petSpell.Name, petSpell.DefaultGem, petSpell.MinManaPercent, petSpell.GiveUpTimer, newSummonFocusItem)
     logger.Info("New pet focus item <%s>.", newSummonFocusItem)
   end
 end
