@@ -15,20 +15,14 @@ local timer = require('lib/timer')
 
 ---@class MezzConfig
 local defaultConfig = {
+  DoCrowdControl = false,
   Radius = 100,
   MezzSpell = "",
 }
 
 local config = configLoader("general.crowdcontrol", defaultConfig)
-if config.MezzSpell == "" then
-  logger.Error("No mezz spell defined!")
-  return function () end
-end
-
 local cleanTimer = timer:new(60)
-
 local mezzSpell = debuffspell:new(config.MezzSpell, 8, 0, 30, 3)
-
 local immunities = {}
 
 local function checkInterrupt(spellId)
@@ -53,6 +47,16 @@ local function checkInterrupt(spellId)
 end
 
 local function doMezz()
+  if not config.DoCrowdControl then
+    return
+  end
+
+  if config.MezzSpell == "" then
+    logger.Error("No mezz spell defined!")
+    config.DoCrowdControl = false
+    return
+  end
+
   local mainAssist = common.GetMainAssist()
   if not mainAssist then
     return
@@ -61,11 +65,6 @@ local function doMezz()
   local maTargetId = mq.TLO.NetBots(mainAssist).TargetID()
   local spawnQuery = "npc los targetable radius "..config.Radius
   local mezzTargetCount = mq.TLO.SpawnCount(spawnQuery)()
-
-  if cleanTimer:IsComplete() then
-    repository.Clean()
-    cleanTimer = cleanTimer:new(60)
-  end
 
   --[[
     should we use mq.getFilteredSpawns(predicate) instead? does range really matter...
@@ -96,6 +95,11 @@ local function doMezz()
         end
       end
     end
+  end
+
+  if cleanTimer:IsComplete() then
+    repository.Clean()
+    cleanTimer = cleanTimer:new(60)
   end
 end
 

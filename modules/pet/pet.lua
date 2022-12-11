@@ -133,7 +133,7 @@ local function doPet()
   end
 
   local query = "id "..config.CurrentPetTarget
-  if config.CurrentPetTarget > 0 and (not mq.TLO.SpawnCount(query)() or mq.TLO.Spawn(query).Type() == "Corpse") then
+  if config.CurrentPetTarget > 0 and (mq.TLO.SpawnCount(query)() == 0 or mq.TLO.Spawn(query).Type() == "Corpse") then
     mq.cmd("/pet back off")
     config.CurrentPetTarget = 0
   elseif config.CurrentPetTarget > 0 then
