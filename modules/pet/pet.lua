@@ -88,6 +88,11 @@ local function disbandPet()
   end
 end
 
+local function resetPet()
+  mq.cmd("/pet back off")
+  config.CurrentPetTarget = 0
+end
+
 local function setActivePetSpell(newPetSpell, newSummonFocusItem)
   if not newPetSpell then
     logger.Warn("New pet spell is <nil>")
@@ -174,9 +179,11 @@ local function createAliases()
   mq.unbind('/setactivepet')
   mq.unbind('/summonpet')
   mq.unbind('/disbandpet')
+  mq.unbind('/resetpet')
   mq.bind("/setactivepet", setActivePetSpell)
   mq.bind("/summonpet", function() state = petstates.SummonPet end)
   mq.bind("/disbandpet", disbandPet)
+  mq.bind('/resetpet', resetPet)
 end
 
 createAliases()
