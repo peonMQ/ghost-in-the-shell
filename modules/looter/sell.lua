@@ -51,7 +51,7 @@ local function sellItem(itemToSell)
     if(itemToSell.ItemSlot2() >= 0) then
       mq.cmdf("/nomodkey /itemnotify in pack%d %d leftmouseup", packslot, itemToSell.ItemSlot2() + 1)
     else
-      mq.cmdf("/nomodkey /itemnotify in pack%d leftmouseup", packslot)
+      mq.cmdf("/nomodkey /itemnotify pack%d leftmouseup", packslot)
     end
 
     mq.delay(retryTimer:TimeRemaining(), function() return merchantWindow.Child("MW_SelectedItemLabel").Text() == itemToSell.Name() end)
