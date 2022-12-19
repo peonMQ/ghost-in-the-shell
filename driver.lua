@@ -26,4 +26,4 @@ end
 
 startBots()
 
-mq.cmd("/lua run hud/hud")
+mq.cmd("/lua run hud")
