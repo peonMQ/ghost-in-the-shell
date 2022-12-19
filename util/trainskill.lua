@@ -1,7 +1,7 @@
 --- @type Mq
 local mq = require('mq')
-local logger = require('lib/util/logging')
-local mqUtils = require('lib/util/mq')
+local logger = require('utils/logging')
+local mqUtils = require('utils/mqhelper')
 
 local args = {...}
 local function Main()

@@ -1,6 +1,6 @@
 --- @type Mq
 local mq = require('mq')
-local logger = require('lib/util/logging')
+local logger = require('utils/logging')
 
 local function DoSummon (itemName)
   mq.cmdf('/nomodkey /itemnotify "%s" rightmouseup', itemName)

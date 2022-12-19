@@ -1,6 +1,6 @@
 --- @type Mq
 local mq = require('mq')
-local logger = require('lib/util/logging')
+local logger = require('utils/logging')
 
 --  https://www.mmobugs.com/forums/index.php?threads/turnin-macro.15376/
 --  https://www.mmobugs.com/forums/index.php?threads/simplify-quest-turn-in.34738/

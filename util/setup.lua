@@ -1,6 +1,6 @@
 --- @type Mq
 local mq = require('mq')
-local plugins = require('lib/util/plugins')
+local plugins = require('utils/plugins')
 
 -- load EQBC if needed
 plugins.EnsureIsLoaded("mq2eqbc")
