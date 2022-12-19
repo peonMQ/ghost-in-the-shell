@@ -1,7 +1,6 @@
 --- @type Mq
 local mq = require('mq')
 local configLoader = require('utils/configloader')
-local luaUtils = require('utils/lua')
 ---@type DeBuffSpell
 local debuffSpell = require('modules/debuffer/types/debuffspell')
 

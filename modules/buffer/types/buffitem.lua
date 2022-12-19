@@ -1,6 +1,6 @@
 --- @type Mq
 local mq = require('mq')
-local luaUtils = require('utils/lua')
+local luaUtils = require('utils/lua-table')
 ---@type Item
 local item = require('lib/spells/types/item')
 

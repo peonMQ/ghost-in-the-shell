@@ -1,5 +1,4 @@
 local configLoader = require('utils/configloader')
-local luautil = require('utils/lua')
 ---@type HealSpell
 local healSpell = require('modules/healer/types/healspell')
 

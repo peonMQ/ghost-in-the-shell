@@ -3,7 +3,7 @@ local mq = require('mq')
 local logger = require('utils/logging')
 local broadcast = require('broadcast/broadcast')
 local plugin = require('utils/plugins')
-local mqUtils = require('utils/mq')
+local mqUtils = require('utils/mqhelpers')
 local moveUtils = require('lib/moveutils')
 ---@type Timer
 local timer = require('lib/timer')

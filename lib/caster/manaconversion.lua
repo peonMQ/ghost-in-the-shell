@@ -1,7 +1,6 @@
 --- @type Mq
 local mq = require('mq')
-local mqutil = require('utils/mq')
-local luaUtils = require('utils/lua')
+local mqutil = require('utils/mqhelpers')
 local configLoader = require('utils/configloader')
 ---@type Spell
 local spell = require('lib/spells/types/spell')

@@ -1,7 +1,7 @@
 --- @type Mq
 local mq = require('mq')
 local logger = require('utils/logging')
-local mqUtils = require('utils/mq')
+local mqUtils = require('utils/mqhelpers')
 local plugin = require('utils/plugins')
 local config = require('modules/buffer/config')
 local state = require('lib/spells/state')

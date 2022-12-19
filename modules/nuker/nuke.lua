@@ -1,7 +1,7 @@
 --- @type Mq
 local mq = require('mq')
 local logger = require('utils/logging')
-local mqUtils = require('utils/mq')
+local mqUtils = require('utils/mqhelpers')
 local luautils = require('utils/lua')
 local enum = require('utils/stringenum')
 local common = require('lib/common/common')

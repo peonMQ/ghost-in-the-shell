@@ -1,7 +1,7 @@
 --- @type Mq
 local mq = require('mq')
 local logger = require('utils/logging')
-local mqUtils = require('utils/mq')
+local mqUtils = require('utils/mqhelpers')
 local common = require('lib/common/common')
 local commonConfig = require('lib/common/config')
 local state = require('modules/melee/state')

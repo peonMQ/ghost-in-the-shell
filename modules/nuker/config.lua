@@ -1,5 +1,4 @@
 local logger = require('utils/logging')
-local luautil = require('utils/lua')
 local configLoader = require('utils/configloader')
 ---@type NukeSpell
 local nukeSpell = require('modules/nuker/types/nukespell')

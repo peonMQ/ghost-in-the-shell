@@ -1,6 +1,6 @@
 --- @type Mq
 local mq = require('mq')
-local mqutil = require('utils/mq')
+local mqutil = require('utils/mqhelpers')
 local configLoader = require('utils/configloader')
 --- @type MQEvent
 local mqEvents = require('lib/mqevent')
