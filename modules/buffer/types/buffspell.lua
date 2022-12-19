@@ -84,7 +84,7 @@ end
 ---@return boolean
 function BuffSpell:CanCastOnspawn(spawn)
   local buffSpell = mq.TLO.Spell(self.Name)
-  
+
   if spawn.Distance() > buffSpell.Range() then
     return false
   end
