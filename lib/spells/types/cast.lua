@@ -79,4 +79,16 @@ function Cast:Interrupt()
   return state.castReturn
 end
 
+
+---@return boolean
+function Cast:CanCast()
+  local me = mq.TLO.Me
+  if me.Stunned() then
+    logger.Debug("Unable to cast <%s>, I am stunned.", self.Name)
+    return false
+  end
+
+  return true
+end
+
 return Cast

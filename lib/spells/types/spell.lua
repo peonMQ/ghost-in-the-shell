@@ -92,6 +92,11 @@ end
 
 ---@return boolean
 function Spell:CanCast()
+  local superCanCast = cast.CanCast(self)
+  if not superCanCast then
+    return false
+  end
+
   local me = mq.TLO.Me
   if me.Casting() then
     logger.Debug("Unable to cast <%s>, already casting <%s>.", self.Name, me.Casting.Name())
@@ -111,7 +116,6 @@ function Spell:CanCast()
   return true
 end
 
-
 ---@param cancelCallback? fun(spelLId:integer)
 ---@return CastReturn
 function Spell:Cast(cancelCallback)
@@ -127,7 +131,10 @@ function Spell:Cast(cancelCallback)
   end
 
   if (mq.TLO.Me.Sitting()) then
-    logger.Debug("Spell:Cast")
+    mq.cmd("/stand")
+  end
+
+  if mq.TLO.Me.Animation()  == 16 then
     mq.cmd("/stand")
   end
 

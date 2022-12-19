@@ -36,6 +36,11 @@ end
 
 ---@return boolean
 function Item:CanCast()
+  local superCanCast = cast.CanCast(self)
+  if not superCanCast then
+    return false
+  end
+
   local item = mq.TLO.FindItem("="..self.ItemName)
   local refreshTimer = item.TimerReady()
   local me = mq.TLO.Me
@@ -51,7 +56,7 @@ end
 function Item:Cast(cancelCallback)
   self:FlushCastEvents()
   state.Reset()
-  
+
   if (mq.TLO.Window("SpellBookWnd").Open()) then
     mq.cmd("/keypress spellbook")
   end
@@ -59,8 +64,12 @@ function Item:Cast(cancelCallback)
   if (mq.TLO.Me.Ducking()) then
     mq.cmd("/keypress duck")
   end
-  
+
   if (mq.TLO.Me.Sitting()) then
+    mq.cmd("/stand")
+  end
+
+  if mq.TLO.Me.Animation()  == 16 then
     mq.cmd("/stand")
   end
 
