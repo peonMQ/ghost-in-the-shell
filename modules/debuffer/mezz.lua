@@ -22,8 +22,11 @@ local defaultConfig = {
 
 local config = configLoader("general.crowdcontrol", defaultConfig)
 local cleanTimer = timer:new(60)
-local mezzSpell = debuffspell:new(config.MezzSpell, 8, 0, 30, 3)
+local mezzSpell = nil
 local immunities = {}
+if config.MezzSpell ~= "" then
+  mezzSpell = debuffspell:new(config.MezzSpell, 8, 0, 30, 3)
+end
 
 local function checkInterrupt(spellId)
   local target = mq.TLO.Target
@@ -51,7 +54,7 @@ local function doMezz()
     return
   end
 
-  if config.MezzSpell == "" then
+  if not mezzSpell then
     logger.Error("No mezz spell defined!")
     config.DoCrowdControl = false
     return

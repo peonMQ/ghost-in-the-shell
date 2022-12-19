@@ -15,10 +15,10 @@ local lip = require('lib.LIP')
 
 -- Define some icons
 local icons = {
-   FA_PLAY = '\xef\x81\x8b',
-   FA_PAUSE = '\xef\x81\x8c',
-   FA_STOP = '\xef\x81\x8d',
-   FA_HEART = '\xef\x80\x84'
+   -- FA_PLAY = '\xef\x81\x8b',
+   -- FA_PAUSE = '\xef\x81\x8c',
+   -- FA_STOP = '\xef\x81\x8d',
+   -- FA_HEART = '\xef\x80\x84'
 }
 
 local is_open = true
