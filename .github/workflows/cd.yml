@@ -46,6 +46,8 @@ jobs:
         7z a -tzip $env:BUNDLE_FILE_NAME autopilot/*.lua
         7z a -tzip $env:BUNDLE_FILE_NAME broadcast/*.lua
         7z a -tzip $env:BUNDLE_FILE_NAME hud/*.lua
+        7z a -tzip $env:BUNDLE_FILE_NAME util/*.lua
+        7z a -tzip $env:BUNDLE_FILE_NAME util/lib/*.*
         7z a -tzip $env:BUNDLE_FILE_NAME utils/*.lua
         7z a -tzip $env:BUNDLE_FILE_NAME utils/loaders/*.lua
         7z a -tzip $env:BUNDLE_FILE_NAME wait4rez/*.lua
