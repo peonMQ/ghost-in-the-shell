@@ -60,7 +60,7 @@ local function DoLockPick()
     end
 
     -- Lockpicks - 13010
-    mq.cmd(string.format("/itemnotify %s leftmouseup", mq.TLO.FindItem("=Lockpicks").InvSlot()))
+    mq.cmd(string.format("/nomodkey /itemnotify %s leftmouseup", mq.TLO.FindItem("=Lockpicks").InvSlot()))
     mq.delay(2000)
 
     if mq.TLO.Cursor.Name() ~= "Lockpicks" then

@@ -3,7 +3,7 @@ local mq = require('mq')
 local logger = require('lib/util/logging')
 
 local function DoSummon (itemName)
-  mq.cmdf('/itemnotify "%s" rightmouseup', itemName)
+  mq.cmdf('/nomodkey /itemnotify "%s" rightmouseup', itemName)
   mq.delay("3s", function() return mq.TLO.Cursor.ID() and mq.TLO.Cursor.ID() > 0 end)
   if mq.TLO.Cursor.ID() then
     mq.delay(500)
