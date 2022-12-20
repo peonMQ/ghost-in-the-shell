@@ -29,14 +29,14 @@ local classActions = {
   druid = {doBuffs, doHealing, doNuking, doMeleeDps, doManaStone, doMeditate},
   enchanter = {doMezz, doBuffs, doDeBuffs, doMeleeDps, doNuking, doManaStone, doMeditate},
   magician = {doBuffs, doDeBuffs, doPet, doWeaponize, doNuking, doMeleeDps, doManaStone, doMeditate},
-  monk = {function() doMeleeDps(combatActions.DoPunchesAndKicks) end},
+  monk = {doBuffs, function() doMeleeDps(combatActions.DoPunchesAndKicks) end},
   necromancer = {doBuffs, doPet, doWeaponize, doNuking, doMeleeDps, doManaStone, doMeditate},
   paladin = {doBuffs, doHealing, doNuking, doMeleeDps, doMeditate},
-  ranger = {},
-  rogue = {function() doMeleeDps(combatActions.DoBackStab) end},
-  shadowknight = {doBuffs, doPet, doNuking, doManaStone, doMeditate},
+  ranger = {doBuffs, doHealing, doNuking, doMeleeDps, doMeditate},
+  rogue = {doBuffs, function() doMeleeDps(combatActions.DoBackStab) end},
+  shadowknight = {doBuffs, doPet, doNuking, doMeleeDps, doMeditate},
   shaman = {doBuffs, doDeBuffs, doHealing, doPet, doWeaponize, doNuking, doMeleeDps, doManaStone, doMeditate},
-  warrior = {doMeleeDps},
+  warrior = {doBuffs, doMeleeDps},
   wizard = {doBuffs, doNuking, doMeleeDps, doManaStone, doManaConversion, doMeditate}
 }
 
