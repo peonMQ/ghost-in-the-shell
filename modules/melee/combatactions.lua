@@ -1,5 +1,6 @@
 --- @type Mq
 local mq = require('mq')
+local logger = require('utils/logging')
 
 --[[
   Kick - Regular attack, cannot damage magical mobs unless you are wearing magic boots.
@@ -30,6 +31,7 @@ local function doPriorityAbility(abilities)
   for _, ability in ipairs(abilities) do
     if me.SkillCap(ability)() and me.SkillCap(ability)() > 0 and me.AbilityReady(ability)() then
       mq.cmdf('/doability "%s"', ability)
+      logger.Debug("Triggering ability <%s>", ability)
       return
     end
   end
@@ -40,13 +42,15 @@ local function doPunchesAndKicks()
   doPriorityAbility(kickAbilities)
 end
 
+local backstab = "Backstab"
 local function doBackStab()
   local me = mq.TLO.Me
   local target = mq.TLO.Target
   if me.Heading.Degrees() - target.Heading.Degrees() < 45 then
     -- doRogueStrike()
-    if me.AbilityReady("Backstab")() then
-      mq.cmd("/doability Backstab")
+    if me.AbilityReady(backstab)() then
+      mq.cmdf("/doability %s", backstab)
+      logger.Debug("Triggering ability <%s>", backstab)
     end
   end
 end
