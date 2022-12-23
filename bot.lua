@@ -35,7 +35,7 @@ local classActions = {
   ranger = {doBuffs, doHealing, doNuking, doMeleeDps, doMeditate},
   rogue = {doBuffs, function() doMeleeDps(combatActions.DoBackStab) end},
   shadowknight = {doBuffs, doPet, doNuking, doMeleeDps, doMeditate},
-  shaman = {doBuffs, doDeBuffs, doHealing, doPet, doWeaponize, doNuking, doMeleeDps, doManaStone, doMeditate},
+  shaman = {doBuffs, doDeBuffs, doHealing, doPet, doWeaponize, doNuking, doMeleeDps, doManaStone, doManaConversion, doMeditate},
   warrior = {doBuffs, doMeleeDps},
   wizard = {doBuffs, doNuking, doMeleeDps, doManaStone, doManaConversion, doMeditate}
 }
