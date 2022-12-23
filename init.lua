@@ -2,6 +2,12 @@
 local mq = require('mq')
 local plugins = require('utils/plugins')
 local logger = require('utils/logging')
+local luapaths = require('utils/lua-paths')
+
+
+---@type RunningDir
+local runningDir = luapaths.RunningDir:new()
+runningDir:AppendToPackagePath()
 
 plugins.EnsureIsLoaded("mq2eqbc")
 plugins.EnsureIsLoaded("mq2netbots")
@@ -18,7 +24,7 @@ local function startBots()
     if name ~= me.Name() then
       local netbot = mq.TLO.NetBots(name)
       logger.Info("Starting up %s >> %s", name, netbot.Class.Name())
-      mq.cmdf('/bct %s //lua run "bot"', name)
+      mq.cmdf('/bct %s //lua run %s', name, runningDir:GetRelativeToMQLuaPath("bot"))
     end
   end
   logger.Info("Bots initialized.")
@@ -26,4 +32,4 @@ end
 
 startBots()
 
-mq.cmd("/lua run hud")
+mq.cmdf("/lua run hud")
