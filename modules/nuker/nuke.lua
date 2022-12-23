@@ -105,7 +105,7 @@ local function setNukeLineup(resistType)
   for i=1, #config.Nukes do
     local nuke = config.Nukes[i]
     local spell = mq.TLO.Spell(nuke.Id)
-    if validResistTypes[spell.ResistType()] then
+    if validResistTypes[spell.ResistType()] and spell.ResistType() == resistType then
       table.insert(newLineUp, nuke)
     end
   end
