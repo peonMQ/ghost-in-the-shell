@@ -80,11 +80,11 @@ local function canLootItem(item)
 
   -- if mq.TLO.Me.LargestFreeInventory() == 0, then mq.TLO.Me.FreeInventory() > 1 indicates a free main inventory slot
   -- mq.TLO.Me.LargestFreeInventory() only checks for free bag slots
-  if mq.TLO.Me.LargestFreeInventory() > 0 and mq.TLO.Me.LargestFreeInventory() < item.Size() then
-    logger.Warn("I don't have a free inventory space large enough to hold <%s>.", item.Name())
-    mq.cmd("/beep")
-    return false
-  end
+  -- if mq.TLO.Me.LargestFreeInventory() > 0 and mq.TLO.Me.LargestFreeInventory() < item.Size() then
+  --   logger.Warn("I don't have a free inventory space large enough to hold <%s>.", item.Name())
+  --   mq.cmd("/beep")
+  --   return false
+  -- end
 
   return true
 end
