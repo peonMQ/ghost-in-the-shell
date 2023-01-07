@@ -153,7 +153,7 @@ local group = {
       end
     end
   end
-} -- /noparse /bct maeglin //say ${Target.ID} /noparse /dex maeglin /say ${Target.ID}
+}
 
 local pets = {
   active = false,
