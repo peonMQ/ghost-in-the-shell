@@ -208,7 +208,7 @@ local function lootNearestCorpse()
     logger.Info("Unable to loot corpse, currently casting.")
   end 
 
-  moveUtils.MoveToLoc(startX, startY, startZ, 20, 12)
+  moveUtils.MoveToLoc(startX, startY, startZ, 20, 1)
   state = looterStates.Idle
 end
 

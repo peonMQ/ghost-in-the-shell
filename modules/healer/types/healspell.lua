@@ -58,7 +58,7 @@ end
 ---@param netbot netbot
 ---@return boolean
 function HealSpell:CanCastOnNetBot(netbot)
-  if netbot.PctHPs() > self.HealPercent then
+  if (tonumber(netbot.PctHPs()) or 100) > self.HealPercent then
     return false
   end
 

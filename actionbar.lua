@@ -78,8 +78,9 @@ local fuchsiaButton = {
 
 local function startBots()
   logger.Info("Start up bots.")
-  local command = string.format('/lua run %s', runningDir:GetRelativeToMQLuaPath("bot"))
-  bci.ExecuteAllCommand(command)
+  -- local command = string.format('/lua run %s', runningDir:GetRelativeToMQLuaPath("bot"))
+  -- bci.ExecuteAllCommand(command)
+  bci.ExecuteAllCommand('/lua run bot')
   logger.Info("Bots initialized.")
 end
 
@@ -234,7 +235,7 @@ local pacify = {
   icon = icons.MD_SNOOZE, --MD_REMOVE_RED_EYE
   tooltip = "Pacify Target",
   activate = function(state)
-    bci.ExecuteCommand('/multiline ; /target id '..mq.TLO.Target.ID()..'; /casting  "Pacify" ', {"Ithildin"})
+    bci.ExecuteCommand('/multiline ; /target id '..mq.TLO.Target.ID()..'; /cast  "Pacify" ', {"Ithildin"})
   end,
 }
 
@@ -405,6 +406,7 @@ local function setLooter(arg)
   end
 
   looter = arg
+  logger.Info("Looter set to <%s>", looter)
 end
 
 local function createAliases()
