@@ -85,7 +85,7 @@ end
 
 local bots = {
   active = false,
-  icon = icons.MD_PLAY_ARROW,
+  icon = icons.MD_PLAY_ARROW, -- MD_ANDRIOD
   activeIcon = icons.MD_STOP,
   tooltip = "Toogle Bots",
   activate = function(state) state.bots.active = true; startBots() end,
@@ -106,7 +106,7 @@ local advFollow = {
 
 local navFollow = {
   active = false,
-  icon = icons.FA_PLANE,
+  icon = icons.FA_PLANE, -- MD_DIRECTIONS_RUN
   tooltip = "Toggle Nav to 'Me'",
   activate = function(state) 
     state.navFollow.active = true
@@ -149,11 +149,11 @@ local group = {
     end
     for leader, members in pairs(groups) do
       for _, member in ipairs(members) do
-        mq.cmdf('/noparse /bct %s ${If[${Group.Members}>0,,//notify GroupWindow GW_FollowButton leftmouseup]}', member)
+        bci.ExecuteCommand('${If[${Group.Members}>0,,//notify GroupWindow GW_FollowButton leftmouseup]}', {member})
       end
     end
   end
-}
+} -- /noparse /bct maeglin //say ${Target.ID} /noparse /dex maeglin /say ${Target.ID}
 
 local pets = {
   active = false,
@@ -192,13 +192,86 @@ local bard = {
     state.bard.active = true
     for _, name in pairs(bards) do
       bci.ExecuteCommand('/twist 1 2 3 4', {name})
-      mq.cmdf('/noparse /bct %s /if (!${BardSwap}) /bardswap', name)
+      bci.ExecuteCommand('/if (!${BardSwap}) /bardswap', {name})
     end
   end,
   deactivate = function(state)
     state.bard.active = false
     bci.ExecuteAllCommand('/twist stop')
   end
+}
+
+local petWeapons = {
+  active = false,
+  icon = icons.FA_SHIELD,
+  tooltip = "Weaponize Your Pets",
+  activate = function(state) bci.ExecuteAllCommand('/weaponizepet') end,
+}
+
+local quit = {
+  active = false,
+  icon = icons.MD_EXIT_TO_APP,
+  tooltip = "Camp Desktop",
+  activate = function(state) 
+    bci.ExecuteAllCommand('/lua stop', true)
+    bci.ExecuteAllCommand('/twist off', true)
+    bci.ExecuteAllCommand('/camp desktop', true)
+  end,
+}
+
+local door = {
+  active = false,
+  icon = icons.FA_KEY,
+  tooltip = "Click Nearest Door",
+  activate = function(state) 
+    bci.ExecuteAllCommand('/doortarget')
+    bci.ExecuteAllCommand('/click left door')
+  end,
+}
+
+local pacify = {
+  active = false,
+  icon = icons.MD_SNOOZE, --MD_REMOVE_RED_EYE
+  tooltip = "Pacify Target",
+  activate = function(state)
+    bci.ExecuteCommand('/multiline ; /target id '..mq.TLO.Target.ID()..'; /casting  "Pacify" ', {"Ithildin"})
+  end,
+}
+
+local instance = {
+  active = false,
+  icon = icons.FA_CUBES,
+  tooltip = "Enter Instance",
+  activate = function(state)
+    bci.ExecuteAllCommand('/target id '..mq.TLO.Target.ID())
+    mq.delay(1)
+    bci.ExecuteAllCommand('/say ready', true)
+  end,
+}
+
+local removeBuffs = {
+  active = false,
+  icon = icons.FA_EXCHANGE,
+  tooltip = "Remove Low Duration Buffs",
+  activate = function(state)
+  end,
+}
+
+local fooddrink = {
+  active = false,
+  icon = icons.MD_RESTAURANT,
+  tooltip = "Summon Food/Drink",
+  activate = function(state)
+    bci.ExecuteAllCommand("/lua run util/turkey", true)
+  end,
+}
+
+local killthis = {
+  active = false,
+  icon = icons.MD_GPS_FIXED,
+  tooltip = "Kill Current Target",
+  activate = function(state)
+  end,
 }
 
 local uiState = {
@@ -208,10 +281,18 @@ local uiState = {
   loot = loot,
   group = group,
   pets = pets,
+  petWeapons = petWeapons,
   magicNuke = magicNuke,
   fireNuke = fireNuke,
   coldNuke = coldNuke,
   bard = bard,
+  pacify = pacify,
+  quit = quit,
+  door = door,
+  instance = instance,
+  removeBuffs = removeBuffs,
+  fooddrink = fooddrink,
+  killthis = killthis,
 }
 
 
@@ -286,11 +367,27 @@ local function actionbarUI()
   ImGui.SameLine()
   createButton(uiState.pets, blueButton)
   ImGui.SameLine()
+  createButton(uiState.petWeapons, blueButton)
+  ImGui.SameLine()
   createButton(uiState.magicNuke, fuchsiaButton)
   ImGui.SameLine()
   createButton(uiState.fireNuke, orangeButton)
   ImGui.SameLine()
   createButton(uiState.coldNuke, darkBlueButton)
+  ImGui.SameLine()
+  createButton(uiState.pacify, yellowButton)
+  ImGui.SameLine()
+  createButton(uiState.door, blueButton)
+  ImGui.SameLine()
+  createButton(uiState.instance, blueButton)
+  ImGui.SameLine()
+  createButton(uiState.fooddrink, blueButton)
+  ImGui.SameLine()
+  createButton(uiState.removeBuffs, blueButton)
+  ImGui.SameLine()
+  createButton(uiState.killthis, blueButton)
+  ImGui.SameLine()
+  createButton(uiState.quit, redButton)
 
   ImGui.End()
 
