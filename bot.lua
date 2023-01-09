@@ -2,6 +2,7 @@
 local mq = require('mq')
 local plugins = require('utils/plugins')
 local logger = require('utils/logging')
+local debugutils = require('utils/debug')
 local doManaStone = require('lib/caster/manastone')
 local doMeditate = require('lib/caster/meditate')
 local doManaConversion = require('lib/caster/manaconversion')
@@ -104,7 +105,7 @@ local function toggleNavTo(targetId)
   end
 
   local stickSpawn = mq.getFilteredSpawns(function(spawn) return spawn.ID() == tonumber(targetId) and spawn.Type() == "PC" end)
-  if stickSpawn[1] and not mq.TLO.Navigation.PathExists("id "..stickSpawn[1].ID()) then
+  if stickSpawn[1] and mq.TLO.Navigation.PathExists("id "..stickSpawn[1].ID()) then
     mq.cmdf("/nav id %d", stickSpawn[1].ID())
   end
 end
