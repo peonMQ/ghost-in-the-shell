@@ -29,6 +29,8 @@ local terminate = false
 local buttonSize = ImVec2(30, 30)
 local windowFlags = bit32.bor(ImGuiWindowFlags.NoDecoration, ImGuiWindowFlags.NoDocking, ImGuiWindowFlags.AlwaysAutoResize, ImGuiWindowFlags.NoFocusOnAppearing, ImGuiWindowFlags.NoNav)
 
+local doInvites = false
+
 local function create(h, s, v)
   local r, g, b = ImGui.ColorConvertHSVtoRGB(h / 7.0, s, v)
   return ImVec4(r, g, b, 1)
@@ -143,16 +145,7 @@ local group = {
   icon = icons.MD_GROUP,
   tooltip = "Create Groups",
   activate = function (state)
-    for leader, members in pairs(groups) do
-      for _, member in ipairs(members) do
-        bci.ExecuteCommand(string.format('/invite %s', member), {leader})
-      end
-    end
-    for leader, members in pairs(groups) do
-      for _, member in ipairs(members) do
-        bci.ExecuteCommand('${If[${Group.Members}>0,,//notify GroupWindow GW_FollowButton leftmouseup]}', {member})
-      end
-    end
+    doInvites = true
   end
 }
 
@@ -296,7 +289,6 @@ local uiState = {
   killthis = killthis,
 }
 
-
 local function DrawTooltip(text)
   if ImGui.IsItemHovered() and text and string.len(text) > 0 then
       ImGui.BeginTooltip()
@@ -360,7 +352,7 @@ local function actionbarUI()
   ImGui.SameLine()
   createStateButton(uiState.advFollow)
   ImGui.SameLine()
-  createStateButton(uiState.navFollow)
+  createButton(uiState.navFollow, blueButton)
   ImGui.SameLine()
   createButton(uiState.loot, blueButton)
   ImGui.SameLine()
@@ -369,7 +361,7 @@ local function actionbarUI()
   createButton(uiState.pets, blueButton)
   ImGui.SameLine()
   createButton(uiState.petWeapons, blueButton)
-  ImGui.SameLine()
+  
   createButton(uiState.magicNuke, fuchsiaButton)
   ImGui.SameLine()
   createButton(uiState.fireNuke, orangeButton)
@@ -417,5 +409,23 @@ end
 createAliases()
 
 while not terminate do
+  if doInvites then
+    for leader, members in pairs(groups) do
+      for _, member in ipairs(members) do
+        if mq.TLO.Me.Name() == leader then
+          mq.cmd("/invite %s", member)
+        else
+          bci.ExecuteCommand(string.format('/invite %s', member), {leader})
+        end
+      end
+    end
+    mq.delay(200)
+    for leader, members in pairs(groups) do
+      for _, member in ipairs(members) do
+        bci.ExecuteCommand('${If[${Group.Members}>0,,//notify GroupWindow GW_FollowButton leftmouseup]}', {member})
+      end
+    end
+    doInvites = false
+  end
   mq.delay(500)
 end
