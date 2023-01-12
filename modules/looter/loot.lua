@@ -64,10 +64,6 @@ local function canLootItem(item)
     return false
   end
 
-  if item.Stackable() and mq.TLO.Me.FreeInventory() < 1 and mq.TLO.FindItemCount("="..item.Name())() > 0 then
-
-  end
-
   if  mq.TLO.Me.FreeInventory() < 1 then
     if item.Stackable() and item.Stack() < item.FreeStack() then
       return true
