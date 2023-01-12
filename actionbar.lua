@@ -204,7 +204,7 @@ local petWeapons = {
 
 local quit = {
   active = false,
-  icon = icons.MD_EXIT_TO_APP,
+  icon = icons.FA_POWER_OFF,
   tooltip = "Camp Desktop",
   activate = function(state) 
     bci.ExecuteAllCommand('/lua stop', true)
@@ -225,27 +225,38 @@ local door = {
 
 local pacify = {
   active = false,
-  icon = icons.MD_SNOOZE, --MD_REMOVE_RED_EYE
+  icon = icons.MD_REMOVE_RED_EYE,
   tooltip = "Pacify Target",
   activate = function(state)
     bci.ExecuteCommand('/multiline ; /target id '..mq.TLO.Target.ID()..'; /cast  "Pacify" ', {"Ithildin"})
   end,
 }
 
+local toggleCrowdControl = {
+  active = false,
+  icon = icons.MD_SNOOZE,
+  tooltip = "Toggle Crowd Control",
+  activate = function(state)
+    bci.ExecuteAllCommand('/docc on')
+  end,
+  deactivate = function(state)
+    bci.ExecuteAllCommand('/docc off')
+  end,
+}
+
 local instance = {
   active = false,
-  icon = icons.FA_CUBES,
+  icon = icons. MD_EXIT_TO_APP, -- FA_CUBES
   tooltip = "Enter Instance",
   activate = function(state)
     bci.ExecuteAllCommand('/target id '..mq.TLO.Target.ID())
-    mq.delay(1)
     bci.ExecuteAllCommand('/say ready', true)
   end,
 }
 
 local removeBuffs = {
   active = false,
-  icon = icons.FA_EXCHANGE,
+  icon = icons.MD_AV_TIMER, --FA_EXCHANGE,
   tooltip = "Remove Low Duration Buffs",
   activate = function(state)
   end,
@@ -280,6 +291,7 @@ local uiState = {
   fireNuke = fireNuke,
   coldNuke = coldNuke,
   bard = bard,
+  toggleCrowdControl = toggleCrowdControl,
   pacify = pacify,
   quit = quit,
   door = door,
@@ -350,6 +362,8 @@ local function actionbarUI()
   ImGui.SameLine()
   createStateButton(uiState.bard)
   ImGui.SameLine()
+  createStateButton(uiState.toggleCrowdControl)
+  ImGui.SameLine()
   createStateButton(uiState.advFollow)
   ImGui.SameLine()
   createButton(uiState.navFollow, blueButton)
@@ -361,7 +375,7 @@ local function actionbarUI()
   createButton(uiState.pets, blueButton)
   ImGui.SameLine()
   createButton(uiState.petWeapons, blueButton)
-  
+
   createButton(uiState.magicNuke, fuchsiaButton)
   ImGui.SameLine()
   createButton(uiState.fireNuke, orangeButton)
@@ -413,16 +427,16 @@ while not terminate do
     for leader, members in pairs(groups) do
       for _, member in ipairs(members) do
         if mq.TLO.Me.Name() == leader then
-          mq.cmd("/invite %s", member)
+          mq.cmdf("/invite %s", member)
         else
           bci.ExecuteCommand(string.format('/invite %s', member), {leader})
         end
       end
     end
-    mq.delay(200)
+    mq.delay(2000)
     for leader, members in pairs(groups) do
       for _, member in ipairs(members) do
-        bci.ExecuteCommand('${If[${Group.Members}>0,,//notify GroupWindow GW_FollowButton leftmouseup]}', {member})
+        bci.ExecuteCommand('/invite', {member})
       end
     end
     doInvites = false

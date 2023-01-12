@@ -111,12 +111,19 @@ local function doMezz()
   end
 end
 
-local function togglemezz()
+local boolParam = {["1"] = true, ["true"] = true, ["on"] = true, ["0"] = false, ["false"] = false, ["off"] = false}
+
+---@param toggle string
+local function doCrowdControl(toggle)
   if not config.MezzSpell then
     return
   end
 
-  config.DoCrowdControl = not config.DoCrowdControl
+  if boolParam[toggle:lower()] == nil then
+    return
+  end
+
+  config.DoCrowdControl = boolParam[toggle:lower()]
   if not config.DoCrowdControl then
     broadcast.Error("%s is no longer doing crowd control", mq.TLO.Me.Name())
   else
@@ -125,7 +132,7 @@ local function togglemezz()
 end
 
 
-mq.unbind('/togglemezz')
-mq.bind("/togglemezz", togglemezz)
+mq.unbind('/docc')
+mq.bind("/docc", doCrowdControl)
 
 return doMezz
