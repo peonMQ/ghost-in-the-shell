@@ -18,32 +18,32 @@ function SpawnSearchFilter:WithID(id)
 end
 
 ---@return SpawnSearchFilter
-function SpawnSearchFilter:FilterByNPC()
+function SpawnSearchFilter:IsNPC()
   self.filter = string:format('%s npc', self.filter)
   return self;
 end
 
 ---@return SpawnSearchFilter
-function SpawnSearchFilter:FilterByPC()
+function SpawnSearchFilter:IsPC()
   self.filter = string:format('%s pc', self.filter)
   return self;
 end
 
 ---@return SpawnSearchFilter
-function SpawnSearchFilter:FilterByLineOfSight()
+function SpawnSearchFilter:HasLineOfSight()
   self.filter = string:format('%s los', self.filter)
   return self;
 end
 
 ---@return SpawnSearchFilter
-function SpawnSearchFilter:FilterByIsTargetable()
+function SpawnSearchFilter:IsTargetable()
   self.filter = string:format('%s targetable', self.filter)
   return self;
 end
 
 ---@param radius integer # Radius distance
 ---@return SpawnSearchFilter
-function SpawnSearchFilter:WithRadius(radius)
+function SpawnSearchFilter:WithinRadius(radius)
   self.filter = string:format('%s radius %d', self.filter, radius)
   return self;
 end
