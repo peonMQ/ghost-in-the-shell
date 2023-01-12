@@ -4,11 +4,12 @@ local logger = require('utils/logging')
 local broadcast = require('broadcast/broadcast')
 local mqUtils = require('utils/mqhelpers')
 local configLoader = require('utils/configloader')
+local spawnsearchparams = require('lib/spawnsearchparams')
 local common = require('lib/common/common')
-local debuffspell = require('modules/debuffer/types/debuffspell')
-local repository = require('modules/debuffer/types/debuffRepository')
 local state = require('lib/spells/state')
 local castReturnTypes = require('lib/spells/types/castreturn')
+local debuffspell = require('modules/debuffer/types/debuffspell')
+local repository = require('modules/debuffer/types/debuffRepository')
 
 --- @type Timer
 local timer = require('lib/timer')
@@ -66,8 +67,12 @@ local function doMezz()
   end
 
   local maTargetId = mq.TLO.NetBots(mainAssist).TargetID()
-  local spawnQuery = "npc los targetable radius "..config.Radius
-  local mezzTargetCount = mq.TLO.SpawnCount(spawnQuery)()
+  local spawnQueryFilter = spawnsearchparams:new()
+                                            :IsNPC()
+                                            :HasLineOfSight()
+                                            :IsTargetable()
+                                            :WithinRadius(config.Radius).filter
+  local mezzTargetCount = mq.TLO.SpawnCount(spawnQueryFilter)()
 
   --[[
     should we use mq.getFilteredSpawns(predicate) instead? does range really matter...
@@ -78,7 +83,7 @@ local function doMezz()
   ]]
 
   for i=1, mezzTargetCount do
-    local mezzSpawn = mq.TLO.NearestSpawn(i, spawnQuery)
+    local mezzSpawn = mq.TLO.NearestSpawn(i, spawnQueryFilter)
     if immunities and immunities[mezzSpawn.Name()] then
       logger.Info("[%s] is immune to <%s>, skipping.", mezzSpawn.Name(), mezzSpell.Name)
     elseif maTargetId ~= mezzSpawn.ID() and mqUtils.IsMaybeAggressive(mezzSpawn --[[@as spawn]]) then
@@ -105,5 +110,22 @@ local function doMezz()
     cleanTimer = cleanTimer:new(60)
   end
 end
+
+local function togglemezz()
+  if not config.MezzSpell then
+    return
+  end
+
+  config.DoCrowdControl = not config.DoCrowdControl
+  if not config.DoCrowdControl then
+    broadcast.Error("%s is no longer doing crowd control", mq.TLO.Me.Name())
+  else
+    broadcast.Success("%s is now doing crowd control", mq.TLO.Me.Name())
+  end
+end
+
+
+mq.unbind('/togglemezz')
+mq.bind("/togglemezz", togglemezz)
 
 return doMezz
