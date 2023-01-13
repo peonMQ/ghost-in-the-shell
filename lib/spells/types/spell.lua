@@ -68,7 +68,7 @@ function Spell:MemSpell(cancelCallback)
     return false
   end
 
-  mq.cmdf('/memspellslot %d "%s"', self.DefaultGem, self.Name)
+  mq.cmdf('/memspell %d "%s"', self.DefaultGem, self.Name)
   mq.delay(10)
 
   local memTimer = timer:new(6)
