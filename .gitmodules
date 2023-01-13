@@ -14,10 +14,6 @@
 	path = wait4rez
 	url = https://github.com/peonMQ/wait4rez.git
 	branch = main
-[submodule "autopilot"]
-	path = autopilot
-	url = https://github.com/peonMQ/autopilot.git
-	branch = main
 [submodule "broadcast"]
 	path = broadcast
 	url = https://github.com/peonMQ/broadcast.git
