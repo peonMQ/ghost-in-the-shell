@@ -18,3 +18,6 @@
 	path = broadcast
 	url = https://github.com/peonMQ/broadcast.git
 	branch = main
+[submodule "definitions/imgui-icons"]
+	path = definitions/imgui-icons
+	url = https://github.com/johnfking/mq-imgui-icons

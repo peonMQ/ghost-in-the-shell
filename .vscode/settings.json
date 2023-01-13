@@ -2,9 +2,7 @@
     "editor.bracketPairColorization.enabled": true,
     "files.exclude": {
         "definitions/": true,
-        "autopilot/": true,
         "broadcast/": true,
-        "hud/": true,
         "utils/": true,
         "wait4rez/": true,
     },
@@ -24,9 +22,8 @@
     "Lua.workspace.library": [
         "./definitions/mq",
         "./definitions/imgui",
-        "./autopilot",
+        "./definitions/imgui-icons",
         "./broadcast",
-        "./hud",
         "./utils",
         "./wait4rez",
     ],
