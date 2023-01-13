@@ -72,7 +72,7 @@ end
 
 ---@return CastReturn
 function Cast:Interrupt()
-  logger.Info("Interrupt casting <%s>.", mq.TLO.Me.Casting())
+  logger.Debug("Interrupt casting <%s>.", mq.TLO.Me.Casting())
   mq.cmd("/stopcast")
   state.setCastReturn(castReturnTypes.Cancelled)
   mq.delay("1s", function () return not mq.TLO.Me.Casting.ID() end)
