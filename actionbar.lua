@@ -8,6 +8,7 @@ local logger = require 'utils/logging'
 local debugUtils = require 'utils/debug'
 local plugins = require('utils/plugins')
 local luapaths = require('utils/lua-paths')
+local filetutils = require('utils/file')
 local broadCastInterfaceFactory = require('broadcast/broadcastinterface')
 
 
@@ -142,7 +143,7 @@ local advFollow = {
   active = false,
   icon = icons.MD_DIRECTIONS_CAR,
   tooltip = "Toggle AdvPath Follow 'Me'",
-  isDisabled = function (state) return not state.bots.active end,
+  isDisabled = function (state) return not state.bots.active or not plugins.IsLoaded("MQ2AdvPath") end,
   activate = function(state)
     state.advFollow.active = true
     state.navFollow.active = false
@@ -156,7 +157,7 @@ local navFollow = {
   active = false,
   icon = icons.FA_PLANE, -- MD_DIRECTIONS_RUN
   tooltip = "Toggle Nav to 'Me'",
-  isDisabled = function (state) return not state.bots.active end,
+  isDisabled = function (state) return not state.bots.active or not plugins.IsLoaded("MQ2Nav") end,
   activate = function(state) 
     state.navFollow.active = true
     state.advFollow.active = false
@@ -241,7 +242,7 @@ local bard = {
   active = false,
   icon = icons.MD_MUSIC_NOTE,
   tooltip = "Toggle Bard Twist",
-  isDisabled = function (state) return false end,
+  isDisabled = function (state) return not plugins.IsLoaded("MQ2Twist") or not plugins.IsLoaded("MQ2BardSwap") end,
   activate = function(state)
     state.bard.active = true
     for _, name in pairs(bards) do
