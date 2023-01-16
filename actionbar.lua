@@ -21,7 +21,37 @@ if not bci then
   return
 end
 
-local looter = nil
+-- local classes
+---@class ActionButton
+---@field public active boolean
+---@field public icon string
+---@field public activeIcon? string
+---@field public tooltip string
+---@field public isDisabled fun(state:ActionButtons):boolean
+---@field public activate fun(state:ActionButtons)
+---@field public deactivate? fun(state:ActionButtons)
+
+
+---@class ActionButtons
+---@field public bots ActionButton
+---@field public advFollow ActionButton
+---@field public navFollow ActionButton
+---@field public loot ActionButton
+---@field public group ActionButton
+---@field public pets ActionButton
+---@field public petWeapons ActionButton
+---@field public magicNuke ActionButton
+---@field public fireNuke ActionButton
+---@field public coldNuke ActionButton
+---@field public bard ActionButton
+---@field public toggleCrowdControl ActionButton
+---@field public pacify ActionButton
+---@field public quit ActionButton
+---@field public door ActionButton
+---@field public instance ActionButton
+---@field public removeBuffs ActionButton
+---@field public fooddrink ActionButton
+---@field public killthis ActionButton
 
 -- GUI Control variables
 local openGUI = true
@@ -29,6 +59,8 @@ local terminate = false
 local buttonSize = ImVec2(30, 30)
 local windowFlags = bit32.bor(ImGuiWindowFlags.NoDecoration, ImGuiWindowFlags.NoDocking, ImGuiWindowFlags.AlwaysAutoResize, ImGuiWindowFlags.NoFocusOnAppearing, ImGuiWindowFlags.NoNav)
 
+
+local looter = nil
 local doInvites = false
 
 local function create(h, s, v)
@@ -94,19 +126,23 @@ local function stopBots()
   logger.Info("Bots stopped.")
 end
 
+---@type ActionButton
 local bots = {
   active = false,
   icon = icons.MD_PLAY_ARROW, -- MD_ANDRIOD
   activeIcon = icons.MD_STOP,
   tooltip = "Toogle Bots",
+  isDisabled = function (state) return false end,
   activate = function(state) state.bots.active = true; startBots() end,
   deactivate = function(state) state.bots.active = false; stopBots() end
 }
 
+---@type ActionButton
 local advFollow = {
   active = false,
   icon = icons.MD_DIRECTIONS_CAR,
   tooltip = "Toggle AdvPath Follow 'Me'",
+  isDisabled = function (state) return state.bots.active end,
   activate = function(state) 
     state.advFollow.active = true
     state.navFollow.active = false
@@ -115,10 +151,12 @@ local advFollow = {
   deactivate = function(state) state.advFollow.active = false; bci.ExecuteAllCommand("/stalk") end
 }
 
+---@type ActionButton
 local navFollow = {
   active = false,
   icon = icons.FA_PLANE, -- MD_DIRECTIONS_RUN
   tooltip = "Toggle Nav to 'Me'",
+  isDisabled = function (state) return state.bots.active end,
   activate = function(state) 
     state.navFollow.active = true
     state.advFollow.active = false
@@ -127,10 +165,12 @@ local navFollow = {
   deactivate = function(state) state.navFollow.active = false; bci.ExecuteAllCommand('/navto') end
 }
 
+---@type ActionButton
 local loot = {
   active = false,
   icon = icons.FA_DIAMOND,
   tooltip = "Do Loot",
+  isDisabled = function (state) return state.bots.active end,
   activate = function (state)
     if not looter then
       logger.Warn("No looter defined. use /setlooter 'looter' to define one.")
@@ -148,48 +188,60 @@ local groups = {
   Mizzfit = {"Komodo", "Izzy", "Lulz", "Tiamat", "Nozdormu"},
 }
 
+---@type ActionButton
 local group = {
   active = false,
   icon = icons.MD_GROUP,
   tooltip = "Create Groups",
+  isDisabled = function (state) return false end,
   activate = function (state)
     doInvites = true
   end
 }
 
+---@type ActionButton
 local pets = {
   active = false,
   icon = icons.MD_PETS,
   tooltip = "Summon Pets",
+  isDisabled = function (state) return state.bots.active end,
   activate = function(state) bci.ExecuteAllCommand('/summonpet') end,
 }
 
+---@type ActionButton
 local magicNuke = {
   active = false,
   icon = icons.FA_MAGIC,
   tooltip = "Set 'Magic' nukes",
+  isDisabled = function (state) return state.bots.active end,
   activate = function(state) bci.ExecuteAllCommand('/setlineup Magic') end,
 }
 
+---@type ActionButton
 local fireNuke = {
   active = false,
   icon = icons.FA_FIRE,
   tooltip = "Set 'Fire' nukes",
+  isDisabled = function (state) return state.bots.active end,
   activate = function(state) bci.ExecuteAllCommand('/setlineup Fire') end,
 }
 
+---@type ActionButton
 local coldNuke = {
   active = false,
   icon = icons.FA_SNOWFLAKE_O,
   tooltip = "Set 'Cold' nukes",
+  isDisabled = function (state) return state.bots.active end,
   activate = function(state) bci.ExecuteAllCommand('/setlineup Cold') end,
 }
 
+---@type ActionButton
 local bards = {"Marillion", "Renaissance", "Soundgarden", "Genesis"}
 local bard = {
   active = false,
   icon = icons.MD_MUSIC_NOTE,
   tooltip = "Toggle Bard Twist",
+  isDisabled = function (state) return state.bots.active end,
   activate = function(state)
     state.bard.active = true
     for _, name in pairs(bards) do
@@ -203,17 +255,21 @@ local bard = {
   end
 }
 
+---@type ActionButton
 local petWeapons = {
   active = false,
   icon = icons.FA_SHIELD,
   tooltip = "Weaponize Your Pets",
+  isDisabled = function (state) return state.bots.active end,
   activate = function(state) bci.ExecuteAllCommand('/weaponizepet') end,
 }
 
+---@type ActionButton
 local quit = {
   active = false,
   icon = icons.FA_POWER_OFF,
   tooltip = "Camp Desktop",
+  isDisabled = function (state) return false end,
   activate = function(state) 
     bci.ExecuteAllCommand('/lua stop', true)
     bci.ExecuteAllCommand('/twist off', true)
@@ -221,29 +277,35 @@ local quit = {
   end,
 }
 
+---@type ActionButton
 local door = {
   active = false,
   icon = icons.FA_KEY,
   tooltip = "Click Nearest Door",
+  isDisabled = function (state) return false end,
   activate = function(state) 
     bci.ExecuteAllCommand('/doortarget')
     bci.ExecuteAllCommand('/click left door')
   end,
 }
 
+---@type ActionButton
 local pacify = {
   active = false,
   icon = icons.MD_REMOVE_RED_EYE,
   tooltip = "Pacify Target",
+  isDisabled = function (state) return false end,
   activate = function(state)
     bci.ExecuteCommand('/multiline ; /target id '..mq.TLO.Target.ID()..'; /cast  "Pacify" ', {"Ithildin"})
   end,
 }
 
+---@type ActionButton
 local toggleCrowdControl = {
   active = false,
   icon = icons.MD_SNOOZE,
   tooltip = "Toggle Crowd Control",
+  isDisabled = function (state) return state.bots.active end,
   activate = function(state)
     bci.ExecuteAllCommand('/docc on')
   end,
@@ -252,41 +314,50 @@ local toggleCrowdControl = {
   end,
 }
 
+---@type ActionButton
 local instance = {
   active = false,
   icon = icons. MD_EXIT_TO_APP, -- FA_CUBES
   tooltip = "Enter Instance",
+  isDisabled = function (state) return false end,
   activate = function(state)
     bci.ExecuteAllCommand('/target id '..mq.TLO.Target.ID())
     bci.ExecuteAllCommand('/say ready', true)
   end,
 }
 
+---@type ActionButton
 local removeBuffs = {
   active = false,
   icon = icons.MD_AV_TIMER, --FA_EXCHANGE,
   tooltip = "Remove Low Duration Buffs",
+  isDisabled = function (state) return false end,
   activate = function(state)
   end,
 }
 
+---@type ActionButton
 local fooddrink = {
   active = false,
   icon = icons.MD_RESTAURANT,
   tooltip = "Summon Food/Drink",
+  isDisabled = function (state) return false end,
   activate = function(state)
     bci.ExecuteAllCommand("/lua run util/turkey", true)
   end,
 }
 
+---@type ActionButton
 local killthis = {
   active = false,
   icon = icons.MD_GPS_FIXED,
   tooltip = "Kill Current Target",
+  isDisabled = function (state) return state.bots.active end,
   activate = function(state)
   end,
 }
 
+---@type ActionButtons
 local uiState = {
   bots = bots,
   advFollow = advFollow,
@@ -354,9 +425,12 @@ local function createButton(state, buttonColor)
   ImGui.PushStyleColor(ImGuiCol.ButtonHovered, buttonColor.hovered)
   ImGui.PushStyleColor(ImGuiCol.ButtonActive, buttonColor.active)
 
+  local disabled = state.isDisabled(uiState)
+  ImGui.BeginDisabled(disabled)
   ImGui.Button(state.icon, buttonSize)
+  ImGui.EndDisabled()
   DrawTooltip(state.tooltip)
-  if ImGui.IsItemClicked(0) then
+  if not disabled and ImGui.IsItemClicked(0) then
     state.activate(uiState)
   end
 
@@ -384,6 +458,7 @@ local function actionbarUI()
   ImGui.SameLine()
   createButton(uiState.petWeapons, blueButton)
 
+  -- next button line
   createButton(uiState.magicNuke, fuchsiaButton)
   ImGui.SameLine()
   createButton(uiState.fireNuke, orangeButton)
