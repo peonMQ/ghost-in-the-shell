@@ -80,10 +80,18 @@ local fuchsiaButton = {
 
 local function startBots()
   logger.Info("Start up bots.")
-  -- local command = string.format('/lua run %s', runningDir:GetRelativeToMQLuaPath("bot"))
-  -- bci.ExecuteAllCommand(command)
-  bci.ExecuteAllCommand('/lua run bot')
+  local command = string.format('/lua run %s', runningDir:GetRelativeToMQLuaPath("bot"))
+  bci.ExecuteAllCommand(command)
+  -- bci.ExecuteAllCommand('/lua run bot')
   logger.Info("Bots initialized.")
+end
+
+local function stopBots()
+  logger.Info("stop bots.")
+  local command = string.format('/lua stop %s', runningDir:GetRelativeToMQLuaPath("bot"))
+  bci.ExecuteAllCommand(command)
+  -- bci.ExecuteAllCommand('/lua run bot')
+  logger.Info("Bots stopped.")
 end
 
 local bots = {
@@ -92,7 +100,7 @@ local bots = {
   activeIcon = icons.MD_STOP,
   tooltip = "Toogle Bots",
   activate = function(state) state.bots.active = true; startBots() end,
-  deactivate = function(state) state.bots.active = false; bci.ExecuteAllCommand("/lua stop bot", true) end
+  deactivate = function(state) state.bots.active = false; stopBots() end
 }
 
 local advFollow = {
