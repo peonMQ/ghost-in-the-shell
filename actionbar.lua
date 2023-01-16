@@ -267,6 +267,7 @@ local removeBuffs = {
   icon = icons.MD_AV_TIMER, --FA_EXCHANGE,
   tooltip = "Remove Low Duration Buffs",
   activate = function(state)
+    bci.ExecuteAllCommand("/lua run mini-apps/removebuffs 120", true)
   end,
 }
 
@@ -275,7 +276,7 @@ local fooddrink = {
   icon = icons.MD_RESTAURANT,
   tooltip = "Summon Food/Drink",
   activate = function(state)
-    bci.ExecuteAllCommand("/lua run util/turkey", true)
+    bci.ExecuteAllCommand("/lua run mini-apps/turkey", true)
   end,
 }
 
