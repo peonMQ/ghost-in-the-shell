@@ -142,8 +142,8 @@ local advFollow = {
   active = false,
   icon = icons.MD_DIRECTIONS_CAR,
   tooltip = "Toggle AdvPath Follow 'Me'",
-  isDisabled = function (state) return state.bots.active end,
-  activate = function(state) 
+  isDisabled = function (state) return not state.bots.active end,
+  activate = function(state)
     state.advFollow.active = true
     state.navFollow.active = false
     bci.ExecuteAllCommand(string.format('/stalk %i', mq.TLO.Me.ID()))
@@ -156,7 +156,7 @@ local navFollow = {
   active = false,
   icon = icons.FA_PLANE, -- MD_DIRECTIONS_RUN
   tooltip = "Toggle Nav to 'Me'",
-  isDisabled = function (state) return state.bots.active end,
+  isDisabled = function (state) return not state.bots.active end,
   activate = function(state) 
     state.navFollow.active = true
     state.advFollow.active = false
@@ -170,7 +170,7 @@ local loot = {
   active = false,
   icon = icons.FA_DIAMOND,
   tooltip = "Do Loot",
-  isDisabled = function (state) return state.bots.active end,
+  isDisabled = function (state) return not state.bots.active end,
   activate = function (state)
     if not looter then
       logger.Warn("No looter defined. use /setlooter 'looter' to define one.")
@@ -204,7 +204,7 @@ local pets = {
   active = false,
   icon = icons.MD_PETS,
   tooltip = "Summon Pets",
-  isDisabled = function (state) return state.bots.active end,
+  isDisabled = function (state) return not state.bots.active end,
   activate = function(state) bci.ExecuteAllCommand('/summonpet') end,
 }
 
@@ -213,7 +213,7 @@ local magicNuke = {
   active = false,
   icon = icons.FA_MAGIC,
   tooltip = "Set 'Magic' nukes",
-  isDisabled = function (state) return state.bots.active end,
+  isDisabled = function (state) return not state.bots.active end,
   activate = function(state) bci.ExecuteAllCommand('/setlineup Magic') end,
 }
 
@@ -222,7 +222,7 @@ local fireNuke = {
   active = false,
   icon = icons.FA_FIRE,
   tooltip = "Set 'Fire' nukes",
-  isDisabled = function (state) return state.bots.active end,
+  isDisabled = function (state) return not state.bots.active end,
   activate = function(state) bci.ExecuteAllCommand('/setlineup Fire') end,
 }
 
@@ -231,7 +231,7 @@ local coldNuke = {
   active = false,
   icon = icons.FA_SNOWFLAKE_O,
   tooltip = "Set 'Cold' nukes",
-  isDisabled = function (state) return state.bots.active end,
+  isDisabled = function (state) return not state.bots.active end,
   activate = function(state) bci.ExecuteAllCommand('/setlineup Cold') end,
 }
 
@@ -241,7 +241,7 @@ local bard = {
   active = false,
   icon = icons.MD_MUSIC_NOTE,
   tooltip = "Toggle Bard Twist",
-  isDisabled = function (state) return state.bots.active end,
+  isDisabled = function (state) return false end,
   activate = function(state)
     state.bard.active = true
     for _, name in pairs(bards) do
@@ -260,7 +260,7 @@ local petWeapons = {
   active = false,
   icon = icons.FA_SHIELD,
   tooltip = "Weaponize Your Pets",
-  isDisabled = function (state) return state.bots.active end,
+  isDisabled = function (state) return not state.bots.active end,
   activate = function(state) bci.ExecuteAllCommand('/weaponizepet') end,
 }
 
@@ -305,7 +305,7 @@ local toggleCrowdControl = {
   active = false,
   icon = icons.MD_SNOOZE,
   tooltip = "Toggle Crowd Control",
-  isDisabled = function (state) return state.bots.active end,
+  isDisabled = function (state) return not state.bots.active end,
   activate = function(state)
     bci.ExecuteAllCommand('/docc on')
   end,
@@ -353,7 +353,7 @@ local killthis = {
   active = false,
   icon = icons.MD_GPS_FIXED,
   tooltip = "Kill Current Target",
-  isDisabled = function (state) return state.bots.active end,
+  isDisabled = function (state) return not state.bots.active end,
   activate = function(state)
   end,
 }
@@ -396,16 +396,22 @@ local function createStateButton(state)
     ImGui.PushStyleColor(ImGuiCol.Button, blueButton.default)
     ImGui.PushStyleColor(ImGuiCol.ButtonHovered, greenButton.hovered)
     ImGui.PushStyleColor(ImGuiCol.ButtonActive, greenButton.active)
+    local isDisabled = state.isDisabled(uiState)
+    ImGui.BeginDisabled(isDisabled)
     ImGui.Button(state.icon, buttonSize)
+    ImGui.EndDisabled()
   else
     ImGui.PushStyleColor(ImGuiCol.Button, greenButton.default)
     ImGui.PushStyleColor(ImGuiCol.ButtonHovered, redButton.hovered)
     ImGui.PushStyleColor(ImGuiCol.ButtonActive, redButton.hovered)
+    local isDisabled = state.isDisabled(uiState)
+    ImGui.BeginDisabled(isDisabled)
     if not state.activeIcon then
       ImGui.Button(state.icon, buttonSize)
     else
       ImGui.Button(state.activeIcon, buttonSize)
     end
+    ImGui.EndDisabled()
   end
 
   DrawTooltip(state.tooltip)
@@ -426,12 +432,12 @@ local function createButton(state, buttonColor)
   ImGui.PushStyleColor(ImGuiCol.ButtonHovered, buttonColor.hovered)
   ImGui.PushStyleColor(ImGuiCol.ButtonActive, buttonColor.active)
 
-  local disabled = state.isDisabled(uiState)
-  ImGui.BeginDisabled(disabled)
+  local isDisabled = state.isDisabled(uiState)
+  ImGui.BeginDisabled(isDisabled)
   ImGui.Button(state.icon, buttonSize)
   ImGui.EndDisabled()
   DrawTooltip(state.tooltip)
-  if not disabled and ImGui.IsItemClicked(0) then
+  if not isDisabled and ImGui.IsItemClicked(0) then
     state.activate(uiState)
   end
 
