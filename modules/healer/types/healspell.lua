@@ -38,7 +38,7 @@ function HealSpell:CanCastOnSpawn(spawn)
   end
 
   local spell = mq.TLO.Spell(self.Name)
-  if spawn.Distance() > spell.Range() then
+  if spawn.Distance() and spawn.Distance() > spell.Range() then
     return false
   end
 

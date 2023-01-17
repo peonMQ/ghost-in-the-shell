@@ -49,7 +49,7 @@ function BuffItem:CanCast()
   -- ${FindItem[${spellName}].EffectType.Find[worn]}
   -- /varset slotName ${FindItem[${spellName}].WornSlot[1].Name}
   local me = mq.TLO.Me
-  if me.Casting() or refreshTimer > 0 then
+  if me.Casting() or (refreshTimer and refreshTimer > 0) then
     return false
   end
 

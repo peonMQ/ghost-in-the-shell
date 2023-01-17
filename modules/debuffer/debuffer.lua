@@ -54,7 +54,6 @@ local function doDebuffs()
   end
 
   for key, debuffSpell in pairs(config.DeBuffs) do
-    logger.Debug("Debuffing with <%s>", debuffSpell.Name)
     if debuffSpell:CanCast() then
       local spell = mq.TLO.Spell(debuffSpell.Id)
       if spell.SpellType() == "Detrimental" then
@@ -62,6 +61,7 @@ local function doDebuffs()
         if spellImmunity and spellImmunity[targetSpawn.Name()] then
           logger.Info("[%s] is immune to <%s>, skipping.", targetSpawn.Name(), debuffSpell.Name)
         elseif mqUtils.EnsureTarget(targetSpawn.ID()) and debuffSpell:CanCastOnTarget(mq.TLO.Target --[[@as target]]) then
+          logger.Debug("Debuffing with <%s>", debuffSpell.Name)
           local castResult = debuffSpell:Cast(checkInterrupt)
           if castResult == castReturnTypes.Immune then
             spellImmunity[targetSpawn.Name()] = "immune"
