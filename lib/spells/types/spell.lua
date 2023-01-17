@@ -6,6 +6,7 @@ local cast = require('lib/spells/types/cast')
 local timer = require('lib/timer')
 
 local castReturnTypes = require('lib/spells/types/castreturn')
+local debugutils = require('utils/debug')
 local logger = require('utils/logging')
 local state = require('lib/spells/state')
 
@@ -159,7 +160,7 @@ function Spell:Cast(cancelCallback)
     self:DoCastEvents()
     self:WhileCasting(cancelCallback)
 
-    if (state.castReturn ~= castReturnTypes.Success 
+    if (state.castReturn ~= castReturnTypes.Success
         and state.castReturn == castReturnTypes.Recover
         and state.giveUpTimer:IsComplete()) then
           logger.Debug("Spell <%s> is not ready.", self.Name)
@@ -176,7 +177,8 @@ function Spell:Cast(cancelCallback)
     end
   until (not state.castReturn.SpellRetry and
          (state.castReturn == castReturnTypes.Resisted and state.resistCounter > self.MaxResists)) or
-        state.retryTimer:TimeRemaining() > state.giveUpTimer:TimeRemaining() or 
+        state.castReturn == castReturnTypes.Success or
+        state.retryTimer:TimeRemaining() > state.giveUpTimer:TimeRemaining() or
         state.giveUpTimer:IsComplete()
 
   self:DoCastEvents()

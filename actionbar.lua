@@ -309,9 +309,11 @@ local toggleCrowdControl = {
   isDisabled = function (state) return not state.bots.active end,
   activate = function(state)
     bci.ExecuteAllCommand('/docc on')
+    state.toggleCrowdControl.active = true
   end,
   deactivate = function(state)
     bci.ExecuteAllCommand('/docc off')
+    state.toggleCrowdControl.active = false
   end,
 }
 

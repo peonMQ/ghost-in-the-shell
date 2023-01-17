@@ -63,7 +63,7 @@ function Cast:WhileCasting(cancelCallback)
 
     if(currentTargetId and mq.TLO.Spawn(currentTargetId).Type() ~= currentTargetType) then
       logger.Info("Cancelling spell <%d>, current target <%s> is no longer available", self.Id, currentTarget())
-      self:Interrupt()
+      state.interrupt()
     end
 
     self:DoCastEvents()
@@ -72,10 +72,7 @@ end
 
 ---@return CastReturn
 function Cast:Interrupt()
-  logger.Debug("Interrupt casting <%s>.", mq.TLO.Me.Casting())
-  mq.cmd("/stopcast")
-  state.setCastReturn(castReturnTypes.Cancelled)
-  mq.delay("1s", function () return not mq.TLO.Me.Casting.ID() end)
+  state.interrupt()
   return state.castReturn
 end
 

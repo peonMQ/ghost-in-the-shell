@@ -13,38 +13,38 @@ end
 ---@param id integer # Spawn ID
 ---@return SpawnSearchFilter
 function SpawnSearchFilter:WithID(id)
-  self.filter = string:format('%s id %d', self.filter, id)
+  self.filter = string.format('%s id %d', self.filter, id)
   return self;
 end
 
 ---@return SpawnSearchFilter
 function SpawnSearchFilter:IsNPC()
-  self.filter = string:format('%s npc', self.filter)
+  self.filter = string.format('%s npc', self.filter)
   return self;
 end
 
 ---@return SpawnSearchFilter
 function SpawnSearchFilter:IsPC()
-  self.filter = string:format('%s pc', self.filter)
+  self.filter = string.format('%s pc', self.filter)
   return self;
 end
 
 ---@return SpawnSearchFilter
 function SpawnSearchFilter:HasLineOfSight()
-  self.filter = string:format('%s los', self.filter)
+  self.filter = string.format('%s los', self.filter)
   return self;
 end
 
 ---@return SpawnSearchFilter
 function SpawnSearchFilter:IsTargetable()
-  self.filter = string:format('%s targetable', self.filter)
+  self.filter = string.format('%s targetable', self.filter)
   return self;
 end
 
 ---@param radius integer # Radius distance
 ---@return SpawnSearchFilter
 function SpawnSearchFilter:WithinRadius(radius)
-  self.filter = string:format('%s radius %d', self.filter, radius)
+  self.filter = string.format('%s radius %d', self.filter, radius)
   return self;
 end
 

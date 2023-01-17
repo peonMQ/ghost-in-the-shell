@@ -35,10 +35,11 @@ function state.Reset(giveUpTimer)
 end
 
 ---@return CastReturn
-function state.interrupt() 
+function state.interrupt()
   logger.Debug("Interrupt casting <%s>.", mq.TLO.Me.Casting())
   mq.cmd("/stopcast")
   state.castReturn = castReturnTypes.Cancelled
+  state.giveUpTimer = timer:new(0)
   mq.delay("1s", function () return not mq.TLO.Me.Casting.ID() end)
   return state.castReturn
 end

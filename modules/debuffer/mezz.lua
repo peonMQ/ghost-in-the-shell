@@ -4,6 +4,7 @@ local logger = require('utils/logging')
 local broadcast = require('broadcast/broadcast')
 local mqUtils = require('utils/mqhelpers')
 local configLoader = require('utils/configloader')
+local debugUtils = require 'utils/debug'
 local spawnsearchparams = require('lib/spawnsearchparams')
 local common = require('lib/common/common')
 local state = require('lib/spells/state')
@@ -74,21 +75,13 @@ local function doMezz()
                                             :WithinRadius(config.Radius).filter
   local mezzTargetCount = mq.TLO.SpawnCount(spawnQueryFilter)()
 
-  --[[
-    should we use mq.getFilteredSpawns(predicate) instead? does range really matter...
-    local predicate = function (spawn) 
-      return spawn.Distance() < config.Radius and spawn.Type() == "NPC" and spawn.Targetable() and spawn.LineOfSight()
-    end
-    mq.getFilteredSpawns(predicate)
-  ]]
-
   for i=1, mezzTargetCount do
     local mezzSpawn = mq.TLO.NearestSpawn(i, spawnQueryFilter)
     if immunities and immunities[mezzSpawn.Name()] then
       logger.Info("[%s] is immune to <%s>, skipping.", mezzSpawn.Name(), mezzSpell.Name)
     elseif maTargetId ~= mezzSpawn.ID() and mqUtils.IsMaybeAggressive(mezzSpawn --[[@as spawn]]) then
-      logger.Info("Attempting to mezz [%s] with <%s>.", mezzSpawn.Name(), mezzSpell.Name)
       if mqUtils.EnsureTarget(mezzSpawn.ID()) and mezzSpell:CanCastOnTarget(mq.TLO.Target --[[@as target]]) then
+        logger.Info("Attempting to mezz [%s] with <%s>.", mezzSpawn.Name(), mezzSpell.Name)
         local castResult = mezzSpell:Cast(checkInterrupt)
         if castResult == castReturnTypes.Immune then
           immunities[mezzSpawn.Name()] = "immune"
@@ -97,7 +90,7 @@ local function doMezz()
         elseif castResult == castReturnTypes.Success then
           logger.Info("[%s] mezzed with <%s>.", mezzSpawn.Name(), mezzSpell.Name)
           broadcast.Success("[%s] mezzed with <%s>.", mezzSpawn.Name(), mezzSpell.Name)
-          repository:Add(mezzSpawn.ID(), mezzSpell.MQSpell)
+          repository.Insert(mezzSpawn.ID(), mezzSpell)
         else
           logger.Info("[%s] <%s> mezz failed with. [%s]", mezzSpawn.Name(), mezzSpell.Name, castResult)
         end
@@ -115,7 +108,7 @@ local boolParam = {["1"] = true, ["true"] = true, ["on"] = true, ["0"] = false, 
 
 ---@param toggle string
 local function doCrowdControl(toggle)
-  if not config.MezzSpell then
+  if not mezzSpell then
     return
   end
 
