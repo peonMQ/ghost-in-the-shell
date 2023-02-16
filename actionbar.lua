@@ -342,7 +342,7 @@ local instance = {
   end,
 }
 
-local removeBuffsScriptExists = filetutils.Exists(mq.luaDir.."/mini-apps/removebuffs")
+local removeBuffsScriptExists = filetutils.Exists(mq.luaDir.."/mini-apps/removebuffs.lua")
 ---@type ActionButton
 local removeBuffs = {
   active = false,
@@ -354,7 +354,7 @@ local removeBuffs = {
   end,
 }
 
-local summonFoodScriptExists = filetutils.Exists(mq.luaDir.."/mini-apps/turkey")
+local summonFoodScriptExists = filetutils.Exists(mq.luaDir.."/mini-apps/turkey.lua")
 ---@type ActionButton
 local fooddrink = {
   active = false,
@@ -455,6 +455,7 @@ local function DrawTooltip(text)
   end
 end
 
+---@param state ActionButton
 local function createStateButton(state)
   if not state.active then
     ImGui.PushStyleColor(ImGuiCol.Button, blueButton.default)
@@ -491,6 +492,8 @@ local function createStateButton(state)
   ImGui.PopStyleColor(3)
 end
 
+---@param state ActionButton
+---@param buttonColor any
 local function createButton(state, buttonColor)
   ImGui.PushStyleColor(ImGuiCol.Button, buttonColor.default)
   ImGui.PushStyleColor(ImGuiCol.ButtonHovered, buttonColor.hovered)
