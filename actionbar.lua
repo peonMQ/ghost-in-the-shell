@@ -111,19 +111,20 @@ local fuchsiaButton = {
   active = create(6.4, 0.8, 0.8),
 }
 
-local function startBots()
+local function startBots(state)
   logger.Info("Start up bots.")
   local command = string.format('/lua run %s', runningDir:GetRelativeToMQLuaPath("bot"))
   bci.ExecuteAllCommand(command)
-  -- bci.ExecuteAllCommand('/lua run bot')
+  state.bots.active = true
   logger.Info("Bots initialized.")
 end
 
-local function stopBots()
+local function stopBots(state)
   logger.Info("stop bots.")
   local command = string.format('/lua stop %s', runningDir:GetRelativeToMQLuaPath("bot"))
   bci.ExecuteAllCommand(command)
-  -- bci.ExecuteAllCommand('/lua run bot')
+  state.bots.active = false
+  state.toggleCrowdControl = false
   logger.Info("Bots stopped.")
 end
 
@@ -134,10 +135,11 @@ local bots = {
   activeIcon = icons.MD_STOP,
   tooltip = "Toogle Bots",
   isDisabled = function (state) return false end,
-  activate = function(state) state.bots.active = true; startBots() end,
-  deactivate = function(state) state.bots.active = false; stopBots() end
+  activate = function(state) startBots(state) end,
+  deactivate = function(state) stopBots(state) end
 }
 
+local advFollowZone = nil
 ---@type ActionButton
 local advFollow = {
   active = false,
@@ -147,9 +149,14 @@ local advFollow = {
   activate = function(state)
     state.advFollow.active = true
     state.navFollow.active = false
+    advFollowZone = mq.TLO.Zone.ShortName()
     bci.ExecuteAllCommand(string.format('/stalk %i', mq.TLO.Me.ID()))
   end,
-  deactivate = function(state) state.advFollow.active = false; bci.ExecuteAllCommand("/stalk") end
+  deactivate = function(state)
+    state.advFollow.active = false
+    advFollowZone = nil
+    bci.ExecuteAllCommand("/stalk")
+  end
 }
 
 ---@type ActionButton
@@ -329,23 +336,25 @@ local instance = {
   end,
 }
 
+local removeBuffsScriptExists = filetutils.Exists(mq.luaDir.."/mini-apps/removebuffs")
 ---@type ActionButton
 local removeBuffs = {
   active = false,
   icon = icons.MD_AV_TIMER, --FA_EXCHANGE,
   tooltip = "Remove Low Duration Buffs",
-  isDisabled = function (state) return false end,
+  isDisabled = function (state) return not removeBuffsScriptExists end,
   activate = function(state)
     bci.ExecuteAllCommand("/lua run mini-apps/removebuffs 120", true)
   end,
 }
 
+local summonFoodScriptExists = filetutils.Exists(mq.luaDir.."/mini-apps/turkey")
 ---@type ActionButton
 local fooddrink = {
   active = false,
   icon = icons.MD_RESTAURANT,
   tooltip = "Summon Food/Drink",
-  isDisabled = function (state) return false end,
+  isDisabled = function (state) return not summonFoodScriptExists end,
   activate = function(state)
     bci.ExecuteAllCommand("/lua run mini-apps/turkey", true)
   end,
@@ -515,8 +524,7 @@ end
 
 createAliases()
 
-while not terminate do
-  if doInvites then
+local function createGroups()
     for leader, members in pairs(groups) do
       for _, member in ipairs(members) do
         if mq.TLO.Me.Name() == leader then
@@ -533,6 +541,17 @@ while not terminate do
       end
     end
     doInvites = false
+end
+
+while not terminate do
+  if doInvites then
+    createGroups()
   end
+
+  if advFollowZone ~= mq.TLO.Zone.ShortName() then
+    advFollowZone = nil
+    uiState.advFollow.active = false;
+  end
+
   mq.delay(500)
 end
