@@ -5,6 +5,7 @@ local plugin = require('utils/plugins')
 local mqUtils = require('utils/mqhelpers')
 local common = require('lib/common/common')
 local state = require('lib/spells/state')
+local numberUtils = require('lib/numberutils')
 local config = require('modules/healer/config')
 ---@type Timer
 local timer = require('lib/timer')
@@ -24,7 +25,7 @@ local function checkInterrupt(spellId)
   end
 
   local spell = mq.TLO.Spell(spellId)
-  if target.Distance() > spell.Range() then
+  if numberUtils.IsLargerThan(target.Distance(), spell.Range()) then
     state.interrupt()
   end
 
@@ -48,7 +49,7 @@ local function checkHealMainTank()
   end
 
   if config.MainTankHeal:CanCastOnNetBot(mq.TLO.NetBots(mainTank) --[[@as netbot]]) and mqUtils.EnsureTarget(mq.TLO.NetBots(mainTank).ID())  then
-    logger.Info("Healing maintain <%s>[%d]", mq.TLO.Target.Name(), mq.TLO.Target.PctHPs())
+    logger.Info("Healing maintank <%s>[%d]", mq.TLO.Target.Name(), mq.TLO.Target.PctHPs() or -100)
     config.MainTankHeal:Cast(checkInterrupt)
   end
 end
