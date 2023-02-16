@@ -1,5 +1,6 @@
 --- @type Mq
 local mq = require('mq')
+local broadcast = require('broadcast/broadcast')
 local logger = require('utils/logging')
 local plugin = require('utils/plugins')
 local mqUtils = require('utils/mqhelpers')
@@ -95,6 +96,10 @@ local function resetPet()
   end
 
   config.CurrentPetTarget = 0
+end
+
+local function logPetTarget()
+  broadcast.Warn("%s current pet target ID is %d", mq.TLO.Me.Name(), config.CurrentPetTarget)
 end
 
 local function setActivePetSpell(newPetSpell, newSummonFocusItem)
@@ -196,10 +201,12 @@ local function createAliases()
   mq.unbind('/summonpet')
   mq.unbind('/disbandpet')
   mq.unbind('/resetpet')
+  mq.unbind('/pettarget')
   mq.bind("/setactivepet", setActivePetSpell)
   mq.bind("/summonpet", function() state = petstates.SummonPet end)
   mq.bind("/disbandpet", disbandPet)
   mq.bind('/resetpet', resetPet)
+  mq.bind('/pettarget', logPetTarget)
 end
 
 createAliases()
