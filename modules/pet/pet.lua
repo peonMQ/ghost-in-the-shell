@@ -83,13 +83,17 @@ local function summonPet()
 end
 
 local function disbandPet()
-  if mq.TLO.Me.Pet() then
+  if mq.TLO.Me.Pet() ~= "NO PET" then
     mq.cmd("/pet get lost")
   end
 end
 
 local function resetPet()
-  mq.cmd("/pet back off")
+  local me = mq.TLO.Me
+  if me.Pet() ~= "NO PET" then
+    mq.cmd("/pet back off")
+  end
+
   config.CurrentPetTarget = 0
 end
 
@@ -137,6 +141,18 @@ local function doPet()
     mq.cmd("/pet back off")
     config.CurrentPetTarget = 0
   elseif config.CurrentPetTarget > 0 then
+    if not mq.TLO.Me.Pet.Combat() then
+      if mqUtils.EnsureTarget(config.CurrentPetTarget) then
+        mq.cmd("/pet attack")
+        mq.delay(5)
+        mq.cmd("/pet attack")
+      end
+    end
+    
+    if not mq.TLO.Me.Pet.Combat() then
+      logger.Error("Pet not able to target <%s>", config.CurrentPetTarget)
+    end
+
     logger.Debug("Pet has target and hopefully attacking")
     return
   end
