@@ -3,6 +3,8 @@ require 'ImGui'
 
 --- @type Mq
 local mq = require 'mq'
+
+--- @type Icons
 local icons = require 'mq/icons'
 local logger = require 'utils/logging'
 local debugUtils = require 'utils/debug'
@@ -11,6 +13,7 @@ local luapaths = require('utils/lua-paths')
 local filetutils = require('utils/file')
 local broadCastInterfaceFactory = require('broadcast/broadcastinterface')
 
+local zoneselector = require('ui/zoneselector')
 
 ---@type RunningDir
 local runningDir = luapaths.RunningDir:new()
@@ -53,6 +56,7 @@ end
 ---@field public removeBuffs ActionButton
 ---@field public fooddrink ActionButton
 ---@field public killthis ActionButton
+---@field public easyfind ActionButton
 
 -- GUI Control variables
 local openGUI = true
@@ -61,6 +65,8 @@ local buttonSize = ImVec2(30, 30)
 local windowFlags = bit32.bor(ImGuiWindowFlags.NoDecoration, ImGuiWindowFlags.NoDocking, ImGuiWindowFlags.AlwaysAutoResize, ImGuiWindowFlags.NoFocusOnAppearing, ImGuiWindowFlags.NoNav)
 
 
+local followZone = nil
+local travelToZone = nil
 local looter = nil
 local doInvites = false
 
@@ -149,8 +155,8 @@ local advFollow = {
   activate = function(state)
     state.advFollow.active = true
     state.navFollow.active = false
-    advFollowZone = mq.TLO.Zone.ShortName()
     bci.ExecuteAllCommand(string.format('/stalk %i', mq.TLO.Me.ID()))
+    followZone = mq.TLO.Zone.ID()
   end,
   deactivate = function(state)
     state.advFollow.active = false
@@ -370,6 +376,35 @@ local killthis = {
   end,
 }
 
+---@type ActionButton
+local clearconsole = {
+  active = false,
+  icon = icons.MD_FORMAT_CLEAR,
+  tooltip = "Clear Console",
+  isDisabled = function (state) return false end,
+  activate = function(state)
+    bci.ExecuteAllCommand("/mqconsole clear")
+    mq.cmd("/mqconsole clear")
+  end,
+}
+
+local selectTravelTo = false
+---@type ActionButton
+local easyfind = {
+  active = false,
+  icon = icons.MD_DIRECTIONS_RUN,
+  tooltip = "Travel Too",
+  isDisabled = function (state) return false end,
+  activate = function(state)
+    selectTravelTo = true
+  end,
+  deactivate = function(state)
+    bci.ExecuteAllCommand("/travelto stop", true)
+    state.easyfind.active = false
+    travelToZone = nil
+  end,
+}
+
 ---@type ActionButtons
 local uiState = {
   bots = bots,
@@ -391,7 +426,24 @@ local uiState = {
   removeBuffs = removeBuffs,
   fooddrink = fooddrink,
   killthis = killthis,
+  clearconsole = clearconsole,
+  easyfind = easyfind,
 }
+
+---@param zoneShortName Zone
+local function travelToo(zoneShortName)
+  if zoneShortName then
+    if not mq.TLO.Zone(zoneShortName.shortname).ID() then
+      logger.Error("Zone shortname does not exist <%s>", zoneShortName.shortname)
+    else
+      uiState.easyfind.active = true
+      bci.ExecuteAllCommand(string.format("/travelto %s", zoneShortName.shortname), true)
+      travelToZone = zoneShortName
+    end
+  end
+
+  selectTravelTo = false
+end
 
 local function DrawTooltip(text)
   if ImGui.IsItemHovered() and text and string.len(text) > 0 then
@@ -469,6 +521,8 @@ local function actionbarUI()
   ImGui.SameLine()
   createButton(uiState.navFollow, blueButton)
   ImGui.SameLine()
+  createStateButton(uiState.easyfind)
+  ImGui.SameLine()
   createButton(uiState.loot, blueButton)
   ImGui.SameLine()
   createButton(uiState.group, blueButton)
@@ -496,9 +550,15 @@ local function actionbarUI()
   ImGui.SameLine()
   createButton(uiState.killthis, blueButton)
   ImGui.SameLine()
+  createButton(uiState.clearconsole, orangeButton)
+  ImGui.SameLine()
   createButton(uiState.quit, redButton)
 
   ImGui.End()
+
+  if selectTravelTo then
+    zoneselector("Travel too", travelToo)
+  end
 
   if not openGUI then
       terminate = true
@@ -517,6 +577,25 @@ local function setLooter(arg)
   logger.Info("Looter set to <%s>", looter)
 end
 
+local function triggerInvites()
+  for leader, members in pairs(groups) do
+    for _, member in ipairs(members) do
+      if mq.TLO.Me.Name() == leader then
+        mq.cmdf("/invite %s", member)
+      else
+        bci.ExecuteCommand(string.format('/invite %s', member), {leader})
+      end
+    end
+  end
+  mq.delay(2000)
+  for leader, members in pairs(groups) do
+    for _, member in ipairs(members) do
+      bci.ExecuteCommand('/invite', {member})
+    end
+  end
+  doInvites = false
+end
+
 local function createAliases()
   mq.unbind('/setlooter')
   mq.bind("/setlooter", setLooter)
@@ -524,33 +603,19 @@ end
 
 createAliases()
 
-local function createGroups()
-    for leader, members in pairs(groups) do
-      for _, member in ipairs(members) do
-        if mq.TLO.Me.Name() == leader then
-          mq.cmdf("/invite %s", member)
-        else
-          bci.ExecuteCommand(string.format('/invite %s', member), {leader})
-        end
-      end
-    end
-    mq.delay(2000)
-    for leader, members in pairs(groups) do
-      for _, member in ipairs(members) do
-        bci.ExecuteCommand('/invite', {member})
-      end
-    end
-    doInvites = false
-end
-
 while not terminate do
   if doInvites then
-    createGroups()
+    triggerInvites()
   end
 
-  if advFollowZone ~= mq.TLO.Zone.ShortName() then
-    advFollowZone = nil
-    uiState.advFollow.active = false;
+  if followZone and followZone == mq.TLO.Zone.ID() then
+    uiState.advFollow.active = false
+    followZone = nil
+  end
+
+  if travelToZone and travelToZone == mq.TLO.Zone.ShortName() then
+    uiState.easyfind.active = false
+    travelToZone = nil
   end
 
   mq.delay(500)
