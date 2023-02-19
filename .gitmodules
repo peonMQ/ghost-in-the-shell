@@ -10,3 +10,7 @@
 	path = broadcast
 	url = https://github.com/peonMQ/broadcast.git
 	branch = main
+[submodule "definitions"]
+	path = definitions
+	url = https://github.com/macroquest/mq-definitions.git
+	branch = master
