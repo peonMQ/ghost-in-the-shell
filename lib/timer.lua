@@ -1,21 +1,21 @@
 ---@class Timer
 ---@field public Duration integer
 ---@field public StartTime integer
-local Timer = {Duration = 0, StartTime = os.time()}
+local Timer = {Duration = 0, StartTime = mq.gettime()}
 
 ---@param duration? integer
 ---@return Timer
 function Timer:new (duration)
   self.__index = self
   local o = setmetatable({}, self)
-  o.Duration = duration or 0
-  o.StartTime = os.time()
+  o.Duration = duration*1000 or 0
+  o.StartTime = mq.gettime()
   return o
 end
 
 ---@return integer
 function Timer:TimeRemaining()
-  return os.difftime(os.time(), self.StartTime);
+  return self.Duration - (mq.gettime() - self.StartTime);
 end
 
 ---@return integer
