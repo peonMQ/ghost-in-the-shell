@@ -1,3 +1,5 @@
+local mq = require('mq')
+
 ---@class Timer
 ---@field public Duration integer
 ---@field public StartTime integer
@@ -8,7 +10,7 @@ local Timer = {Duration = 0, StartTime = mq.gettime()}
 function Timer:new (duration)
   self.__index = self
   local o = setmetatable({}, self)
-  o.Duration = duration*1000 or 0
+  o.Duration = (duration or 0)*1000
   o.StartTime = mq.gettime()
   return o
 end
