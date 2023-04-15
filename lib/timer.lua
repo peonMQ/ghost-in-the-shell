@@ -20,9 +20,9 @@ function Timer:TimeRemaining()
   return self.Duration - (mq.gettime() - self.StartTime);
 end
 
----@return integer
-function Timer:DelayTime()
-  return self:TimeRemaining();
+---@return Timer
+function Timer:Reset()
+  return Timer:new(self.Duration)
 end
 
 ---@return boolean

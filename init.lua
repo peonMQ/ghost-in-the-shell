@@ -4,7 +4,6 @@ local plugins = require('utils/plugins')
 local logger = require('utils/logging')
 local luapaths = require('utils/lua-paths')
 
-
 ---@type RunningDir
 local runningDir = luapaths.RunningDir:new()
 runningDir:AppendToPackagePath()

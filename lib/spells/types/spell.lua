@@ -154,7 +154,7 @@ function Spell:Cast(cancelCallback)
   state.recoveryTime = spell.RecoveryTime()
 
   repeat
-    mq.delay(state.retryTimer:DelayTime(), function() return mq.TLO.Me.SpellReady(self.Name)() end)
+    mq.delay(state.retryTimer:TimeRemaining(), function() return mq.TLO.Me.SpellReady(self.Name)() end)
     mq.cmdf('/cast "%s"', self.Name)
     mq.delay(200)
     self:DoCastEvents()
