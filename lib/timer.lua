@@ -22,12 +22,12 @@ end
 
 ---@return integer
 function Timer:DelayTime()
-  return self:TimeRemaining() * 1000;
+  return self:TimeRemaining();
 end
 
 ---@return boolean
 function Timer:IsComplete()
-  return self:TimeRemaining() >= self.Duration;
+  return self:TimeRemaining() <= self.Duration;
 end
 
 ---@return boolean
