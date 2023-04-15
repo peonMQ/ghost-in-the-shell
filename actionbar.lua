@@ -130,7 +130,7 @@ local function stopBots(state)
   local command = string.format('/lua stop %s', runningDir:GetRelativeToMQLuaPath("bot"))
   bci.ExecuteAllCommand(command)
   state.bots.active = false
-  state.toggleCrowdControl = false
+  state.toggleCrowdControl.active = false
   logger.Info("Bots stopped.")
 end
 
