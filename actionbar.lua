@@ -457,6 +457,10 @@ end
 
 ---@param state ActionButton
 local function createStateButton(state)
+  if not state then
+    return
+  end
+
   if not state.active then
     ImGui.PushStyleColor(ImGuiCol.Button, blueButton.default)
     ImGui.PushStyleColor(ImGuiCol.ButtonHovered, greenButton.hovered)
