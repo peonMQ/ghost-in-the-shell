@@ -61,7 +61,7 @@ local function summonPet()
   end
 
   if not petSpell:CanCast() then
-    logger.Info("Cannott cast <%s>", petSpell.Name)
+    logger.Info("Can not cast <%s>", petSpell.Name)
     state = petstates.Idle
     return
   end
