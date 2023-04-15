@@ -26,13 +26,13 @@ function Timer:DelayTime()
 end
 
 ---@return boolean
-function Timer:IsComplete()
-  return self:TimeRemaining() <= self.Duration;
+function Timer:IsRunning()
+  return self:TimeRemaining() >= 0;
 end
 
 ---@return boolean
-function Timer:IsRunning()
-  return self:IsComplete() == false;
+function Timer:IsComplete()
+  return self:IsRunning() == false;
 end
 
 return Timer
