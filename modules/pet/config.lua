@@ -23,14 +23,14 @@ local petConfig = configLoader("pet", deafultPetConfig)
 
 local defaultPetSpell = petConfig.PetSpell
 if defaultPetSpell and defaultPetSpell.Name then
-  petConfig.PetSpell = petSpell:new(defaultPetSpell.Name, defaultPetSpell.DefaultGem, defaultPetSpell.MinManaPercent, 5, defaultPetSpell.FocusItem)
+  petConfig.PetSpell = petSpell:new(defaultPetSpell.Name, defaultPetSpell.DefaultGem, defaultPetSpell.MinManaPercent, 15, defaultPetSpell.FocusItem)
 else
   petConfig.PetSpell = nil
 end
 
 local weaponizeSpell = petConfig.WeaponizeSpell
 if weaponizeSpell and weaponizeSpell.Name then
-  petConfig.WeaponizeSpell = spell:new(weaponizeSpell.Name, weaponizeSpell.DefaultGem, weaponizeSpell.MinManaPercent, 5)
+  petConfig.WeaponizeSpell = spell:new(weaponizeSpell.Name, weaponizeSpell.DefaultGem, weaponizeSpell.MinManaPercent, 15)
 else
   petConfig.WeaponizeSpell = nil
 end
