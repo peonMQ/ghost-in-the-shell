@@ -2,6 +2,7 @@
 local mq = require('mq')
 local logger = require('utils/logging')
 local debugUtils = require('utils/debug')
+local plugins = require('utils/plugins')
 local moveUtils = require('lib/moveutils')
 local timer = require('lib/timer')
 local merchant = require('modules/looter/merchant')
@@ -157,8 +158,15 @@ local function doSell()
   end
 
   if state == looterStates.Selling then
+    local isBardSwapping = plugins.IsLoaded("MQ2BardSwap") and mq.TLO.BardSwap()
+    if isBardSwapping then
+      mq.cmd("/bardswap")
+    end
     sellItems()
     state = looterStates.Idle
+    if isBardSwapping then
+      mq.cmd("/bardswap")
+    end
   end
 end
 
