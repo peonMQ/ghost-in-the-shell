@@ -153,9 +153,9 @@ local function doPet()
         mq.cmd("/pet attack")
       end
     end
-    
+ 
     if not mq.TLO.Me.Pet.Combat() then
-      logger.Error("Pet not able to target <%s>", config.CurrentPetTarget)
+      logger.Error("Pet not able to engage <%s>", config.CurrentPetTarget)
     end
 
     logger.Debug("Pet has target and hopefully attacking")
