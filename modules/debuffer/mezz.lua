@@ -12,6 +12,11 @@ local castReturnTypes = require 'lib/spells/types/castreturn'
 local debuffspell = require 'modules/debuffer/types/debuffspell'
 local repository = require 'modules/debuffer/types/debuffRepository'
 
+-- possible mezz animations
+-- 26, 32, 71, 72, 110, 111
+-- possible Aggro Animations
+-- 5,8,12,17,18,32,42,44,80,106,129,144
+
 --- @type Timer
 local timer = require 'lib/timer'
 

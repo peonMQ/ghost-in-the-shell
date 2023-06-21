@@ -25,8 +25,11 @@ local function castBuff(buffSpell, targetId)
     if buffSpell:CanCastOnspawn(mq.TLO.Target) then
       logger.Info("Casting [%s] on <%s>", buffSpell.Name, mq.TLO.Target.Name())
       buffSpell:Cast(checkInterrupt)
+      return true
     end
   end
+
+  return false
 end
 
 local function checkSelfBuffs()
@@ -62,8 +65,10 @@ local function checkNetBotBuffs()
           local netbot = mq.TLO.NetBots(name) --[[@as netbot]]
           if netbot.InZone() == true and netbot.Class() ~= "NULL" and buffSpell:CanCastOnClass(netbot.Class.ShortName()) then
             if buffSpell:WillStack(netbot) then
-              castBuff(buffSpell, netbot.ID())
-              return;
+              local didCastBuff = castBuff(buffSpell, netbot.ID())
+              if didCastBuff then
+                return
+              end
             end
           end
         end
@@ -83,15 +88,19 @@ local function checkPetBuffs()
           local netbot = mq.TLO.NetBots(name)
           if netbot.InZone() and netbot.PetID() > 0 then
             if netbot.PetBuff():find(""..buffSpell.Id) == 0 then
-              castBuff(buffSpell, netbot.PetID())
-              return;
+              local didCastBuff = castBuff(buffSpell, netbot.PetID())
+              if didCastBuff then
+                return
+              end
             end
           end
         end
       elseif spell.TargetType() == "Pet" then
         if me.Pet.ID() > 0 and mq.TLO.Spell(buffSpell.Name).StacksPet() and not me.Pet.Buff(buffSpell.Name)() then
-          castBuff(buffSpell, me.Pet.ID())
-          return;
+          local didCastBuff = castBuff(buffSpell, me.Pet.ID())
+          if didCastBuff then
+            return
+          end
         end
       end
     end
