@@ -1,9 +1,9 @@
 --- @type Mq
-local mq = require('mq')
-local logger = require('utils/logging')
-local plugin = require('utils/plugins')
-local mqUtils = require('utils/mqhelpers')
-local timer = require('lib/timer')
+local mq = require 'mq'
+local logger = require 'utils/logging'
+local plugin = require 'utils/plugins'
+local mqUtils = require 'utils/mqhelpers'
+local timer = require 'lib/timer'
 
 plugin.EnsureIsLoaded("mq2nav")
 

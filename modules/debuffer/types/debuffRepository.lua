@@ -1,8 +1,8 @@
 --- @type Mq
-local mq = require('mq')
-local packageMan = require('mq/PackageMan')
-local configLoader = require('utils/configloader')
-local debug = require('utils/debug')
+local mq = require 'mq'
+local packageMan = require 'mq/PackageMan'
+local configLoader = require 'utils/configloader'
+local debug = require 'utils/debug'
 
 local sqlite3 = packageMan.Require('lsqlite3')
 

@@ -1,7 +1,7 @@
-local logger = require('utils/logging')
-local configLoader = require('utils/configloader')
+local logger = require 'utils/logging'
+local configLoader = require 'utils/configloader'
 ---@type NukeSpell
-local nukeSpell = require('modules/nuker/types/nukespell')
+local nukeSpell = require 'modules/nuker/types/nukespell'
 
 
 ---@type NukeSpell[]

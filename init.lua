@@ -1,8 +1,8 @@
 --- @type Mq
-local mq = require('mq')
-local plugins = require('utils/plugins')
-local logger = require('utils/logging')
-local luapaths = require('utils/lua-paths')
+local mq = require 'mq'
+local plugins = require 'utils/plugins'
+local logger = require 'utils/logging'
+local luapaths = require 'utils/lua-paths'
 
 ---@type RunningDir
 local runningDir = luapaths.RunningDir:new()

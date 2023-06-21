@@ -1,9 +1,9 @@
 --- @type Mq
-local mq = require('mq')
-local logger = require('utils/logging')
-local state = require('modules/melee/state')
+local mq = require 'mq'
+local logger = require 'utils/logging'
+local state = require 'modules/melee/state'
 --- @type MQEvent
-local mqEvents = require('lib/mqevent')
+local mqEvents = require 'lib/mqevent'
 
 local tooFarAWay = mqEvents:new("tooFarAway", "Your target is too far away, get closer!", function() end)
 

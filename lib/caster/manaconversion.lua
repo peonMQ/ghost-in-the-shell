@@ -1,9 +1,9 @@
 --- @type Mq
-local mq = require('mq')
-local mqutil = require('utils/mqhelpers')
-local configLoader = require('utils/configloader')
+local mq = require 'mq'
+local mqutil = require 'utils/mqhelpers'
+local configLoader = require 'utils/configloader'
 ---@type Spell
-local spell = require('lib/spells/types/spell')
+local spell = require 'lib/spells/types/spell'
 
 ---@class CommonConfig
 local defaultConfig = {

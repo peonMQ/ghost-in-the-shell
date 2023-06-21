@@ -1,19 +1,19 @@
 --- @type Mq
-local mq = require('mq')
-local logger = require('utils/logging')
-local broadcast = require('broadcast/broadcast')
-local mqUtils = require('utils/mqhelpers')
-local configLoader = require('utils/configloader')
+local mq = require 'mq'
+local logger = require 'utils/logging'
+local broadcast = require 'broadcast/broadcast'
+local mqUtils = require 'utils/mqhelpers'
+local configLoader = require 'utils/configloader'
 local debugUtils = require 'utils/debug'
-local spawnsearchparams = require('lib/spawnsearchparams')
-local common = require('lib/common/common')
-local state = require('lib/spells/state')
-local castReturnTypes = require('lib/spells/types/castreturn')
-local debuffspell = require('modules/debuffer/types/debuffspell')
-local repository = require('modules/debuffer/types/debuffRepository')
+local spawnsearchparams = require 'lib/spawnsearchparams'
+local common = require 'lib/common/common'
+local state = require 'lib/spells/state'
+local castReturnTypes = require 'lib/spells/types/castreturn'
+local debuffspell = require 'modules/debuffer/types/debuffspell'
+local repository = require 'modules/debuffer/types/debuffRepository'
 
 --- @type Timer
-local timer = require('lib/timer')
+local timer = require 'lib/timer'
 
 ---@class MezzConfig
 local defaultConfig = {

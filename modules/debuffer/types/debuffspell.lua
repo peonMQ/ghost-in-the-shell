@@ -1,9 +1,9 @@
 --- @type Mq
-local mq = require('mq')
-local logger = require('utils/logging')
+local mq = require 'mq'
+local logger = require 'utils/logging'
 ---@type Spell
-local spell = require('lib/spells/types/spell')
-local repository = require('modules/debuffer/types/debuffRepository')
+local spell = require 'lib/spells/types/spell'
+local repository = require 'modules/debuffer/types/debuffRepository'
 
 ---@class DeBuffSpell : Spell
 ---@field public Id integer

@@ -1,14 +1,14 @@
 --- @type Mq
-local mq = require('mq')
+local mq = require 'mq'
 ---@type Cast
-local cast = require('lib/spells/types/cast')
+local cast = require 'lib/spells/types/cast'
 --- @type Timer
-local timer = require('lib/timer')
+local timer = require 'lib/timer'
 
-local castReturnTypes = require('lib/spells/types/castreturn')
-local debugutils = require('utils/debug')
-local logger = require('utils/logging')
-local state = require('lib/spells/state')
+local castReturnTypes = require 'lib/spells/types/castreturn'
+local debugutils = require 'utils/debug'
+local logger = require 'utils/logging'
+local state = require 'lib/spells/state'
 
 ---@class Spell : Cast
 ---@field public Id integer

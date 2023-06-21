@@ -1,11 +1,11 @@
 --- @type Mq
-local mq = require('mq')
+local mq = require 'mq'
 ---@type Cast
-local cast = require('lib/spells/types/cast')
+local cast = require 'lib/spells/types/cast'
 
-local castReturnTypes = require('lib/spells/types/castreturn')
-local logger = require('utils/logging')
-local state = require('lib/spells/state')
+local castReturnTypes = require 'lib/spells/types/castreturn'
+local logger = require 'utils/logging'
+local state = require 'lib/spells/state'
 
 ---@class Item : Cast
 ---@field public Id integer

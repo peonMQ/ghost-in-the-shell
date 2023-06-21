@@ -1,12 +1,12 @@
 --- @type Mq
-local mq = require('mq')
-local logger = require('utils/logging')
-local plugin = require('utils/plugins')
-local mqUtils = require('utils/mqhelpers')
-local moveUtils = require('lib/moveutils')
-local timer = require('lib/timer')
-local petstates = require('modules/pet/types/petstate')
-local config = require('modules/pet/config')
+local mq = require 'mq'
+local logger = require 'utils/logging'
+local plugin = require 'utils/plugins'
+local mqUtils = require 'utils/mqhelpers'
+local moveUtils = require 'lib/moveutils'
+local timer = require 'lib/timer'
+local petstates = require 'modules/pet/types/petstate'
+local config = require 'modules/pet/config'
 
 local state = petstates.Idle
 local weaponizePetId = nil

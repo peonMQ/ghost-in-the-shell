@@ -1,23 +1,23 @@
 --- @type Mq
-local mq = require('mq')
-local plugins = require('utils/plugins')
-local logger = require('utils/logging')
-local debugutils = require('utils/debug')
-local doManaStone = require('lib/caster/manastone')
-local doMeditate = require('lib/caster/meditate')
-local doManaConversion = require('lib/caster/manaconversion')
-local doBuffs = require('modules/buffer/buffer')
-local doDeBuffs = require('modules/debuffer/debuffer')
-local doMezz = require('modules/debuffer/mezz')
-local doHealing = require('modules/healer/healing')
-local combatActions = require('modules/melee/combatactions')
-local doMeleeDps = require('modules/melee/melee')
-local doNuking = require('modules/nuker/nuke')
-local doPet = require('modules/pet/pet')
-local doWeaponize = require('modules/pet/weaponize')
-local doLoot = require('modules/looter/loot')
-local doSell = require('modules/looter/sell')
-local wait4rez = require('wait4rez/wait4rez')
+local mq = require 'mq'
+local plugins = require 'utils/plugins'
+local logger = require 'utils/logging'
+local debugutils = require 'utils/debug'
+local doManaStone = require 'lib/caster/manastone'
+local doMeditate = require 'lib/caster/meditate'
+local doManaConversion = require 'lib/caster/manaconversion'
+local doBuffs = require 'modules/buffer/buffer'
+local doDeBuffs = require 'modules/debuffer/debuffer'
+local doMezz = require 'modules/debuffer/mezz'
+local doHealing = require 'modules/healer/healing'
+local combatActions = require 'modules/melee/combatactions'
+local doMeleeDps = require 'modules/melee/melee'
+local doNuking = require 'modules/nuker/nuke'
+local doPet = require 'modules/pet/pet'
+local doWeaponize = require 'modules/pet/weaponize'
+local doLoot = require 'modules/looter/loot'
+local doSell = require 'modules/looter/sell'
+local wait4rez = require 'wait4rez/wait4rez'
 
 require('lib/common/cleanBuffs')
 

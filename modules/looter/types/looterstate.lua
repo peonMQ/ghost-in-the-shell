@@ -1,4 +1,4 @@
-local logger = require('utils/logging')
+local logger = require 'utils/logging'
 
 ---@class LooterState
 ---@field public Name string

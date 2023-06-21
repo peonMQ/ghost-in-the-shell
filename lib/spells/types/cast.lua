@@ -1,9 +1,9 @@
 --- @type Mq
-local mq = require('mq')
-local events = require('lib/spells/events')
-local castReturnTypes = require('lib/spells/types/castreturn')
-local state = require('lib/spells/state')
-local logger = require('utils/logging')
+local mq = require 'mq'
+local events = require 'lib/spells/events'
+local castReturnTypes = require 'lib/spells/types/castreturn'
+local state = require 'lib/spells/state'
+local logger = require 'utils/logging'
 
 ---@class Cast
 ---@field public Id integer

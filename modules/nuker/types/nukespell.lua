@@ -1,7 +1,7 @@
 --- @type Mq
-local mq = require('mq')
+local mq = require 'mq'
 ---@type Spell
-local spell = require('lib/spells/types/spell')
+local spell = require 'lib/spells/types/spell'
 
 ---@class NukeSpell : Spell
 ---@field public Id integer

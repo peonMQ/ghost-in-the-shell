@@ -1,6 +1,6 @@
-local configLoader = require('utils/configloader')
+local configLoader = require 'utils/configloader'
 ---@type HealSpell
-local healSpell = require('modules/healer/types/healspell')
+local healSpell = require 'modules/healer/types/healspell'
 
 
 ---@class HealConfig

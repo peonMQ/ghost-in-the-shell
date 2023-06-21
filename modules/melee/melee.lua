@@ -1,11 +1,11 @@
 --- @type Mq
-local mq = require('mq')
-local logger = require('utils/logging')
-local mqUtils = require('utils/mqhelpers')
-local common = require('lib/common/common')
-local commonConfig = require('lib/common/config')
-local state = require('modules/melee/state')
-local events = require('modules/melee/events')
+local mq = require 'mq'
+local logger = require 'utils/logging'
+local mqUtils = require 'utils/mqhelpers'
+local common = require 'lib/common/common'
+local commonConfig = require 'lib/common/config'
+local state = require 'modules/melee/state'
+local events = require 'modules/melee/events'
 
 local function doEvents()
   for key, value in pairs(events) do

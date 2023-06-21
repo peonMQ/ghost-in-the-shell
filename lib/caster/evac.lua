@@ -1,10 +1,10 @@
 --- @type Mq
-local mq = require('mq')
-local broadcast = require('broadcast/broadcast')
-local logger = require('utils/logging')
-local configLoader = require('utils/configloader')
-local state = require('lib/spells/state')
-local spell = require('lib/spells/type/spell')
+local mq = require 'mq'
+local broadcast = require 'broadcast/broadcast'
+local logger = require 'utils/logging'
+local configLoader = require 'utils/configloader'
+local state = require 'lib/spells/state'
+local spell = require 'lib/spells/type/spell'
 
 ---@class CommonConfig
 local defaultConfig = {

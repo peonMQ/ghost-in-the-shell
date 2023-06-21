@@ -1,8 +1,8 @@
 --- @type Mq
-local mq = require('mq')
-local logger = require('utils/logging')
-local plugin = require('utils/plugins')
-local configLoader = require('utils/configloader')
+local mq = require 'mq'
+local logger = require 'utils/logging'
+local plugin = require 'utils/plugins'
+local configLoader = require 'utils/configloader'
 
 local next = next 
 

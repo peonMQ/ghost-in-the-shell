@@ -1,9 +1,9 @@
 --- @type Mq
-local mq = require('mq')
-local logger = require('utils/logging')
+local mq = require 'mq'
+local logger = require 'utils/logging'
 --- @type Timer
-local timer = require('lib/timer')
-local castReturnTypes = require('lib/spells/types/castreturn')
+local timer = require 'lib/timer'
+local castReturnTypes = require 'lib/spells/types/castreturn'
 
 ---@class CastState
 ---@field castReturn CastReturn

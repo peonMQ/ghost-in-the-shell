@@ -1,6 +1,6 @@
 --- @type Mq
-local mq = require('mq')
-local configLoader = require('utils/configloader')
+local mq = require 'mq'
+local configLoader = require 'utils/configloader'
 
 ---@class CommonConfig
 local defaultConfig = {

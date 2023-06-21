@@ -1,12 +1,12 @@
 --- @type Mq
-local mq = require('mq')
-local logger = require('utils/logging')
-local castReturnTypes = require('lib/spells/types/castreturn')
-local state = require('lib/spells/state')
+local mq = require 'mq'
+local logger = require 'utils/logging'
+local castReturnTypes = require 'lib/spells/types/castreturn'
+local state = require 'lib/spells/state'
 --- @type MQEvent
-local mqEvents = require('lib/mqevent')
+local mqEvents = require 'lib/mqevent'
 --- @type Timer
-local timer = require('lib/timer')
+local timer = require 'lib/timer'
 
 local function beginCastEvent()
   state.setCastReturn(castReturnTypes.Success)

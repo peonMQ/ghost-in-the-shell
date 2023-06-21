@@ -8,12 +8,12 @@ local mq = require 'mq'
 local icons = require 'mq/icons'
 local logger = require 'utils/logging'
 local debugUtils = require 'utils/debug'
-local plugins = require('utils/plugins')
-local luapaths = require('utils/lua-paths')
-local filetutils = require('utils/file')
-local broadCastInterfaceFactory = require('broadcast/broadcastinterface')
+local plugins = require 'utils/plugins'
+local luapaths = require 'utils/lua-paths'
+local filetutils = require 'utils/file'
+local broadCastInterfaceFactory = require 'broadcast/broadcastinterface'
 
-local zoneselector = require('ui/zoneselector')
+local zoneselector = require 'ui/zoneselector'
 
 ---@type RunningDir
 local runningDir = luapaths.RunningDir:new()

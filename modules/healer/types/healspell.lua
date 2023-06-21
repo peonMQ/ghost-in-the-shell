@@ -1,8 +1,8 @@
 --- @type Mq
-local mq = require('mq')
+local mq = require 'mq'
 ---@type Spell
-local spell = require('lib/spells/types/spell')
-local logger = require('utils/logging')
+local spell = require 'lib/spells/types/spell'
+local logger = require 'utils/logging'
 
 ---@class HealSpell : Spell
 ---@field public Id integer

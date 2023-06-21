@@ -1,6 +1,6 @@
 --- @type Mq
-local mq = require('mq')
-local logger = require('utils/logging')
+local mq = require 'mq'
+local logger = require 'utils/logging'
 
 ---@param remainingDuration integer
 local function cleanLowDurationBuffs(remainingDuration)

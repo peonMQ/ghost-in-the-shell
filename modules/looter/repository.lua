@@ -1,10 +1,10 @@
 --- @type Mq
-local mq = require('mq')
-local logger = require('utils/logging')
-local jsonUtil = require('utils/loaders/json')
-local debugUtils = require('utils/debug')
+local mq = require 'mq'
+local logger = require 'utils/logging'
+local jsonUtil = require 'utils/loaders/json'
+local debugUtils = require 'utils/debug'
 --- @type LootItem
-local item = require('modules/looter/types/lootitem')
+local item = require 'modules/looter/types/lootitem'
 
 local configDir = mq.configDir.."/"
 local serverName = mq.TLO.MacroQuest.Server()

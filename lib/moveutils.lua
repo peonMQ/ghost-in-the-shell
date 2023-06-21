@@ -1,10 +1,10 @@
 --- @type Mq
-local mq = require('mq')
-local logger = require('utils/logging')
-local plugins = require('utils/plugins')
+local mq = require 'mq'
+local logger = require 'utils/logging'
+local plugins = require 'utils/plugins'
 
 --- @type Timer
-local timer = require('lib/timer')
+local timer = require 'lib/timer'
 
 plugins.EnsureIsLoaded("mq2moveutils")
 plugins.EnsureIsLoaded("mq2eqbc")

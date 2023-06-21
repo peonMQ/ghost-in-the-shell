@@ -1,12 +1,12 @@
 --- @type Mq
-local mq = require('mq')
-local logger = require('utils/logging')
+local mq = require 'mq'
+local logger = require 'utils/logging'
 
-local configLoader = require('utils/configloader')
+local configLoader = require 'utils/configloader'
 ---@type BuffSpell
-local buffSpell = require('modules/buffer/types/buffspell')
+local buffSpell = require 'modules/buffer/types/buffspell'
 ---@type BuffItem
-local buffItem = require('modules/buffer/types/buffitem')
+local buffItem = require 'modules/buffer/types/buffitem'
 
 ---@type BuffSpell[]
 local buffArray = {}
