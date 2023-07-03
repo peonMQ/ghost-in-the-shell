@@ -620,7 +620,7 @@ while not terminate do
     followZone = nil
   end
 
-  if travelToZone and travelToZone == mq.TLO.Zone.ShortName() then
+  if travelToZone and travelToZone.shortname == mq.TLO.Zone.ShortName() then
     uiState.easyfind.active = false
     travelToZone = nil
   end
