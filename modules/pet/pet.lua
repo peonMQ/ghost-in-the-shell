@@ -1,15 +1,15 @@
 --- @type Mq
-local mq = require('mq')
-local broadcast = require('broadcast/broadcast')
-local logger = require('utils/logging')
-local plugin = require('utils/plugins')
-local mqUtils = require('utils/mqhelpers')
-local common = require('lib/common/common')
-local config = require('modules/pet/config')
-local petstates = require('modules/pet/types/petstate')
+local mq = require 'mq'
+local broadcast = require 'broadcast/broadcast'
+local logger = require 'utils/logging'
+local plugin = require 'utils/plugins'
+local mqUtils = require 'utils/mqhelpers'
+local common = require 'lib/common/common'
+local config = require 'modules/pet/config'
+local petstates = require 'modules/pet/types/petstate'
 require('modules/pet/weaponize')
 ---@type PetSpell
-local petspell = require('modules/pet/types/petspell')
+local petspell = require 'modules/pet/types/petspell'
 
 local state = petstates.Idle
 

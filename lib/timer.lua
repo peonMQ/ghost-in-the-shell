@@ -1,4 +1,4 @@
-local mq = require('mq')
+local mq = require 'mq'
 
 ---@class Timer
 ---@field public Duration integer

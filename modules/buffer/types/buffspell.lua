@@ -1,9 +1,9 @@
 --- @type Mq
-local mq = require('mq')
-local logger = require('utils/logging')
-local luaUtils = require('utils/lua-table')
+local mq = require 'mq'
+local logger = require 'utils/logging'
+local luaUtils = require 'utils/lua-table'
 ---@type Spell
-local spell = require('lib/spells/types/spell')
+local spell = require 'lib/spells/types/spell'
 
 local function currentZoneIsNoLevitate()
   local currentZone = mq.TLO.Zone.ShortName()

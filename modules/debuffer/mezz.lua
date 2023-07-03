@@ -1,16 +1,16 @@
 --- @type Mq
-local mq = require('mq')
-local logger = require('utils/logging')
-local broadcast = require('broadcast/broadcast')
-local mqUtils = require('utils/mqhelpers')
-local configLoader = require('utils/configloader')
+local mq = require 'mq'
+local logger = require 'utils/logging'
+local broadcast = require 'broadcast/broadcast'
+local mqUtils = require 'utils/mqhelpers'
+local configLoader = require 'utils/configloader'
 local debugUtils = require 'utils/debug'
-local spawnsearchparams = require('lib/spawnsearchparams')
-local common = require('lib/common/common')
-local state = require('lib/spells/state')
-local castReturnTypes = require('lib/spells/types/castreturn')
-local debuffspell = require('modules/debuffer/types/debuffspell')
-local repository = require('modules/debuffer/types/debuffRepository')
+local spawnsearchparams = require 'lib/spawnsearchparams'
+local common = require 'lib/common/common'
+local state = require 'lib/spells/state'
+local castReturnTypes = require 'lib/spells/types/castreturn'
+local debuffspell = require 'modules/debuffer/types/debuffspell'
+local repository = require 'modules/debuffer/types/debuffRepository'
 
 -- possible mezz animations
 -- 26, 32, 71, 72, 110, 111
@@ -18,7 +18,7 @@ local repository = require('modules/debuffer/types/debuffRepository')
 -- 5,8,12,17,18,32,42,44,80,106,129,144
 
 --- @type Timer
-local timer = require('lib/timer')
+local timer = require 'lib/timer'
 
 ---@class MezzConfig
 local defaultConfig = {

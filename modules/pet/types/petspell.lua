@@ -1,8 +1,8 @@
 --- @type Mq
-local mq = require('mq')
-local logger = require('utils/logging')
+local mq = require 'mq'
+local logger = require 'utils/logging'
 ---@type Spell
-local spell = require('lib/spells/types/spell')
+local spell = require 'lib/spells/types/spell'
 
 ---@class PetSpell : Spell
 ---@field public FocusItem string

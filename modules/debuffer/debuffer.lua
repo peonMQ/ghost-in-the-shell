@@ -1,16 +1,16 @@
 --- @type Mq
-local mq = require('mq')
-local logger = require('utils/logging')
-local broadcast = require('broadcast/broadcast')
-local mqUtils = require('utils/mqhelpers')
-local common = require('lib/common/common')
-local state = require('lib/spells/state')
-local castReturnTypes = require('lib/spells/types/castreturn')
-local config = require('modules/debuffer/config')
-local repository = require('modules/debuffer/types/debuffRepository')
+local mq = require 'mq'
+local logger = require 'utils/logging'
+local broadcast = require 'broadcast/broadcast'
+local mqUtils = require 'utils/mqhelpers'
+local common = require 'lib/common/common'
+local state = require 'lib/spells/state'
+local castReturnTypes = require 'lib/spells/types/castreturn'
+local config = require 'modules/debuffer/config'
+local repository = require 'modules/debuffer/types/debuffRepository'
 
 --- @type Timer
-local timer = require('lib/timer')
+local timer = require 'lib/timer'
 
 local cleanTimer = timer:new(60)
 

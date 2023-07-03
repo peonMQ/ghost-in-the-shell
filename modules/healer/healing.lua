@@ -1,14 +1,14 @@
 --- @type Mq
-local mq = require('mq')
-local logger = require('utils/logging')
-local plugin = require('utils/plugins')
-local mqUtils = require('utils/mqhelpers')
-local common = require('lib/common/common')
-local state = require('lib/spells/state')
-local numberUtils = require('lib/numberutils')
-local config = require('modules/healer/config')
+local mq = require 'mq'
+local logger = require 'utils/logging'
+local plugin = require 'utils/plugins'
+local mqUtils = require 'utils/mqhelpers'
+local common = require 'lib/common/common'
+local state = require 'lib/spells/state'
+local numberUtils = require 'lib/numberutils'
+local config = require 'modules/healer/config'
 ---@type Timer
-local timer = require('lib/timer')
+local timer = require 'lib/timer'
 
 
 ---@type Timer[]

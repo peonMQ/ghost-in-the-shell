@@ -1,11 +1,11 @@
 --- @type Mq
-local mq = require('mq')
-local mqutil = require('utils/mqhelpers')
-local configLoader = require('utils/configloader')
+local mq = require 'mq'
+local mqutil = require 'utils/mqhelpers'
+local configLoader = require 'utils/configloader'
 --- @type MQEvent
-local mqEvents = require('lib/mqevent')
+local mqEvents = require 'lib/mqevent'
 --- @type Timer
-local timer = require('lib/timer')
+local timer = require 'lib/timer'
 
 ---@class CommonConfig
 local defaultConfig = {

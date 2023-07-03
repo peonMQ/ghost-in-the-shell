@@ -1,17 +1,17 @@
 --- @type Mq
-local mq = require('mq')
-local logger = require('utils/logging')
-local debugUtils = require('utils/debug')
-local plugins = require('utils/plugins')
-local moveUtils = require('lib/moveutils')
-local timer = require('lib/timer')
-local merchant = require('modules/looter/merchant')
+local mq = require 'mq'
+local logger = require 'utils/logging'
+local debugUtils = require 'utils/debug'
+local plugins = require 'utils/plugins'
+local moveUtils = require 'lib/moveutils'
+local timer = require 'lib/timer'
+local merchant = require 'modules/looter/merchant'
 --- @type LootItem
-local item = require('modules/looter/types/lootitem')
+local item = require 'modules/looter/types/lootitem'
 ---@type LooterStates
-local looterStates = require('modules/looter/types/looterState')
+local looterStates = require 'modules/looter/types/looterState'
 --- @type Repository
-local repository = require('modules/looter/repository')
+local repository = require 'modules/looter/repository'
 
 local state = looterStates.Idle
 

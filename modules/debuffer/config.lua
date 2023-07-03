@@ -1,8 +1,8 @@
 --- @type Mq
-local mq = require('mq')
-local configLoader = require('utils/configloader')
+local mq = require 'mq'
+local configLoader = require 'utils/configloader'
 ---@type DeBuffSpell
-local debuffSpell = require('modules/debuffer/types/debuffspell')
+local debuffSpell = require 'modules/debuffer/types/debuffspell'
 
 
 ---@type DeBuffSpell[]

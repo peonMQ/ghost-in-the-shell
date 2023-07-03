@@ -1,8 +1,8 @@
-local configLoader = require('utils/configloader')
+local configLoader = require 'utils/configloader'
 ---@type Spell
-local spell = require('lib/spells/types/spell')
+local spell = require 'lib/spells/types/spell'
 ---@type PetSpell
-local petSpell = require('modules/pet/types/petspell')
+local petSpell = require 'modules/pet/types/petspell'
 
 ---@class PetConfig
 ---@field public PetAssistPercent integer

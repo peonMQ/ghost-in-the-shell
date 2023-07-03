@@ -1,15 +1,15 @@
 --- @type Mq
-local mq = require('mq')
-local logger = require('utils/logging')
-local mqUtils = require('utils/mqhelpers')
-local luautils = require('utils/lua-table')
-local enum = require('utils/stringenum')
-local common = require('lib/common/common')
-local commonConfig = require('lib/common/config')
-local state = require('lib/spells/state')
-local config = require('modules/nuker/config')
+local mq = require 'mq'
+local logger = require 'utils/logging'
+local mqUtils = require 'utils/mqhelpers'
+local luautils = require 'utils/lua-table'
+local enum = require 'utils/stringenum'
+local common = require 'lib/common/common'
+local commonConfig = require 'lib/common/config'
+local state = require 'lib/spells/state'
+local config = require 'modules/nuker/config'
 ---@type Timer
-local timer = require('lib/timer')
+local timer = require 'lib/timer'
 
 local next = next
 

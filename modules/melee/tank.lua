@@ -1,9 +1,9 @@
 --- @type Mq
-local mq = require('mq')
-local logger = require('utils/logging')
-local mqUtils = require('utils/mqhelpers')
-local common = require('lib/common/common')
-local doMeleeDps = require('modules/melee/melee')
+local mq = require 'mq'
+local logger = require 'utils/logging'
+local mqUtils = require 'utils/mqhelpers'
+local common = require 'lib/common/common'
+local doMeleeDps = require 'modules/melee/melee'
 
 local function canTargetOfftankAdd() 
   local mainAssist = common.GetMainAssist()

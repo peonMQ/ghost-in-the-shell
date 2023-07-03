@@ -1,8 +1,8 @@
 --- @type ImGui
 local imgui = require 'ImGui'
 
-local renderCombobox = require('ui/combobox')
-local worldZones = require('ui/zones')
+local renderCombobox = require 'ui/combobox'
+local worldZones = require 'ui/zones'
 
 ---@type Continent[]
 local continents = {}
