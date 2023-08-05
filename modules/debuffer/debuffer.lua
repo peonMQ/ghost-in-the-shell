@@ -50,7 +50,7 @@ local function doDebuffs()
 
   if cleanTimer:IsComplete() then
     repository.Clean()
-    cleanTimer = cleanTimer:new(60)
+    cleanTimer:Reset()
   end
 
   for key, debuffSpell in pairs(config.DeBuffs) do
