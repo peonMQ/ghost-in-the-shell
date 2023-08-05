@@ -105,7 +105,7 @@ local function doMezz()
 
   if cleanTimer:IsComplete() then
     repository.Clean()
-    cleanTimer = cleanTimer:new(60)
+    cleanTimer:Reset()
   end
 end
 
