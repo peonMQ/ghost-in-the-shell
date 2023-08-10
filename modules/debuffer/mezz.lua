@@ -80,24 +80,25 @@ local function doMezz()
                                             :WithinRadius(config.Radius).filter
   local mezzTargetCount = mq.TLO.SpawnCount(spawnQueryFilter)()
 
+  var mezzName = mezzSpawn.Name()
   for i=1, mezzTargetCount do
     local mezzSpawn = mq.TLO.NearestSpawn(i, spawnQueryFilter)
-    if immunities and immunities[mezzSpawn.Name()] then
-      logger.Info("[%s] is immune to <%s>, skipping.", mezzSpawn.Name(), mezzSpell.Name)
+    if immunities and immunities[mezzName] then
+      logger.Info("[%s] is immune to <%s>, skipping.", mezzName, mezzSpell.Name)
     elseif maTargetId ~= mezzSpawn.ID() and mqUtils.IsMaybeAggressive(mezzSpawn --[[@as spawn]]) then
       if mqUtils.EnsureTarget(mezzSpawn.ID()) and mezzSpell:CanCastOnTarget(mq.TLO.Target --[[@as target]]) then
-        logger.Info("Attempting to mezz [%s] with <%s>.", mezzSpawn.Name(), mezzSpell.Name)
+        logger.Info("Attempting to mezz [%s] with <%s>.", mezzName, mezzSpell.Name)
         local castResult = mezzSpell:Cast(checkInterrupt)
         if castResult == castReturnTypes.Immune then
-          immunities[mezzSpawn.Name()] = "immune"
+          immunities[mezzName] = "immune"
         elseif castResult == castReturnTypes.Resisted then
-          logger.Info("[%s] resisted <%s> %d times, retrying next run.", mezzSpawn.Name(), mezzSpell.Name, mezzSpell.MaxResists)
+          logger.Info("[%s] resisted <%s> %d times, retrying next run.", mezzName, mezzSpell.Name, mezzSpell.MaxResists)
         elseif castResult == castReturnTypes.Success then
-          logger.Info("[%s] mezzed with <%s>.", mezzSpawn.Name(), mezzSpell.Name)
-          broadcast.Success("[%s] mezzed with <%s>.", mezzSpawn.Name(), mezzSpell.Name)
+          logger.Info("[%s] mezzed with <%s>.", mezzName, mezzSpell.Name)
+          broadcast.Success("[%s] mezzed with <%s>.", mezzName, mezzSpell.Name)
           repository.Insert(mezzSpawn.ID(), mezzSpell)
         else
-          logger.Info("[%s] <%s> mezz failed with. [%s]", mezzSpawn.Name(), mezzSpell.Name, castResult)
+          logger.Info("[%s] <%s> mezz failed with. [%s]", mezzName, mezzSpell.Name, castResult)
         end
       end
     end
