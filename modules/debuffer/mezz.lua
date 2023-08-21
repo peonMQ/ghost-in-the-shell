@@ -80,9 +80,9 @@ local function doMezz()
                                             :WithinRadius(config.Radius).filter
   local mezzTargetCount = mq.TLO.SpawnCount(spawnQueryFilter)()
 
-  var mezzName = mezzSpawn.Name()
   for i=1, mezzTargetCount do
     local mezzSpawn = mq.TLO.NearestSpawn(i, spawnQueryFilter)
+    local mezzName = mezzSpawn.Name()
     if immunities and immunities[mezzName] then
       logger.Info("[%s] is immune to <%s>, skipping.", mezzName, mezzSpell.Name)
     elseif maTargetId ~= mezzSpawn.ID() and mqUtils.IsMaybeAggressive(mezzSpawn --[[@as spawn]]) then
