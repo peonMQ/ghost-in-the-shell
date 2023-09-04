@@ -50,7 +50,7 @@ local function doNuking()
   local nukeSpell = nil
   for i=1, #config.CurrentLineup do
     local nuke = config.Nukes[i]
-    if mq.TLO.Me.SpellReady(nuke.Name)() then
+    if nuke:MemSpell() and mq.TLO.Me.SpellReady(nuke.Name)() then
       nukeSpell = nuke
       break
     end
