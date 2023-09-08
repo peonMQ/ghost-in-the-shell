@@ -278,6 +278,8 @@ local petWeapons = {
   activate = function(state) bci.ExecuteAllCommand('/weaponizepet') end,
 }
 
+
+local exportInventoryScriptExists = filetutils.Exists(mq.luaDir.."/inventory/export.lua")
 ---@type ActionButton
 local quit = {
   active = false,
@@ -288,6 +290,9 @@ local quit = {
     bci.ExecuteAllCommand('/lua stop', true)
     bci.ExecuteAllCommand('/twist off', true)
     bci.ExecuteAllCommand('/camp desktop', true)
+    if exportInventoryScriptExists then
+      bci.ExecuteAllCommand('/lua run inventory/export')
+    end
   end,
 }
 
