@@ -8,12 +8,14 @@ local healSpell = require 'modules/healer/types/healspell'
 ---@field public MainTankEmergencyHeal HealSpell|nil
 ---@field public GroupHeal HealSpell|nil
 ---@field public NetbotsHeal HealSpell|nil
+---@field public NetbotsHot HealSpell|nil
 ---@field public AEGroupHeal HealSpell|nil
 local defaultConfig = {
   MainTankHeal = {},
   MainTankEmergencyHeal = {},
   GroupHeal = {},
   NetbotsHeal = {},
+  NetbotsHot = {},
   AEGroupHeal = {}
 }
 

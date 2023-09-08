@@ -3,6 +3,7 @@ local mq = require 'mq'
 ---@type Spell
 local spell = require 'lib/spells/types/spell'
 local logger = require 'utils/logging'
+local luaUtils = require 'utils/lua-table'
 
 ---@class HealSpell : Spell
 ---@field public Id integer
@@ -82,6 +83,24 @@ function HealSpell:CanCastOnGroupMember(groupMember)
   end
 
   return self:CanCastOnSpawn(groupMember)
+end
+
+---@param netbot netbot
+---@return boolean
+function HealSpell:WillStack(netbot)
+  local netbotBuffs = luaUtils.Split(netbot.Buff(), "%s")
+  for _, buffId in ipairs(netbotBuffs) do
+    if self.Id == tonumber(buffId) then
+      return false
+    end
+
+    local buffSpell = mq.TLO.Spell(buffId)
+    if buffSpell() and not mq.TLO.Spell(self.Id).WillStack(buffSpell.Name())() then
+      return false
+    end
+  end
+
+  return true
 end
 
 return HealSpell

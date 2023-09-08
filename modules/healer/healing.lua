@@ -169,11 +169,54 @@ local function checkAEGroupHeal()
   end
 end
 
+local function checkHotNetBots()
+  if plugin.IsLoaded("mq2netbots") == false then
+    logger.Debug("mq2netbots is not loaded")
+    return
+  end
+
+  local spell = config.NetbotsHot
+  if not spell then
+    logger.Debug("No NetbotsHot.")
+    return
+  end
+
+  if mq.TLO.NetBots.Counts() < 1 then
+    logger.Debug("No Nebots clients.")
+    return
+  end
+
+  local lowestMember = {
+    id = 0,
+    percentHP = 100
+  }
+
+  for i=1,mq.TLO.NetBots.Counts() do
+    local name = mq.TLO.NetBots.Client(i)()
+    local netbot = mq.TLO.NetBots(name) --[[@as netbot]]
+    if spell:CanCastOnNetBot(netbot) and spell:WillStack(netbot) and (not netbotTimers[netbot.ID()] or netbotTimers[netbot.ID()]:IsComplete()) then
+      if netbot.PctHPs() < lowestMember.percentHP then
+        lowestMember.id = netbot.ID()
+        lowestMember.percentHP = netbot.PctHPs()
+      end
+    end
+  end
+
+  if lowestMember.id > 0 then
+    netbotTimers[lowestMember.id] = timer:new(2)
+    if mqUtils.EnsureTarget(lowestMember.id) then
+      logger.Info("Hot netbot '%s' <%s>[%d]", spell.MQSpell.Name(), mq.TLO.Target.Name(), mq.TLO.Target.PctHPs())
+      spell:Cast(checkInterrupt)
+    end
+  end
+end
+
 local function doHealing()
   checkHealMainTank()
   checkAEGroupHeal()
   checkHealGroup()
   checkHealNetBots()
+  checkHotNetBots()
 end
 
 return doHealing
