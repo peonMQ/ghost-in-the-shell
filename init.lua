@@ -19,5 +19,5 @@ bci.ExecuteAllCommand('/lua run hud/pids')
 
 mq.cmd("/lua run hud")
 
-local command = string.format('/lua run %s', runningDir:GetRelativeToMQLuaPath("actionbar"))
+local command = string.format('/lua run %s', runningDir:GetRelativeToMQLuaPath("/actionbar"))
 mq.cmdf(command)

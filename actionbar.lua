@@ -119,7 +119,7 @@ local fuchsiaButton = {
 
 local function startBots(state)
   logger.Info("Start up bots.")
-  local command = string.format('/lua run %s', runningDir:GetRelativeToMQLuaPath("bot"))
+  local command = string.format('/lua run %s', runningDir:GetRelativeToMQLuaPath("/bot"))
   bci.ExecuteAllCommand(command)
   state.bots.active = true
   logger.Info("Bots initialized.")
@@ -127,7 +127,7 @@ end
 
 local function stopBots(state)
   logger.Info("stop bots.")
-  local command = string.format('/lua stop %s', runningDir:GetRelativeToMQLuaPath("bot"))
+  local command = string.format('/lua stop %s', runningDir:GetRelativeToMQLuaPath("/bot"))
   bci.ExecuteAllCommand(command)
   state.bots.active = false
   state.toggleCrowdControl.active = false
