@@ -303,8 +303,7 @@ local door = {
   tooltip = "Click Nearest Door",
   isDisabled = function (state) return false end,
   activate = function(state) 
-    bci.ExecuteAllCommand('/doortarget')
-    bci.ExecuteAllCommand('/click left door')
+    bci.ExecuteAllCommand('/multiline ; /doortarget; /click left door')
   end,
 }
 
