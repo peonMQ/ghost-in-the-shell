@@ -250,6 +250,15 @@ local coldNuke = {
 }
 
 ---@type ActionButton
+local resetNuke = {
+  active = false,
+  icon = icons.FA_MAGIC,
+  tooltip = "Reset nukes",
+  isDisabled = function (state) return not state.bots.active end,
+  activate = function(state) bci.ExecuteAllCommand('/clearlineup') end,
+}
+
+---@type ActionButton
 local bards = {"Marillion", "Renaissance", "Soundgarden", "Genesis"}
 local bard = {
   active = false,
@@ -421,6 +430,7 @@ local uiState = {
   magicNuke = magicNuke,
   fireNuke = fireNuke,
   coldNuke = coldNuke,
+  resetNuke = resetNuke,
   bard = bard,
   toggleCrowdControl = toggleCrowdControl,
   pacify = pacify,
@@ -548,6 +558,8 @@ local function actionbarUI()
   createButton(uiState.fireNuke, orangeButton)
   ImGui.SameLine()
   createButton(uiState.coldNuke, darkBlueButton)
+  ImGui.SameLine()
+  createButton(uiState.resetNuke, darkBlueButton)
   ImGui.SameLine()
   createButton(uiState.pacify, yellowButton)
   ImGui.SameLine()
