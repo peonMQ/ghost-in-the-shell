@@ -36,6 +36,7 @@ local function loadConfig()
   config.GroupHeal = reMapHealSpell(config.GroupHeal)
   config.NetbotsHeal = reMapHealSpell(config.NetbotsHeal)
   config.AEGroupHeal = reMapHealSpell(config.AEGroupHeal)
+  config.NetbotsHot = reMapHealSpell(config.NetbotsHot)
   return config
 end
 
