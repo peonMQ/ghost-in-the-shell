@@ -80,8 +80,8 @@ function Spell:MemSpell(cancelCallback)
     end
   end
 
-  local spelLReadyTimer = timer:new(10)
-  while not me.SpellReady(self.Name)() and spelLReadyTimer:IsRunning() do
+  local spellReadyTimer = timer:new(10)
+  while not me.SpellReady(self.Name)() and spellReadyTimer:IsRunning() do
     if cancelCallback and cancelCallback(self.Id) then
       self:Interrupt()
       return false
@@ -101,11 +101,6 @@ function Spell:CanCast()
   local me = mq.TLO.Me
   if me.Casting() then
     logger.Debug("Unable to cast <%s>, already casting <%s>.", self.Name, me.Casting.Name())
-    return false
-  end
-
-  if me.Gem(self.Name)() and not me.SpellReady(self.Name)() then
-    logger.Debug("Unable to cast <%s>, spell not ready.", self.Name)
     return false
   end
 
@@ -148,6 +143,11 @@ function Spell:Cast(cancelCallback)
   if not self:MemSpell(cancelCallback) then
     logger.Debug("Unable to cast <%s>, not in any spell gem and default spell gem is not defined.", self.Name)
     return castReturnTypes.NotMemmed
+  end
+
+  if not mq.TLO.Me.SpellReady(self.Name)() then
+    logger.Debug("Unable to cast <%s>, spell not ready.", self.Name)
+    return castReturnTypes.NotReady
   end
 
   state.recastTime = spell.RecastTime()
