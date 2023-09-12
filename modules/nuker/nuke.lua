@@ -3,6 +3,7 @@ local mq = require 'mq'
 local logger = require 'utils/logging'
 local mqUtils = require 'utils/mqhelpers'
 local luautils = require 'utils/lua-table'
+local debugUtils = require 'utils/debug'
 local enum = require 'utils/stringenum'
 local common = require 'lib/common/common'
 local commonConfig = require 'lib/common/config'
@@ -48,8 +49,7 @@ local function doNuking()
 
   -- might want to fetch nuke based on target type for 'Undead' and 'Summoned'
   local nukeSpell = nil
-  for i=1, #config.CurrentLineup do
-    local nuke = config.Nukes[i]
+  for _, nuke in ipairs(config.CurrentLineup) do
     if nuke:MemSpell() and mq.TLO.Me.SpellReady(nuke.Name)() then
       nukeSpell = nuke
       break
@@ -91,8 +91,9 @@ local function doNuking()
 end
 
 local function setNukeLineup(resistType)
+  logger.Info("Setting nuke lineup [%s]", resistType)
   if not validResistTypes[resistType] then
-    logger.Info("Lineup <%s> does not a valid resist type. Valid keys are: [%s]", resistType, luautils.GetKeysSorted(validResistTypes))
+    logger.Warn("Lineup <%s> does not a valid resist type. Valid keys are: [%s]", resistType, luautils.GetKeysSorted(validResistTypes))
     return
   end
 
@@ -107,6 +108,7 @@ local function setNukeLineup(resistType)
     local spell = mq.TLO.Spell(nuke.Id)
     if validResistTypes[spell.ResistType()] and spell.ResistType() == resistType then
       table.insert(newLineUp, nuke)
+      logger.Debug("Added [%s] to new linup.", spell.Name())
     end
   end
 
