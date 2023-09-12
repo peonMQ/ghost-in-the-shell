@@ -111,6 +111,10 @@ function BuffSpell:WillStack(netbot)
     end
   end
 
+  if #netbotBuffs == 15 then
+    return false
+  end
+
   return true
 end
 
