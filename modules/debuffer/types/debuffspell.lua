@@ -5,14 +5,29 @@ local logger = require 'utils/logging'
 local spell = require 'lib/spells/types/spell'
 local repository = require 'modules/debuffer/types/debuffRepository'
 
+---@param debuffSpell spell
+---@return number Recast time in milliseconds
+local function createRecastTimer(debuffSpell)
+  -- duration is number of ticks and one tick is 6 seconds
+  local spellDuration = debuffSpell.Duration()*6*1000
+  -- deduct cast time for refresh
+  spellDuration = spellDuration - debuffSpell.CastTime()
+  if debuffSpell.Category() == "Damage Over Time" then
+    return spellDuration
+  end
+
+  return spellDuration - 3000
+end
+
+
 ---@class DeBuffSpell : Spell
 ---@field public Id integer
 ---@field public Name string
 ---@field public DefaultGem integer
 ---@field public MinManaPercent integer
 ---@field public CategoryId integer
----@field public SubCategoryId integer
----@field public Duration integer
+---@field public SubCategoryId integer  
+---@field public RefreshTimer integer
 local DeBuffSpell = spell:base()
 
 ---@param name string
@@ -26,7 +41,7 @@ function DeBuffSpell:new (name, defaultGem, minManaPercent, giveUpTimer, resistR
   local o = setmetatable(spell:new(name, defaultGem, minManaPercent, giveUpTimer, resistRetries), self)
   o.CategoryId = o.MQSpell.CategoryID()
   o.SubCategoryId = o.MQSpell.SubcategoryID()
-  o.Duration = o.MQSpell.Duration()*6*1000 - 3000 - o.MQSpell.CastTime() -- Set duration to what refresh timer should be to refresh the debuff without fading
+  o.RefreshTimer = createRecastTimer(o.MQSpell) -- Set duration to what refresh timer should be to refresh the debuff without fading
   return o --[[@as DeBuffSpell]]
 end
 

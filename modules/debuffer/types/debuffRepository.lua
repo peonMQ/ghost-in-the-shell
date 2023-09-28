@@ -62,7 +62,7 @@ end
 ---@param spawnId integer
 ---@param debuffSpell DeBuffSpell
 local function insert(spawnId, debuffSpell)
-  local insertStatement = string.format("INSERT INTO debuffs(spawnId, spellId, spellCategoryId, spellSubCategoryId, expireTimeStamp) VALUES(%d, %d, %d, %d, %d)", spawnId, debuffSpell.Id, debuffSpell.CategoryId, debuffSpell.SubCategoryId, mq.gettime() + debuffSpell.Duration)
+  local insertStatement = string.format("INSERT INTO debuffs(spawnId, spellId, spellCategoryId, spellSubCategoryId, expireTimeStamp) VALUES(%d, %d, %d, %d, %d)", spawnId, debuffSpell.Id, debuffSpell.CategoryId, debuffSpell.SubCategoryId, mq.gettime() + debuffSpell.RefreshTimer)
   local retries = 0
   local result = db:exec(insertStatement)
   while result ~= 0 and retries < 20 do
