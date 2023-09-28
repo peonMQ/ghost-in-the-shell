@@ -26,7 +26,7 @@ function DeBuffSpell:new (name, defaultGem, minManaPercent, giveUpTimer, resistR
   local o = setmetatable(spell:new(name, defaultGem, minManaPercent, giveUpTimer, resistRetries), self)
   o.CategoryId = o.MQSpell.CategoryID()
   o.SubCategoryId = o.MQSpell.SubcategoryID()
-  o.Duration = o.MQSpell.Duration()*6
+  o.Duration = o.MQSpell.Duration()*6*1000 - 3000 - o.MQSpell.CastTime() -- Set duration to what refresh timer should be to refresh the debuff without fading
   return o --[[@as DeBuffSpell]]
 end
 
@@ -58,7 +58,7 @@ function DeBuffSpell:CanCastOnTarget(target)
 
   local currentDebuffs = repository.GetDebuffs(target.ID(), self)
   for _, currentDebuff in pairs(currentDebuffs) do
-    if currentDebuff.expireTimeStamp < os.time() then
+    if currentDebuff.expireTimeStamp < mq.gettime() then
       return true
     elseif currentDebuff.spellId == self.Id then
       return false

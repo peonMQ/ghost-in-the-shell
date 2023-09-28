@@ -18,7 +18,7 @@ local defaultConfig = {
 ---@return table
 local function reMapDeBuffspell(debuffSpells)
   local mappedBuffspells = {}
-  for key, value in pairs(debuffSpells) do
+  for _, value in ipairs(debuffSpells) do
     local spell = debuffSpell:new(value.Name, value.DefaultGem, value.MinManaPercent, value.GiveUpTimer, value.MaxResists)
     table.insert(mappedBuffspells, spell)
   end

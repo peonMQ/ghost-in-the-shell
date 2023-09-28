@@ -27,11 +27,11 @@ require('lib/common/cleanBuffs')
 local classActions = {
   bard = {doBuffs, doMeleeDps},
   cleric = {doBuffs, doHealing, doNuking, doMeleeDps, doManaStone, doMeditate},
-  druid = {doBuffs, doHealing, doNuking, doMeleeDps, doManaStone, doMeditate},
+  druid = {doBuffs, doDeBuffs, doHealing, doNuking, doMeleeDps, doManaStone, doMeditate},
   enchanter = {doMezz, doBuffs, doDeBuffs, doMeleeDps, doNuking, doManaStone, doMeditate},
   magician = {doBuffs, doDeBuffs, doPet, doWeaponize, doNuking, doMeleeDps, doManaStone, doMeditate},
   monk = {doBuffs, function() doMeleeDps(combatActions.DoPunchesAndKicks) end},
-  necromancer = {doBuffs, doPet, doWeaponize, doNuking, doMeleeDps, doManaStone, doMeditate},
+  necromancer = {doBuffs, doDeBuffs, doPet, doWeaponize, doNuking, doMeleeDps, doManaStone, doMeditate},
   paladin = {doBuffs, doHealing, doNuking, doMeleeDps, doMeditate},
   ranger = {doBuffs, doHealing, doNuking, doMeleeDps, doMeditate},
   rogue = {doBuffs, function() doMeleeDps(combatActions.DoBackStab) end},

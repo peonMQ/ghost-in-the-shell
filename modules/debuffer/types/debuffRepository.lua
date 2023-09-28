@@ -31,7 +31,7 @@ local function clean()
     DELETE FROM debuffs WHERE expireTimeStamp < %d
   ]]
 
-  local deleteSQL = sql:format(os.time()-20)
+  local deleteSQL = sql:format(mq.gettime() - 20)
   local retries = 0
   local result = db:exec(deleteSQL)
   while result ~= 0 and retries < 20 do
@@ -62,7 +62,7 @@ end
 ---@param spawnId integer
 ---@param debuffSpell DeBuffSpell
 local function insert(spawnId, debuffSpell)
-  local insertStatement = string.format("INSERT INTO debuffs(spawnId, spellId, spellCategoryId, spellSubCategoryId, expireTimeStamp) VALUES(%d, %d, %d, %d, %d)", spawnId, debuffSpell.Id, debuffSpell.CategoryId, debuffSpell.SubCategoryId, os.time() + debuffSpell.Duration)
+  local insertStatement = string.format("INSERT INTO debuffs(spawnId, spellId, spellCategoryId, spellSubCategoryId, expireTimeStamp) VALUES(%d, %d, %d, %d, %d)", spawnId, debuffSpell.Id, debuffSpell.CategoryId, debuffSpell.SubCategoryId, mq.gettime() + debuffSpell.Duration)
   local retries = 0
   local result = db:exec(insertStatement)
   while result ~= 0 and retries < 20 do

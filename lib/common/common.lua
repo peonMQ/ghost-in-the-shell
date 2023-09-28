@@ -17,8 +17,8 @@ local function getMainTank()
     logger.Debug("No MainTanks defined.")
     return nil
  end
- 
- for key, maintank in pairs(config.MainTanks) do
+
+ for _, maintank in ipairs(config.MainTanks) do
   local netbot = mq.TLO.NetBots(maintank)
   if netbot.ID() ~= "NULL" and netbot.InZone() ~= "NULL" then
     return maintank
@@ -38,7 +38,7 @@ local function amIOfftank()
   if mainTank == mq.TLO.Me.Name() then
     return false
   end
- 
+
   for i=1, #config.MainTanks do
     if config.MainTanks[i] == mainTank and config.MainTanks[i+1] == mq.TLO.Me.Name() then
       local netbot = mq.TLO.NetBots(config.MainTanks[i])
@@ -64,8 +64,8 @@ local function getMainAssist()
     logger.Debug("No MainAssists defined.")
     return nil
  end
- 
- for key, mainAssist in pairs(config.MainAssists) do
+
+ for _, mainAssist in ipairs(config.MainAssists) do
   local netbot = mq.TLO.NetBots(mainAssist)
   if netbot.ID() ~= "NULL" and netbot.InZone() ~= "NULL" then
     return mainAssist

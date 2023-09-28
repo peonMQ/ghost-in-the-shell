@@ -53,7 +53,7 @@ local function doDebuffs()
     cleanTimer:Reset()
   end
 
-  for key, debuffSpell in pairs(config.DeBuffs) do
+  for _, debuffSpell in ipairs(config.DeBuffs) do
     if debuffSpell:CanCast() then
       local spell = mq.TLO.Spell(debuffSpell.Id)
       if spell.SpellType() == "Detrimental" then
