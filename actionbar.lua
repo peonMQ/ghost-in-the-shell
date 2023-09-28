@@ -149,7 +149,7 @@ local advFollowZone = nil
 ---@type ActionButton
 local advFollow = {
   active = false,
-  icon = icons.MD_DIRECTIONS_CAR,
+  icon = icons.MD_DIRECTIONS_RUN,
   tooltip = "Toggle AdvPath Follow 'Me'",
   isDisabled = function (state) return not state.bots.active or not plugins.IsLoaded("MQ2AdvPath") end,
   activate = function(state)
@@ -168,7 +168,7 @@ local advFollow = {
 ---@type ActionButton
 local navFollow = {
   active = false,
-  icon = icons.FA_PLANE, -- MD_DIRECTIONS_RUN
+  icon = icons.MD_MY_LOCATION, -- MD_DIRECTIONS_RUN
   tooltip = "Toggle Nav to 'Me'",
   isDisabled = function (state) return not state.bots.active or not plugins.IsLoaded("MQ2Nav") end,
   activate = function(state) 
@@ -405,7 +405,7 @@ local selectTravelTo = false
 ---@type ActionButton
 local easyfind = {
   active = false,
-  icon = icons.MD_DIRECTIONS_RUN,
+  icon = icons.MD_DIRECTIONS_CAR,
   tooltip = "Travel Too",
   isDisabled = function (state) return false end,
   activate = function(state)
