@@ -40,6 +40,17 @@ local function canDestroyItem(itemId, itemName)
   return itemToDestroy.DoDestroy, itemToDestroy
 end
 
+---@param itemId integer
+---@return number
+local function numberOfStacksToKeep(itemId)
+  local foundItem, stackItem = repository:tryGet(itemId)
+  if not foundItem then
+    return 9999
+  end
+
+  return stackItem.NumberOfStacks or 9999
+end
+
 local function alreadyHaveLoreItem(item)
   if not item.Lore() then
     return false
@@ -65,12 +76,14 @@ local function canLootItem(item)
   end
 
   if  mq.TLO.Me.FreeInventory() < 1 then
-    if item.Stackable() and item.Stack() < item.FreeStack() then
+    if item.Stackable() and item.FreeStack() > 0 then
       return true
     end
 
     logger.Debug("My inventory is full!", item.Name())
     mq.cmd("/beep")
+    return false
+  elseif item.Stackable() and item.Stacks() >= numberOfStacksToKeep(item.ID()) then
     return false
   end
 

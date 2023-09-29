@@ -19,7 +19,7 @@ local function loadStore()
   local loadedConfig = jsonUtil.LoadJSON(filePath)
   local data = {}
   for key, value in pairs(loadedConfig) do
-    table.insert(data, item:new(value.Id, value.Name, value.DoSell, value.DoDestroy))
+    table.insert(data, item:new(value.Id, value.Name, value.DoSell, value.DoDestroy, value.NumberOfStacks))
   end
 
   return data
