@@ -118,22 +118,6 @@ function Spell:Cast(cancelCallback)
   self:FlushCastEvents()
   state.Reset(self.GiveUpTimer)
 
-  if (mq.TLO.Window("SpellBookWnd").Open()) then
-    mq.cmd("/keypress spellbook")
-  end
-
-  if (mq.TLO.Me.Ducking()) then
-    mq.cmd("/keypress duck")
-  end
-
-  if (mq.TLO.Me.Sitting()) then
-    mq.cmd("/stand")
-  end
-
-  if mq.TLO.Me.Animation()  == 16 then
-    mq.cmd("/stand")
-  end
-
   local spell = mq.TLO.Spell(self.Id)
   if(mq.TLO.Me.CurrentMana() < spell.Mana()) then
     logger.Debug("Unable to cast <%s>, not enough mana.", self.Name)
@@ -148,6 +132,22 @@ function Spell:Cast(cancelCallback)
   if not mq.TLO.Me.SpellReady(self.Name)() then
     logger.Debug("Unable to cast <%s>, spell not ready.", self.Name)
     return castReturnTypes.NotReady
+  end
+
+  if (mq.TLO.Window("SpellBookWnd").Open()) then
+    mq.cmd("/keypress spellbook")
+  end
+
+  if (mq.TLO.Me.Ducking()) then
+    mq.cmd("/keypress duck")
+  end
+
+  if (mq.TLO.Me.Sitting()) then
+    mq.cmd("/stand")
+  end
+
+  if mq.TLO.Me.Animation()  == 16 then
+    mq.cmd("/stand")
   end
 
   state.recastTime = spell.RecastTime()
