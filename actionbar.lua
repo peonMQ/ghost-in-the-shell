@@ -323,7 +323,7 @@ local pacify = {
   tooltip = "Pacify Target",
   isDisabled = function (state) return false end,
   activate = function(state)
-    bci.ExecuteCommand('/multiline ; /target id '..mq.TLO.Target.ID()..'; /cast  "Pacify" ', {"Ithildin"})
+    bci.ExecuteCommand('/multiline ; /target id '..mq.TLO.Target.ID()..'; /cast  "Wake of Tranquility" ', {"Ithildin"})
   end,
 }
 
