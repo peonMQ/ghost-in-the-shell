@@ -30,6 +30,12 @@ function SpawnSearchFilter:IsPC()
 end
 
 ---@return SpawnSearchFilter
+function SpawnSearchFilter:IsBanker()
+  self.filter = string.format('%s banker', self.filter)
+  return self;
+end
+
+---@return SpawnSearchFilter
 function SpawnSearchFilter:HasLineOfSight()
   self.filter = string.format('%s los', self.filter)
   return self;
