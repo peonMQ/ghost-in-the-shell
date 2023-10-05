@@ -9,7 +9,7 @@ local spell = require 'lib/spells/types/spell'
 ---@field public DefaultGem integer
 ---@field public MinManaPercent integer
 ---@field public GiveUpTimer integer
----@field public ResistsType integer
+---@field public ResistType string
 ---@field public DPS float
 local NukeSpell = spell:base()
 
