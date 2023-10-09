@@ -10,6 +10,7 @@ local doBuffs = require 'modules/buffer/buffer'
 local doDeBuffs = require 'modules/debuffer/debuffer'
 local doMezz = require 'modules/debuffer/mezz'
 local doHealing = require 'modules/healer/healing'
+local doCuring = require 'modules/curer/curer'
 local combatActions = require 'modules/melee/combatactions'
 local doMeleeDps = require 'modules/melee/melee'
 local doNuking = require 'modules/nuker/nuke'
@@ -26,7 +27,7 @@ require('lib/common/cleanBuffs')
 ---@type table<eqclass, fun()[]>
 local classActions = {
   bard = {doBuffs, doMeleeDps},
-  cleric = {doBuffs, doHealing, doNuking, doMeleeDps, doManaStone, doMeditate},
+  cleric = {doBuffs, doHealing, doNuking, doMeleeDps, doManaStone, doMeditate, doCuring},
   druid = {doBuffs, doDeBuffs, doHealing, doNuking, doMeleeDps, doManaStone, doMeditate},
   enchanter = {doMezz, doBuffs, doDeBuffs, doMeleeDps, doNuking, doManaStone, doMeditate},
   magician = {doBuffs, doDeBuffs, doPet, doWeaponize, doNuking, doMeleeDps, doManaStone, doMeditate},
@@ -36,7 +37,7 @@ local classActions = {
   ranger = {doBuffs, doHealing, doNuking, doMeleeDps, doMeditate},
   rogue = {doBuffs, function() doMeleeDps(combatActions.DoBackStab) end},
   shadowknight = {doBuffs, doPet, doNuking, doMeleeDps, doMeditate},
-  shaman = {doBuffs, doDeBuffs, doHealing, doPet, doWeaponize, doNuking, doMeleeDps, doManaStone, doManaConversion, doMeditate},
+  shaman = {doBuffs, doDeBuffs, doHealing, doPet, doWeaponize, doNuking, doMeleeDps, doManaStone, doManaConversion, doMeditate, doCuring},
   warrior = {doBuffs, doMeleeDps},
   wizard = {doBuffs, doNuking, doMeleeDps, doManaStone, doManaConversion, doMeditate}
 }
@@ -118,6 +119,11 @@ local function createAliases()
 end
 
 createAliases()
+
+if mq.TLO.Me.GM() then
+  logger.Error("Cannot run GM character as BOT...")
+  return
+end
 
 local botActions = classActions[mq.TLO.Me.Class():lower()] or {}
 

@@ -129,6 +129,10 @@ function Spell:Cast(cancelCallback)
     return castReturnTypes.NotMemmed
   end
 
+  if mq.TLO.Me.SpellInCooldown() then
+    mq.delay(2500, function() return not mq.TLO.Me.SpellInCooldown() end)
+  end
+
   if not mq.TLO.Me.SpellReady(self.Name)() then
     logger.Debug("Unable to cast <%s>, spell not ready.", self.Name)
     return castReturnTypes.NotReady
