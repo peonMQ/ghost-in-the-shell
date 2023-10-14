@@ -350,8 +350,7 @@ local instance = {
   tooltip = "Enter Instance",
   isDisabled = function (state) return false end,
   activate = function(state)
-    bci.ExecuteAllCommand('/target id '..mq.TLO.Target.ID())
-    bci.ExecuteAllCommand('/say ready', true)
+    bci.ExecuteAllCommand('/multiline ; /target id '..mq.TLO.Target.ID()..'; /say ready', true)
   end,
 }
 
