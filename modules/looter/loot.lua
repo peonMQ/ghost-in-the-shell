@@ -165,7 +165,6 @@ local function lootCorpse()
       logger.Debug("Done looting slot <%d>", i)
     end
   end
-  logger.Debug("Ending loot on <%s>, no items left: %d", mq.TLO.Target.Name(), corpse.Items())
 
   if corpse.Items() > 0 then
     mq.cmd("/keypress /")
@@ -180,8 +179,10 @@ local function lootCorpse()
 
   if mq.TLO.Corpse.Open() then
     mq.cmd("/notify LootWnd DoneButton leftmouseup")
-    mq.delay("1s", function() return mq.TLO.Window("LootWnd").Open() end)
+    mq.delay("1s", function() return not mq.TLO.Corpse.Open()  end)
   end
+
+  broadcast.Success("Ending loot on <%s>, # of items left: %d", mq.TLO.Target.Name(), corpse.Items() or 0)
 end
 
 local function lootNearestCorpse()
@@ -236,7 +237,7 @@ local function markItemForDestroying()
 
   item.DoDestroy = true
   repository:upsert(item)
-  logger.Debug("Marked <%d:%s> for destroying", item.Id, item.Name)
+  logger.Info("Marked <%d:%s> for destroying", item.Id, item.Name)
 end
 
 local function createAliases()
