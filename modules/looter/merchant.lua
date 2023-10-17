@@ -8,7 +8,7 @@ local timer = require 'lib/timer'
 plugin.EnsureIsLoaded("mq2nav")
 
 local function findMerchant()
-  local merchantSpawn = mq.TLO.Spawn("Merchant")
+  local merchantSpawn = mq.TLO.NearestSpawn("Merchant radius 100")
   local nav = mq.TLO.Navigation
 
   if not merchantSpawn() or not nav.PathExists("id "..merchantSpawn.ID()) then
