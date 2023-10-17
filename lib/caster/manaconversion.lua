@@ -6,10 +6,13 @@ local configLoader = require 'utils/configloader'
 local spell = require 'lib/spells/types/spell'
 
 ---@class CommonConfig
+---@field Spell Spell
+---@field StartManaPct number
+---@field StopHPPct number
 local defaultConfig = {
   Spell = {},
   StartManaPct = 90,
-  StopHPPct = 1
+  StopHPPct = 10
 }
 
 local next = next
