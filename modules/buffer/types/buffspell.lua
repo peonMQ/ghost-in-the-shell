@@ -67,6 +67,15 @@ function BuffSpell:CanCast()
     return false
   end
 
+  for i=1,4 do
+    local reagentId = buffSpell.ReagentID(i)()
+    local reagentCount = buffSpell.ReagentCount(i)()
+    if reagentId > 0 and mq.TLO.FindItemCount(reagentId)() < reagentCount then
+      logger.Warn("Insuffiecient reagents with id <%d>, need at least <%d>", reagentId, reagentCount)
+      return false
+    end
+  end
+
   return true
 end
 
