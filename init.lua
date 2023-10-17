@@ -15,7 +15,7 @@ if not bci then
   return
 end
 
-bci.ExecuteAllCommand('/lua run hud/pids')
+bci.ExecuteAllWithSelfCommand('/lua run hud/pids')
 
 mq.cmd("/lua run hud")
 

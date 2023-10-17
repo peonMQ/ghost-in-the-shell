@@ -125,21 +125,21 @@ local function lootItem(slotNum)
       mq.cmdf("/destroy")
       mq.delay(100, function() return cursor() == nil end)
       if cursor() == nil then
-        broadcast.Success("Destroyed %s from slot# %s", item.Name, slotNum)
+        broadcast.Success({}, "Destroyed %s from slot# %s", item.Name, slotNum)
       else
-        broadcast.Fail("Destroying %s from slot# %s", item.Name, slotNum)
+        broadcast.Fail({}, "Destroying %s from slot# %s", item.Name, slotNum)
       end
     end
   else
     mqUtils.ClearCursor()
-    broadcast.Success("Looted %s from slot# %s", item.Name, slotNum)
+    broadcast.Success({}, "Looted %s from slot# %s", item.Name, slotNum)
   end
 end
 
 local function lootCorpse()
   local target = mq.TLO.Target
   if not target() or target.Type() ~= "Corpse" then
-    broadcast.Fail("No corpse on target.")
+    broadcast.Fail({}, "No corpse on target.")
     return
   end
 
@@ -148,7 +148,7 @@ local function lootCorpse()
   local corpse = mq.TLO.Corpse
   mq.delay("1s", function() return corpse.Open() and corpse.Items() > 0 end)
   if not corpse.Open() then
-    broadcast.Fail("Unable to open corpse for looting.")
+    broadcast.Fail({}, "Unable to open corpse for looting.")
     return
   end
 
@@ -182,7 +182,7 @@ local function lootCorpse()
     mq.delay("1s", function() return not mq.TLO.Corpse.Open()  end)
   end
 
-  broadcast.Success("Ending loot on <%s>, # of items left: %d", mq.TLO.Target.Name(), corpse.Items() or 0)
+  broadcast.Success({}, "Ending loot on <%s>, # of items left: %d", mq.TLO.Target.Name(), corpse.Items() or 0)
 end
 
 local function lootNearestCorpse()

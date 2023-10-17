@@ -98,10 +98,6 @@ local function resetPet()
   config.CurrentPetTarget = 0
 end
 
-local function logPetTarget()
-  broadcast.Warn("%s current pet target ID is %d", mq.TLO.Me.Name(), config.CurrentPetTarget)
-end
-
 local function setActivePetSpell(newPetSpell, newSummonFocusItem)
   if not newPetSpell then
     logger.Warn("New pet spell is <nil>")
@@ -206,7 +202,6 @@ local function createAliases()
   mq.bind("/summonpet", function() state = petstates.SummonPet end)
   mq.bind("/disbandpet", disbandPet)
   mq.bind('/resetpet', resetPet)
-  mq.bind('/pettarget', logPetTarget)
 end
 
 createAliases()

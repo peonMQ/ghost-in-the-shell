@@ -124,9 +124,9 @@ local function doCrowdControl(toggle)
 
   config.DoCrowdControl = boolParam[toggle:lower()]
   if not config.DoCrowdControl then
-    broadcast.Error("%s is no longer doing crowd control", mq.TLO.Me.Name())
+    broadcast.Error({}, "%s is no longer doing crowd control", mq.TLO.Me.Name())
   else
-    broadcast.Success("%s is now doing crowd control", mq.TLO.Me.Name())
+    broadcast.Success({}, "%s is now doing crowd control", mq.TLO.Me.Name())
   end
 end
 

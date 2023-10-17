@@ -155,13 +155,13 @@ local advFollow = {
   activate = function(state)
     state.advFollow.active = true
     state.navFollow.active = false
-    bci.ExecuteAllCommand(string.format('/stalk %i', mq.TLO.Me.ID()))
+    bci.ExecuteZoneCommand(string.format('/stalk %i', mq.TLO.Me.ID()))
     followZone = mq.TLO.Zone.ID()
   end,
   deactivate = function(state)
     state.advFollow.active = false
     advFollowZone = nil
-    bci.ExecuteAllCommand("/stalk")
+    bci.ExecuteZoneCommand("/stalk")
   end
 }
 
@@ -174,9 +174,9 @@ local navFollow = {
   activate = function(state) 
     state.navFollow.active = true
     state.advFollow.active = false
-    bci.ExecuteAllCommand(string.format('/navto %i', mq.TLO.Me.ID()))
+    bci.ExecuteZoneCommand(string.format('/navto %i', mq.TLO.Me.ID()))
   end,
-  deactivate = function(state) state.navFollow.active = false; bci.ExecuteAllCommand('/navto') end
+  deactivate = function(state) state.navFollow.active = false; bci.ExecuteZoneCommand('/navto') end
 }
 
 ---@type ActionButton
@@ -189,7 +189,7 @@ local loot = {
     if not looter then
       logger.Warn("No looter defined. use /setlooter 'looter' to define one.")
     else
-      bci.ExecuteCommand('/doloot', {looter})
+      bci.ExecuteZoneCommand('/doloot', {looter})
     end
   end
 }
@@ -284,7 +284,7 @@ local petWeapons = {
   icon = icons.FA_SHIELD,
   tooltip = "Weaponize Your Pets",
   isDisabled = function (state) return not state.bots.active end,
-  activate = function(state) bci.ExecuteAllCommand('/weaponizepet') end,
+  activate = function(state) bci.ExecuteZoneCommand('/weaponizepet') end,
 }
 
 
@@ -296,11 +296,11 @@ local quit = {
   tooltip = "Camp Desktop",
   isDisabled = function (state) return false end,
   activate = function(state) 
-    bci.ExecuteAllCommand('/lua stop', true)
-    bci.ExecuteAllCommand('/twist off', true)
-    bci.ExecuteAllCommand('/camp desktop', true)
+    bci.ExecuteAllWithSelfCommand('/lua stop')
+    bci.ExecuteAllWithSelfCommand('/twist off')
+    bci.ExecuteAllWithSelfCommand('/camp desktop')
     if exportInventoryScriptExists then
-      bci.ExecuteAllCommand('/lua run inventory/export')
+      bci.ExecuteAllWithSelfCommand('/lua run inventory/export')
     end
   end,
 }
@@ -312,7 +312,7 @@ local door = {
   tooltip = "Click Nearest Door",
   isDisabled = function (state) return false end,
   activate = function(state) 
-    bci.ExecuteAllCommand('/multiline ; /doortarget; /click left door')
+    bci.ExecuteZoneCommand('/multiline ; /doortarget; /click left door')
   end,
 }
 
@@ -334,11 +334,11 @@ local toggleCrowdControl = {
   tooltip = "Toggle Crowd Control",
   isDisabled = function (state) return not state.bots.active end,
   activate = function(state)
-    bci.ExecuteAllCommand('/docc on')
+    bci.ExecuteZoneCommand('/docc on')
     state.toggleCrowdControl.active = true
   end,
   deactivate = function(state)
-    bci.ExecuteAllCommand('/docc off')
+    bci.ExecuteZoneCommand('/docc off')
     state.toggleCrowdControl.active = false
   end,
 }
@@ -351,7 +351,7 @@ local instance = {
   isDisabled = function (state) return false end,
   activate = function(state)
     bci.ExecuteAllCommand('/target id '..mq.TLO.Target.ID())
-    bci.ExecuteAllCommand('/say ready', true)
+    bci.ExecuteAllWithSelfCommand('/say ready')
   end,
 }
 
@@ -363,7 +363,7 @@ local removeBuffs = {
   tooltip = "Remove Low Duration Buffs",
   isDisabled = function (state) return not removeBuffsScriptExists end,
   activate = function(state)
-    bci.ExecuteAllCommand("/lua run mini-apps/removebuffs 120", true)
+    bci.ExecuteAllWithSelfCommand("/lua run mini-apps/removebuffs 120")
   end,
 }
 
@@ -375,7 +375,7 @@ local fooddrink = {
   tooltip = "Summon Food/Drink",
   isDisabled = function (state) return not summonFoodScriptExists end,
   activate = function(state)
-    bci.ExecuteAllCommand("/lua run mini-apps/turkey", true)
+    bci.ExecuteAllWithSelfCommand("/lua run mini-apps/turkey")
   end,
 }
 
@@ -412,7 +412,7 @@ local easyfind = {
     selectTravelTo = true
   end,
   deactivate = function(state)
-    bci.ExecuteAllCommand("/travelto stop", true)
+    bci.ExecuteAllWithSelfCommand("/travelto stop")
     state.easyfind.active = false
     travelToZone = nil
   end,
@@ -451,7 +451,7 @@ local function travelToo(zoneShortName)
       logger.Error("Zone shortname does not exist <%s>", zoneShortName.shortname)
     else
       uiState.easyfind.active = true
-      bci.ExecuteAllCommand(string.format("/travelto %s", zoneShortName.shortname), true)
+      bci.ExecuteAllWithSelfCommand(string.format("/travelto %s", zoneShortName.shortname))
       travelToZone = zoneShortName
     end
   end
