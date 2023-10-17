@@ -104,7 +104,8 @@ local function sellItems()
   if merchant.OpenMerchant(target --[[@as target]]) then
     -- mq.cmd("/keypress OPEN_INV_BAGS")
 
-    for i=23,30,1 do
+    local maxInventory = 23 + mq.TLO.Me.NumBagSlots() - 1
+    for i=23,maxInventory,1 do
       local inventoryItem = mq.TLO.Me.Inventory(i)
       if inventoryItem() then
         if inventoryItem.Container() > 0 then
