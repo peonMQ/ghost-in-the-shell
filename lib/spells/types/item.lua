@@ -1,6 +1,4 @@
---- @type Mq
 local mq = require 'mq'
----@type Cast
 local cast = require 'lib/spells/types/cast'
 
 local castReturnTypes = require 'lib/spells/types/castreturn'

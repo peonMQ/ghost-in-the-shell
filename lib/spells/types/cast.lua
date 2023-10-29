@@ -1,4 +1,3 @@
---- @type Mq
 local mq = require 'mq'
 local events = require 'lib/spells/events'
 local castReturnTypes = require 'lib/spells/types/castreturn'

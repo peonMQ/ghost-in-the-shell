@@ -15,10 +15,10 @@ local defaultConfig = {
 
 local config = configLoader("general.mana", defaultConfig)
 
-local tempDisableMeditateTimer = timer:new()
+local tempDisableMeditateTimer = timer:new(10)
 
 local function youHaveBeenHitEvent()
-  tempDisableMeditateTimer = timer:new(10)
+  tempDisableMeditateTimer:Reset()
 end
 
 local disableMeditateEvent = mqEvents:new("disableMeditate", "#*# YOU for #1# points of damage.", youHaveBeenHitEvent)

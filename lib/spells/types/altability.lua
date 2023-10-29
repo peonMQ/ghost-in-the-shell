@@ -1,6 +1,4 @@
---- @type Mq
 local mq = require 'mq'
----@type Cast
 local cast = require 'lib/spells/types/cast'
 local castReturnTypes = require 'lib/spells/types/castreturn'
 local logger = require 'utils/logging'
@@ -49,7 +47,7 @@ function AltAbility:Cast(cancelCallback)
       return castReturnTypes.NotReady
     end
 
-    mq.cmdf("/alt activate %s", mq.TLO.Me.AltAbility(self.Name).ID())
+    mq.cmdf("/alt activate %s", self.Id)
     mq.delay(5, function() return mq.TLO.Me.Casting.ID() or false end)
     self:DoCastEvents()
     self:WhileCasting(cancelCallback)
