@@ -1,10 +1,6 @@
---- @type ImGui
 require 'ImGui'
 
---- @type Mq
 local mq = require 'mq'
-
---- @type Icons
 local icons = require 'mq/icons'
 local logger = require 'utils/logging'
 local debugUtils = require 'utils/debug'
@@ -258,8 +254,8 @@ local resetNuke = {
   activate = function(state) bci.ExecuteAllCommand('/clearlineup') end,
 }
 
----@type ActionButton
 local bards = {"Marillion", "Renaissance", "Soundgarden", "Genesis"}
+---@type ActionButton
 local bard = {
   active = false,
   icon = icons.MD_MUSIC_NOTE,
