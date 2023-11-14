@@ -109,6 +109,10 @@ end
 ---@return boolean
 function BuffSpell:WillStack(netbot)
   local netbotBuffs = luaUtils.Split(netbot.Buff(), "%s")
+  if #netbotBuffs == mq.TLO.Me.MaxBuffSlots() then
+    return false
+  end
+
   for _, buffId in ipairs(netbotBuffs) do
     if self.Id == tonumber(buffId) then
       return false
@@ -118,10 +122,6 @@ function BuffSpell:WillStack(netbot)
     if buffSpell() and not mq.TLO.Spell(self.Id).WillStack(buffSpell.Name())() then
       return false
     end
-  end
-
-  if #netbotBuffs == mq.TLO.Me.MaxBuffSlots() then
-    return false
   end
 
   return true
