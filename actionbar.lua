@@ -185,7 +185,7 @@ local loot = {
     if not looter then
       logger.Warn("No looter defined. use /setlooter 'looter' to define one.")
     else
-      bci.ExecuteZoneCommand('/doloot', {looter})
+      bci.ExecuteCommand('/doloot', {looter})
     end
   end
 }
