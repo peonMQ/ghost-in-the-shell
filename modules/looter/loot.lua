@@ -32,8 +32,8 @@ end
 ---@param itemName string
 ---@return boolean, LootItem
 local function canDestroyItem(itemId, itemName)
-  local foundItem, itemToDestroy = repository:tryGet(itemId)
-  if not foundItem then
+  local itemToDestroy = repository:tryGet(itemId)
+  if not itemToDestroy then
     itemToDestroy = item:new(itemId, itemName)
   end
 
@@ -43,8 +43,8 @@ end
 ---@param itemId integer
 ---@return number
 local function numberOfStacksToKeep(itemId)
-  local foundItem, stackItem = repository:tryGet(itemId)
-  if not foundItem then
+  local stackItem = repository:tryGet(itemId)
+  if not stackItem then
     return 9999
   end
 

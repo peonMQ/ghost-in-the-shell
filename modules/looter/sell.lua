@@ -19,8 +19,8 @@ local state = looterStates.Idle
 ---@param itemName string
 ---@return boolean, LootItem
 local function canSellItem(itemId, itemName)
-  local foundItem, itemToSell = repository:tryGet(itemId)
-  if not foundItem then
+  local itemToSell = repository:tryGet(itemId)
+  if not itemToSell then
     itemToSell = item:new(itemId, itemName)
   end
 

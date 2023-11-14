@@ -36,15 +36,15 @@ function Repository:add (item)
 end
 
 ---@param itemId integer
----@return boolean, LootItem?
+---@return LootItem?
 function Repository:tryGet (itemId)
   for i, v in ipairs (self.items) do
     if (v.Id == itemId) then
-      return true, v
+      return v
     end
   end
 
-  return false, nil
+  return nil
 end
 
 ---@param upsertItem LootItem
