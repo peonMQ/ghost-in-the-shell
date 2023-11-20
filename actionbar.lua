@@ -1,7 +1,7 @@
 require 'ImGui'
 
 local mq = require 'mq'
-local icons = require 'mq/icons'
+local icons = require 'mq/Icons'
 local logger = require 'utils/logging'
 local debugUtils = require 'utils/debug'
 local plugins = require 'utils/plugins'
