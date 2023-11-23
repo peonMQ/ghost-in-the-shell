@@ -1,30 +1,12 @@
---- @type Mq
 local mq = require 'mq'
 local logger = require 'utils/logging'
 local mqUtils = require 'utils/mqhelpers'
-local luautils = require 'utils/lua-table'
-local debugUtils = require 'utils/debug'
-local enum = require 'utils/stringenum'
 local common = require 'lib/common/common'
 local commonConfig = require 'lib/common/config'
 local state = require 'lib/spells/state'
 local config = require 'modules/nuker/config'
----@type Timer
-local timer = require 'lib/timer'
 
 local next = next
-
-local validResistTypes = enum({
-  -- "Chromatic",
-  -- "Corruption",
-  "Cold",
-  "Disease",
-  "Fire",
-  "Magic",
-  "Poison",
-  -- "Unresistable",
-  -- "Prismatic"
-})
 
 local function checkInterrupt(spellId)
   local target = mq.TLO.Target
@@ -35,7 +17,7 @@ local function checkInterrupt(spellId)
   if target.Type() == "Corpse" then
     state.interrupt()
   end
-  
+
   local spell = mq.TLO.Spell(spellId)
   if not target.Distance() or target.Distance() > spell.Range() then
     state.interrupt()
@@ -89,49 +71,5 @@ local function doNuking()
     nukeSpell:Cast(checkInterrupt)
   end
 end
-
-local function setNukeLineup(resistType)
-  logger.Info("Setting nuke lineup [%s]", resistType)
-  if not validResistTypes[resistType] then
-    logger.Warn("Lineup <%s> does not a valid resist type. Valid keys are: [%s]", resistType, luautils.GetKeysSorted(validResistTypes))
-    return
-  end
-
-  if not next(config.Nukes) then
-    logger.Warn("No nukes defined in config.")
-    return
-  end
-
-  local newLineUp = {}
-  for i=1, #config.Nukes do
-    local nuke = config.Nukes[i]
-    local spell = mq.TLO.Spell(nuke.Id)
-    if validResistTypes[spell.ResistType()] and spell.ResistType() == resistType then
-      table.insert(newLineUp, nuke)
-      logger.Debug("Added [%s] to new linup.", spell.Name())
-    end
-  end
-
-  if not next(newLineUp) then
-    logger.Warn("Unable to find any nukes in config matching resist type <%s>.", resistType)
-    return
-  end
-
-  config.CurrentLineup = newLineUp
-end
-
-
-local function clearNukeLineup()
-  config.CurrentLineup = config.Nukes
-end
-
-local function createAliases()
-  mq.unbind('/setlineup')
-  mq.unbind('/clearlineup')
-  mq.bind("/setlineup", setNukeLineup)
-  mq.bind("/clearlineup", clearNukeLineup)
-end
-
-createAliases()
 
 return doNuking

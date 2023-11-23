@@ -29,7 +29,7 @@ local function evacuate()
 
   evacSpell:Cast()
   logger.Info("<<< EVACUATING [%s] >>>", evacSpell.Name)
-  broadcast.Warn({}, "<<< EVACUATING [%s] >>>", evacSpell.Name)
+  broadcast.WarnAll("<<< EVACUATING [%s] >>>", evacSpell.Name)
 end
 
 mq.unbind('/evac')

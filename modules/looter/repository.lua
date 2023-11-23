@@ -1,7 +1,7 @@
 --- @type Mq
 local mq = require 'mq'
 local logger = require 'utils/logging'
-local jsonUtil = require 'utils/loaders/json'
+local luaLoader = require 'utils/loaders/lua-table'
 local debugUtils = require 'utils/debug'
 --- @type LootItem
 local item = require 'modules/looter/types/lootitem'
@@ -10,13 +10,13 @@ local configDir = mq.configDir.."/"
 local serverName = mq.TLO.MacroQuest.Server()
 
 local function getFilePath()
-  local fileName = "Loot Settings.json"
-  return string.format("%s/%s/data/%s", configDir, serverName, fileName)
+  local fileName = "loot_settings.lua"
+  return string.format("%s/%s/gits/data/%s", configDir, serverName, fileName)
 end
 
 local function loadStore()
   local filePath = getFilePath()
-  local loadedConfig = jsonUtil.LoadJSON(filePath)
+  local loadedConfig = luaLoader.LoadTable(filePath)
   local data = {}
   for key, value in pairs(loadedConfig) do
     table.insert(data, item:new(value.Id, value.Name, value.DoSell, value.DoDestroy, value.NumberOfStacks))
@@ -57,8 +57,9 @@ function Repository:upsert (upsertItem)
   end
 
   self:add(upsertItem)
-  local filePath = getFilePath()
-  jsonUtil.SaveJSON(filePath, Repository.items)
+  local fileName = "loot_settings.lua"
+  local filePath = string.format("%s/%s/gits/data/%s", configDir, serverName, fileName)
+  luaLoader.SaveTable(filePath, Repository.items)
 end
 
 return Repository

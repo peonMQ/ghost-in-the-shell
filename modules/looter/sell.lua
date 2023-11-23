@@ -2,7 +2,7 @@
 local mq = require 'mq'
 local logger = require 'utils/logging'
 local debugUtils = require 'utils/debug'
-local plugins = require 'utils/plugins'
+local broadcast = require 'broadcast/broadcast'
 local moveUtils = require 'lib/moveutils'
 local timer = require 'lib/timer'
 local merchant = require 'modules/looter/merchant'
@@ -50,13 +50,14 @@ local function sellItem(itemToSell)
   local packslot = itemToSell.ItemSlot() - 22
   while merchantWindow.Child("MW_SelectedItemLabel").Text() ~= itemToSell.Name() do
     if(itemToSell.ItemSlot2() >= 0) then
+      logger.Info("Selecting %s to sell in pack%d %d", itemToSell.ItemLink("CLICKABLE")(), packslot, itemToSell.ItemSlot2() + 1)
       mq.cmdf("/nomodkey /itemnotify in pack%d %d leftmouseup", packslot, itemToSell.ItemSlot2() + 1)
     else
+      logger.Info("Selecting %s to sell in pack%d", itemToSell.ItemLink("CLICKABLE")(), packslot)
       mq.cmdf("/nomodkey /itemnotify pack%d leftmouseup", packslot)
     end
 
     mq.delay(retryTimer:TimeRemaining(), function() return merchantWindow.Child("MW_SelectedItemLabel").Text() == itemToSell.Name() end)
-
     if(retryTimer:IsComplete()) then
       logger.Error("Failed to select [%s], skipping.", itemToSell.Name())
       return
@@ -87,7 +88,7 @@ local function sellItems()
   local startZ = mq.TLO.Me.Z()
 
   if not merchant.FindMerchant() then
-    logger.Debug("Unable to find any merchants nearby")
+    broadcast.FailAll("Unable to find any merchants nearby.")
     return
   end
 
@@ -128,49 +129,4 @@ local function sellItems()
   logger.Info("Completed selling items to [%s].", merchantName)
 end
 
-local function markItemForSelling()
-  local cursor = mq.TLO.Cursor
-  if not cursor() then
-    logger.Debug("No item to mark for selling on cursor")
-    return
-  end
-
-  local itemId = cursor.ID()
-  local shouldSell, sellItem = canSellItem(itemId, cursor.Name())
-  if shouldSell then
-    logger.Debug("Item already marked for selling")
-  end
-
-  sellItem.DoSell = true
-  repository:upsert(sellItem)
-  logger.Debug("Marked <%d:%s> for destroying", sellItem.Id, sellItem.Name)
-end
-
-local function createAliases()
-  mq.unbind('/setsellitem')
-  mq.unbind('/sellitems')
-  mq.bind("/setsellitem", markItemForSelling)
-  mq.bind("/sellitems", function() state = looterStates.Selling end)
-end
-
-createAliases()
-
-local function doSell()
-  if state == looterStates.Idle then
-    return
-  end
-
-  if state == looterStates.Selling then
-    local isBardSwapping = plugins.IsLoaded("MQ2BardSwap") and mq.TLO.BardSwap()
-    if isBardSwapping then
-      mq.cmd("/bardswap")
-    end
-    sellItems()
-    state = looterStates.Idle
-    if isBardSwapping then
-      mq.cmd("/bardswap")
-    end
-  end
-end
-
-return doSell
+return sellItems

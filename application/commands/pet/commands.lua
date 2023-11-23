@@ -1,0 +1,6 @@
+require("application/commands/pet/ask_for_weapons_command")
+require("application/commands/pet/disband_command")
+require("application/commands/pet/reset_command")
+require("application/commands/pet/set_active_spell_command")
+require("application/commands/pet/summon_command")
+require("application/commands/pet/weaponize_command")

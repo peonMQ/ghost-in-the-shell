@@ -5,19 +5,16 @@ local logger = require 'utils/logging'
 local spell = require 'lib/spells/types/spell'
 
 ---@class PetSpell : Spell
----@field public FocusItem string
 local PetSpell = spell:base()
 
 ---@param name string
----@param defaultGem integer
----@param minManaPercent integer
----@param giveUpTimer integer
----@param focusItem string
+---@param defaultGem integer?
+---@param minManaPercent integer?
+---@param giveUpTimer integer?
 ---@return PetSpell
-function PetSpell:new (name, defaultGem, minManaPercent, giveUpTimer, focusItem)
+function PetSpell:new(name, defaultGem, minManaPercent, giveUpTimer)
   self.__index = self
   local o = setmetatable(spell:new(name, defaultGem, minManaPercent, giveUpTimer), self)
-  o.FocusItem = focusItem or ""
   return o --[[@as PetSpell]]
 end
 

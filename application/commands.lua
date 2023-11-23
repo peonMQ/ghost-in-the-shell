@@ -1,0 +1,7 @@
+require("application/commands/buff/commands")
+require("application/commands/loot/commands")
+require("application/commands/movement/commands")
+require("application/commands/nuke/commands")
+require("application/commands/pet/commands")
+require("application/commands/settings/commands")
+require("application/commands/wait4rez/commands")

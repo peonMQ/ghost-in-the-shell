@@ -69,7 +69,7 @@ local function doDebuffs()
             logger.Info("[%s] resisted <%s> %d times, retrying next run.", targetSpawn.Name(), debuffSpell.Name, debuffSpell.MaxResists)
           elseif castResult == castReturnTypes.Success then
             logger.Info("[%s] debuffed with <%s>.", targetSpawn.Name(), debuffSpell.Name)
-            broadcast.Success({}, "[%s] debuffed with <%s>.", targetSpawn.Name(), debuffSpell.Name)
+            broadcast.SuccessAll("[%s] debuffed with <%s>.", targetSpawn.Name(), debuffSpell.Name)
             repository.Insert(targetSpawn.ID(), debuffSpell)
           else
             logger.Info("[%s] <%s> debuff failed with. [%s]", targetSpawn.Name(), debuffSpell.Name, castResult)

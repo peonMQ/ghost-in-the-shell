@@ -15,12 +15,8 @@ local combatActions = require 'modules/melee/combatactions'
 local doMeleeDps = require 'modules/melee/melee'
 local doNuking = require 'modules/nuker/nuke'
 local doPet = require 'modules/pet/pet'
-local doWeaponize = require 'modules/pet/weaponize'
-local doLoot = require 'modules/looter/loot'
-local doSell = require 'modules/looter/sell'
-local wait4rez = require 'wait4rez/wait4rez'
-
-require('lib/common/cleanBuffs')
+local commandQueue  = require("application/command_queue")
+require("application/commands")
 
 ---@alias eqclass 'bard'|'cleric'|'druid'|'enchanter'|'magician'|'monk'|'necromancer'|'paladin'|'ranger'|'rogue'|'shadowknight'|'shaman'|'warrior'|'wizard'
 
@@ -30,14 +26,14 @@ local classActions = {
   cleric = {doBuffs, doHealing, doNuking, doMeleeDps, doManaStone, doMeditate, doCuring},
   druid = {doBuffs, doDeBuffs, doHealing, doNuking, doMeleeDps, doManaStone, doMeditate},
   enchanter = {doMezz, doBuffs, doDeBuffs, doMeleeDps, doNuking, doManaStone, doMeditate},
-  magician = {doBuffs, doDeBuffs, doPet, doWeaponize, doNuking, doMeleeDps, doManaStone, doMeditate},
+  magician = {doBuffs, doDeBuffs, doPet, doNuking, doMeleeDps, doManaStone, doMeditate},
   monk = {doBuffs, function() doMeleeDps(combatActions.DoPunchesAndKicks) end},
-  necromancer = {doBuffs, doDeBuffs, doPet, doWeaponize, doNuking, doMeleeDps, doManaStone, doMeditate},
+  necromancer = {doBuffs, doDeBuffs, doPet, doNuking, doMeleeDps, doManaStone, doMeditate},
   paladin = {doBuffs, doHealing, doNuking, doMeleeDps, doMeditate},
   ranger = {doBuffs, doHealing, doNuking, doMeleeDps, doMeditate},
   rogue = {doBuffs, function() doMeleeDps(combatActions.DoBackStab) end},
   shadowknight = {doBuffs, doPet, doNuking, doMeleeDps, doMeditate},
-  shaman = {doBuffs, doDeBuffs, doHealing, doPet, doWeaponize, doNuking, doMeleeDps, doManaStone, doManaConversion, doMeditate, doCuring},
+  shaman = {doBuffs, doDeBuffs, doHealing, doPet, doNuking, doMeleeDps, doManaStone, doManaConversion, doMeditate, doCuring},
   warrior = {doBuffs, doMeleeDps},
   wizard = {doBuffs, doNuking, doMeleeDps, doManaStone, doManaConversion, doMeditate}
 }
@@ -61,65 +57,6 @@ local function isFollowing()
   return false
 end
 
-local function toggleFollow(targetId)
-  if not plugins.IsLoaded("mq2advpath") then
-    return
-  end
-
-  if mq.TLO.AdvPath.Following() then
-    mq.cmd("/afollow off")
-    return
-  end
-
-  if plugins.IsLoaded("mq2nav") and mq.TLO.Navigation.Active() then
-    mq.cmd("/nav stop")
-  end
-
-  if not targetId then
-    logger.Warn("Missing <targetId> to follow.")
-    return
-  end
-
-  local stickSpawn = mq.getFilteredSpawns(function(spawn)  return spawn.ID() == tonumber(targetId) and spawn.Type() == "PC" end)
-  if stickSpawn[1] then
-    mq.cmdf("/afollow spawn %d", stickSpawn[1].ID())
-  end
-end
-
-local function toggleNavTo(targetId)
-  if not plugins.IsLoaded("mq2nav") then
-    return
-  end
-
-  if mq.TLO.Navigation.Active() then
-    mq.cmd("/nav stop")
-    return
-  end
-
-  if plugins.IsLoaded("mq2advpath") and mq.TLO.AdvPath.Following() then
-    mq.cmd("/afollow off")
-  end
-
-  if not targetId then
-    logger.Warn("Missing <targetId> to navigate to.")
-    return
-  end
-
-  local stickSpawn = mq.getFilteredSpawns(function(spawn) return spawn.ID() == tonumber(targetId) and spawn.Type() == "PC" end)
-  if stickSpawn[1] and mq.TLO.Navigation.PathExists("id "..stickSpawn[1].ID()) then
-    mq.cmdf("/nav id %d", stickSpawn[1].ID())
-  end
-end
-
-local function createAliases()
-  mq.unbind('/stalk')
-  mq.unbind('/navto')
-  mq.bind("/stalk", toggleFollow)
-  mq.bind("/navto", toggleNavTo)
-end
-
-createAliases()
-
 if mq.TLO.Me.GM() then
   logger.Error("Cannot run GM character as BOT...")
   return
@@ -132,12 +69,9 @@ while true do
     for _,action in ipairs(botActions) do
       action()
     end
-
-    doLoot()
-    doSell()
   end
 
-  wait4rez()
   mq.doevents()
+  commandQueue.Process()
   mq.delay(50)
 end

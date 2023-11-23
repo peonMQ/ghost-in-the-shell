@@ -125,21 +125,21 @@ local function lootItem(slotNum)
       mq.cmdf("/destroy")
       mq.delay(100, function() return cursor() == nil end)
       if cursor() == nil then
-        broadcast.Success({}, "Destroyed %s from slot# %s", item.Name, slotNum)
+        broadcast.SuccessAll("Destroyed %s from slot# %s", item.Name, slotNum)
       else
-        broadcast.Fail({}, "Destroying %s from slot# %s", item.Name, slotNum)
+        broadcast.FailAll("Destroying %s from slot# %s", item.Name, slotNum)
       end
     end
   else
     mqUtils.ClearCursor()
-    broadcast.Success({}, "Looted %s from slot# %s", item.Name, slotNum)
+    broadcast.SuccessAll("Looted %s from slot# %s", item.Name, slotNum)
   end
 end
 
 local function lootCorpse()
   local target = mq.TLO.Target
   if not target() or target.Type() ~= "Corpse" then
-    broadcast.Fail({}, "No corpse on target.")
+    broadcast.FailAll("No corpse on target.")
     return
   end
 
@@ -148,7 +148,7 @@ local function lootCorpse()
   local corpse = mq.TLO.Corpse
   mq.delay("1s", function() return corpse.Open() and corpse.Items() > 0 end)
   if not corpse.Open() then
-    broadcast.Fail({}, "Unable to open corpse for looting.")
+    broadcast.FailAll("Unable to open corpse for looting.")
     return
   end
 
@@ -182,10 +182,10 @@ local function lootCorpse()
     mq.delay("1s", function() return not mq.TLO.Corpse.Open()  end)
   end
 
-  broadcast.Success({}, "Ending loot on <%s>, # of items left: %d", mq.TLO.Target.Name(), corpse.Items() or 0)
+  broadcast.SuccessAll("Ending loot on <%s>, # of items left: %d", mq.TLO.Target.Name(), corpse.Items() or 0)
 end
 
-local function lootNearestCorpse()
+local function lootNearestCorpse(seekRadius)
   local startX = mq.TLO.Me.X()
   local startY = mq.TLO.Me.Y()
   local startZ = mq.TLO.Me.Z()
@@ -196,7 +196,6 @@ local function lootNearestCorpse()
   end
 
   if not mq.TLO.Me.Casting.ID() then
-    local seekRadius = 100
     local searchCorpseString = string.format("npc corpse zradius 50 radius %s", seekRadius)
     local closestCorpseID = mq.TLO.NearestSpawn(1, searchCorpseString).ID()
     if mq.TLO.Spawn(closestCorpseID)() and mqUtils.EnsureTarget(closestCorpseID) then
@@ -219,44 +218,6 @@ local function lootNearestCorpse()
   end 
 
   moveUtils.MoveToLoc(startX, startY, startZ, 20, 1)
-  state = looterStates.Idle
 end
 
-local function markItemForDestroying()
-  local cursor = mq.TLO.Cursor
-  if not cursor() then
-    logger.Debug("No item to mark for destroying on cursor")
-    return
-  end
-
-  local itemId = cursor.ID()
-  local shouldDestroy, item = canDestroyItem(itemId, cursor.Name())
-  if shouldDestroy then
-    logger.Debug("Item already marked for destroying")
-  end
-
-  item.DoDestroy = true
-  repository:upsert(item)
-  logger.Info("Marked <%d:%s> for destroying", item.Id, item.Name)
-end
-
-local function createAliases()
-  mq.unbind('/setdestroyitem')
-  mq.unbind('/doloot')
-  mq.bind("/setdestroyitem", markItemForDestroying)
-  mq.bind("/doloot", function() state = looterStates.Looting end)
-end
-
-createAliases()
-
-local function doLoot()
-  if state == looterStates.Idle then
-    return
-  end
-
-  if state == looterStates.Looting then
-    lootNearestCorpse()
-  end
-end
-
-return doLoot
+return lootNearestCorpse

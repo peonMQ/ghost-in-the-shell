@@ -10,11 +10,6 @@ local runningDir = luapaths.RunningDir:new()
 runningDir:AppendToPackagePath()
 
 local bci = broadCastInterfaceFactory()
-if not bci then
-  logger.Fatal("No networking interface found, please start eqbc or dannet")
-  return
-end
-
 bci.ExecuteAllWithSelfCommand('/lua run hud/pids')
 
 mq.cmd("/lua run hud")

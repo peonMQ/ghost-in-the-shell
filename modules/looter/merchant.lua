@@ -26,39 +26,36 @@ end
 ---@param target spawn
 ---@return boolean
 local function openMerchant(target)
-  local merchantWindow = mq.TLO.Window("MerchantWnd")
   local openMerchantTimer = timer:new(10)
-
-  if not merchantWindow.Open() then
+  if not mq.TLO.Merchant.Open() then
     mq.cmd("/click right target")
     mq.delay("5s", function ()
-      return merchantWindow.Open() or openMerchantTimer:IsComplete()
+      return not mq.TLO.Merchant.Open() or openMerchantTimer:IsComplete()
     end)
   end
 
-  if not merchantWindow.Open() then
+  if not not mq.TLO.Merchant.Open() then
     logger.Warn("Failed to open trade with [%s].", target.CleanName())
     return false
   end
 
   mq.delay("5s", function ()
-    return (merchantWindow.Child("ItemList") and merchantWindow.Child("ItemList").Items() > 0) or openMerchantTimer:IsComplete()
+    return mq.TLO.Merchant.ItemsReceived() or openMerchantTimer:IsComplete()
   end)
 
-  return merchantWindow.Child("ItemList").Items() > 0
+  return mq.TLO.Merchant.Open()
 end
 
 ---@param target spawn
 ---@return boolean
 local function closeMerchant(target)
-  local merchantWindow = mq.TLO.Window("MerchantWnd")
   local closeMerchantTimer = timer:new(5)
-  while merchantWindow.Open() and closeMerchantTimer:IsRunning() do
+  while mq.TLO.Merchant.Open() and closeMerchantTimer:IsRunning() do
     mq.cmd("/notify MerchantWnd MW_Done_Button leftmouseup")
     mq.delay(10)
   end
 
-  if merchantWindow.Open() then
+  if mq.TLO.Merchant.Open() then
     logger.Warn("Failed to close trade with [%s].", target.CleanName())
     return false
   end

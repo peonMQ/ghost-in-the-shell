@@ -1,138 +1,15 @@
---- @type Mq
 local mq = require 'mq'
 local broadcast = require 'broadcast/broadcast'
 local logger = require 'utils/logging'
-local plugin = require 'utils/plugins'
 local mqUtils = require 'utils/mqhelpers'
 local common = require 'lib/common/common'
-local config = require 'modules/pet/config'
-local petstates = require 'modules/pet/types/petstate'
-require('modules/pet/weaponize')
----@type PetSpell
-local petspell = require 'modules/pet/types/petspell'
+local settings = require 'settings/settings'
 
-local state = petstates.Idle
-
-local function equipSummonFocusItem(petSummonFocusItem)
-  if not petSummonFocusItem or petSummonFocusItem == "" then
-    return nil, nil
-  end
-
-  if plugin.IsLoaded("mq2exchange") == false then
-    return nil, nil
-  end
-
-  if not mq.TLO.FindItem("="..petSummonFocusItem)() then
-    return nil, nil
-  end
-
-  local currentMainhand = mq.TLO.Me.Inventory("mainhand")()
-  local currentOffhand = mq.TLO.Me.Inventory("offhand")() -- or slot 14
-
-  if currentOffhand then
-    mq.cmd("/unequip offhand")
-    mq.delay(250)
-    mqUtils.ClearCursor()
-  end
-
-  mq.cmdf('/exchange "%s" mainhand', petSummonFocusItem)
-  mq.delay(500)
-
-  if mq.TLO.Me.Inventory("mainhand")() ~= petSummonFocusItem then
-    logger.Debug("Unable to equip <%s>.", petSummonFocusItem)
-  end
-
-  return currentMainhand, currentOffhand
-end
-
-local function summonPet()
-  local me = mq.TLO.Me
-  if me.Pet() ~= "NO PET" then
-    logger.Info("Already have an active pet <%s>", me.Pet())
-    state = petstates.Idle
-    return
-  end
-
-  local petSpell = config.PetSpell
-  if not petSpell then
-    logger.Debug("No pet spell configured")
-    state = petstates.Idle
-    return
-  end
-
-  if not petSpell:CanCast() then
-    logger.Info("Can not cast <%s>", petSpell.Name)
-    state = petstates.Idle
-    return
-  end
-
-  local mainhand, offhand = equipSummonFocusItem(petSpell.FocusItem)
-
-  petSpell:Cast()
-
-  if mainhand then
-    mq.cmdf('/exchange "%s" mainhand', mainhand)
-    mq.delay(500)
-  end
-
-  if offhand then
-    mq.cmdf('/exchange "%s" offhand', offhand)
-    mq.delay(500)
-  end
-
-  state = petstates.Idle
-end
-
-local function disbandPet()
-  if mq.TLO.Me.Pet() ~= "NO PET" then
-    mq.cmd("/pet get lost")
-  end
-end
-
-local function resetPet()
-  local me = mq.TLO.Me
-  if me.Pet() ~= "NO PET" then
-    mq.cmd("/pet back off")
-  end
-
-  config.CurrentPetTarget = 0
-end
-
-local function setActivePetSpell(newPetSpell, newSummonFocusItem)
-  if not newPetSpell then
-    logger.Warn("New pet spell is <nil>")
-    return
-  end
-
-  local petSpell = config.PetSpell
-  if not mq.TLO.Me.Book(newPetSpell)() then
-    mq.cmd("/beep")
-    logger.Error("You do not know the spell <%s>.", newPetSpell)
-    return
-  else
-    config.PetSpell = petspell:new(newPetSpell, petSpell.DefaultGem, petSpell.MinManaPercent, petSpell.GiveUpTimer, petSpell.FocusItem)
-    logger.Info("New pet spell the spell <%s>.", newPetSpell)
-  end
-
-  if not newSummonFocusItem then
-    return
-  end
-
-  if newSummonFocusItem and not mq.TLO.FindItem("="..newSummonFocusItem)() then
-    mq.cmd("/beep")
-    logger.Error("You do not have the focus item <%s> on your character..", newSummonFocusItem)
-  else
-    config.PetSpell = petspell:new(petSpell.Name, petSpell.DefaultGem, petSpell.MinManaPercent, petSpell.GiveUpTimer, newSummonFocusItem)
-    logger.Info("New pet focus item <%s>.", newSummonFocusItem)
-  end
-end
-
+local config = {
+  CurrentPetTarget = 0
+}
 
 local function doPet()
-  if state == petstates.SummonPet then
-    summonPet()
-  end
-
   if not mq.TLO.Me.Pet.ID() or mq.TLO.Me.Pet.ID() == 0 then
     return
   end
@@ -149,7 +26,7 @@ local function doPet()
         mq.cmd("/pet attack")
       end
     end
- 
+
     if not mq.TLO.Me.Pet.Combat() then
       logger.Error("Pet not able to engage <%s>", config.CurrentPetTarget)
     end
@@ -176,7 +53,7 @@ local function doPet()
   local targetHP = netbot.TargetHP()
 
   if (not isNPC and not isPet)
-     or (targetHP > 0 and targetHP > config.PetAssistPercent)
+     or (targetHP > 0 and targetHP > settings.pet.engage_at)
      or not hasLineOfSight
      or targetSpawn.Distance() > 100 then
       return
@@ -192,24 +69,4 @@ local function doPet()
   end
 end
 
-local function createAliases()
-  mq.unbind('/setactivepet')
-  mq.unbind('/summonpet')
-  mq.unbind('/disbandpet')
-  mq.unbind('/resetpet')
-  mq.unbind('/pettarget')
-  mq.bind("/setactivepet", setActivePetSpell)
-  mq.bind("/summonpet", function() state = petstates.SummonPet end)
-  mq.bind("/disbandpet", disbandPet)
-  mq.bind('/resetpet', resetPet)
-end
-
-createAliases()
-
 return doPet
-
--- /setactivepet "Greater Vocaration: Earth" "Staff of Elemental Mastery: Earth"
-
--- /lua parse mq.TLO.Me.Gem("Greater Vocaration: Earth")
--- /memspell 1 "Greater Vocaration: Earth"
--- 8 is not a valid slot for this container.

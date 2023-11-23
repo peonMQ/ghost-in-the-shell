@@ -1,7 +1,6 @@
---- @type Mq
 local mq = require 'mq'
+local broadcast = require 'broadcast/broadcast'
 local logger = require 'utils/logging'
---- @type Timer
 local timer = require 'lib/timer'
 local castReturnTypes = require 'lib/spells/types/castreturn'
 
@@ -36,6 +35,7 @@ end
 
 ---@return CastReturn
 function state.interrupt()
+  broadcast.InfoAll("Cancelled casting <%s>",  mq.TLO.Me.Casting())
   logger.Debug("Interrupt casting <%s>.", mq.TLO.Me.Casting())
   mq.cmd("/stopcast")
   state.castReturn = castReturnTypes.Cancelled

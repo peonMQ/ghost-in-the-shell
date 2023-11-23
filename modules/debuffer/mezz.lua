@@ -95,7 +95,7 @@ local function doMezz()
           logger.Info("[%s] resisted <%s> %d times, retrying next run.", mezzName, mezzSpell.Name, mezzSpell.MaxResists)
         elseif castResult == castReturnTypes.Success then
           logger.Info("[%s] mezzed with <%s>.", mezzName, mezzSpell.Name)
-          broadcast.Success("[%s] mezzed with <%s>.", mezzName, mezzSpell.Name)
+          broadcast.SuccessAll("[%s] mezzed with <%s>.", mezzName, mezzSpell.Name)
           repository.Insert(mezzSpawn.ID(), mezzSpell)
         else
           logger.Info("[%s] <%s> mezz failed with. [%s]", mezzName, mezzSpell.Name, castResult)
@@ -124,9 +124,9 @@ local function doCrowdControl(toggle)
 
   config.DoCrowdControl = boolParam[toggle:lower()]
   if not config.DoCrowdControl then
-    broadcast.Error({}, "%s is no longer doing crowd control", mq.TLO.Me.Name())
+    broadcast.ErrorAll("%s is no longer doing crowd control", mq.TLO.Me.Name())
   else
-    broadcast.Success({}, "%s is now doing crowd control", mq.TLO.Me.Name())
+    broadcast.SuccessAll("%s is now doing crowd control", mq.TLO.Me.Name())
   end
 end
 
