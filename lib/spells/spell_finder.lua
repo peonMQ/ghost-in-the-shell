@@ -4,16 +4,18 @@ local spell_groups = require 'data/spell_groups'
 
 ---@param spell_name string
 ---@return spell?
-local function has_spell(spell_name)
-  local spellSlot = mq.TLO.Me.Book(mq.TLO.Spell(spell_name).RankName())
+local function find_spell(spell_name)
+  local spell = mq.TLO.Spell(spell_name)
+  if not spell() then
+    logger.Debug("Spell doest not exist: %s", spell_name)
+    return nil
+  end
+
+  local spellSlot = mq.TLO.Me.Book(spell.RankName())
   if spellSlot() then
-    local spell = mq.TLO.Me.Book(spellSlot())
-    if spell() ~= nil and (not spell or spell.Level() > spell.Level()) then
-      logger.Debug("Found new/upgraded spell in book: [%s] - %s", spell.Level(), spell_name)
-      return spell --[[@as spell]]
-    end
+    return mq.TLO.Me.Book(spellSlot()) --[[@as spell]]
   else
-      logger.Debug("Spell not in book: %s", spell_name)
+      logger.Debug("Spell not in book: %s", spell.RankName())
   end
 
   return nil
@@ -21,15 +23,17 @@ end
 
 --- @param group_spells string[]
 --- @return spell?
-local function find_spell(group_spells)
+local function find_ordered_spell(group_spells)
+  local highest_level_spell = nil
   for _, spellName in ipairs(group_spells) do
-      local spell = has_spell(spellName)
-      if spell and spell() ~= nil then
-        return spell
+      local spell = find_spell(spellName)
+      if spell ~= nil and (not highest_level_spell or spell.Level() > highest_level_spell.Level()) then
+        logger.Debug("Found new/upgraded spell in book: [%s] - %s", spell.Level(), spell.Name())
+        highest_level_spell = spell --[[@as spell]]
       end
   end
 
-  return nil
+  return highest_level_spell
 end
 
 --- @param group_name string
@@ -48,7 +52,7 @@ local function find_group_spell(group_name)
     return nil
   end
 
-  local spell = find_spell(spell_group)
+  local spell = find_ordered_spell(spell_group)
   if not spell then
     logger.Warn("No spell found for spellgroup <%s> with class <%s>.", group_name, class)
     return nil
@@ -58,7 +62,7 @@ local function find_group_spell(group_name)
 end
 
 return {
-  HasSpell = has_spell,
   FindSpell = find_spell,
+  FindOrderedSpell = find_ordered_spell,
   FindGroupSpell = find_group_spell,
 }

@@ -3,6 +3,7 @@ local logger = require("knightlinc/Write")
 local lua_utils = require 'utils/debug'
 local spell_finder = require 'lib/spells/spell_finder'
 local curespell = require 'modules/curer/types/curespell'
+local nukepell = require 'modules/nukes/types/nukespell'
 
 
 logger.prefix = string.format("\at%s\ax", "[GITS]")
@@ -129,8 +130,25 @@ function settings:ReloadSettings()
       table.insert(availableCures, curespell:new(spell.Name(), self:GetDefaultGem(value.Name), value.MinManaPercent, value.GiveUpTimer))
     end
   end
-
   self.cures = availableCures
+
+  local availableNukes = {}
+  for key, spells in ipairs(self.assist.nukes) do
+    ---@type NukeSpell[]
+    local availableSpells = {}
+    for _, value in ipairs(spells) do
+      local spell = spell_finder.FindGroupSpell(value.Name)
+      if spell and spell() then
+        table.insert(availableSpells, nukepell:new(spell.Name(), self:GetDefaultGem(value.Name), value.MinManaPercent, value.GiveUpTimer))
+      end
+    end
+
+    table.sort(availableSpells, function(a,b) return a.MQSpell.Level() > b.MQSpell.Level() end)
+    if next(availableSpells) then
+      availableNukes[key] = availableSpells
+    end
+  end
+  self.assist.nukes = availableNukes
 end
 
 local function saveSettings()

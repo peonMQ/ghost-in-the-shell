@@ -3,8 +3,8 @@ local logger = require 'utils/logging'
 local mqUtils = require 'utils/mqhelpers'
 local common = require 'lib/common/common'
 local settings = require 'settings/settings'
+local assist_state = require 'settings/assist_state'
 local state = require 'lib/spells/state'
-local config = require 'modules/nuker/config'
 
 local next = next
 
@@ -25,13 +25,14 @@ local function checkInterrupt(spellId)
 end
 
 local function doNuking()
-  if not next(config.CurrentLineup) then
+  local nukes = settings.assist.nukes[assist_state.spell_set]
+  if not next(nukes) then
     return
   end
 
   -- might want to fetch nuke based on target type for 'Undead' and 'Summoned'
   local nukeSpell = nil
-  for _, nuke in ipairs(config.CurrentLineup) do
+  for _, nuke in ipairs(nukes) do
     if nuke:MemSpell() and mq.TLO.Me.SpellReady(nuke.Name)() then
       nukeSpell = nuke
       break

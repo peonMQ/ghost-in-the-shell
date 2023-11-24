@@ -8,13 +8,13 @@ local next = next
 ---@generic T
 ---@param original T
 ---@return T
-local function copyValue(original)
+local function clone(original)
   local orig_type = type(original)
   if orig_type == 'table' then
     local copy = {}
     for orig_key, orig_value in pairs(original) do
       if type(orig_value) == "table" then
-        copy[orig_key] = copyValue(orig_value)
+        copy[orig_key] = clone(orig_value)
       else
         copy[orig_key] = orig_value
       end
@@ -31,7 +31,7 @@ end
 ---@param default T
 ---@return T
 local function leftJoin(loaded, default)
-  local config = copyValue(default)
+  local config = clone(default)
   for key, value in pairs(loaded) do
     local defaultValue = default[key]
     if defaultValue and type(defaultValue) == "table" and type(value) == "table" then
@@ -66,7 +66,7 @@ end
 ---@param bot_settings_filename string
 ---@return T
 local function loadSettings(default_settings, server_settings_filename, class_settings_filename, bot_settings_filename)
-  local settings = copyValue(default_settings)
+  local settings = clone(default_settings)
   local server_settings = loadFile(server_settings_filename) or {}
   logger.Debug("server_settings\n %s", lua_utils.ToString(server_settings))
 
@@ -81,5 +81,6 @@ local function loadSettings(default_settings, server_settings_filename, class_se
 end
 
 return {
+  Clone = clone,
   LoadSettings = loadSettings
 }
