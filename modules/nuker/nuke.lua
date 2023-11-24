@@ -2,7 +2,7 @@ local mq = require 'mq'
 local logger = require 'utils/logging'
 local mqUtils = require 'utils/mqhelpers'
 local common = require 'lib/common/common'
-local commonConfig = require 'lib/common/config'
+local settings = require 'settings/settings'
 local state = require 'lib/spells/state'
 local config = require 'modules/nuker/config'
 
@@ -61,7 +61,7 @@ local function doNuking()
   local targetHP = netbot.TargetHP()
 
   if (not isNPC and not isPet)
-     or (targetHP > 0 and targetHP > commonConfig.AssistPct)
+     or (targetHP > 0 and targetHP > settings.assist.engage_at)
      or not hasLineOfSight
      or not nukeSpell:CanCastOnspawn(targetSpawn) then
       return

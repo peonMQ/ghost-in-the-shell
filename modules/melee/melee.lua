@@ -4,6 +4,7 @@ local logger = require 'utils/logging'
 local mqUtils = require 'utils/mqhelpers'
 local common = require 'lib/common/common'
 local commonConfig = require 'lib/common/config'
+local settings = require 'settings/settings'
 local state = require 'modules/melee/state'
 local events = require 'modules/melee/events'
 
@@ -44,7 +45,7 @@ end
 local function doMeleeDps(meleeAbilityCallback)
   local me = mq.TLO.Me
 
-  if not ("Monk,Paladin,Ranger,Rogue,Shadowknight,Warrior"):find(me.Class()) and not commonConfig.DoMeleeAsNonMeleeClass then
+  if settings.assist.type ~= 'melee' then
     return
   end
 
@@ -98,7 +99,7 @@ local function doMeleeDps(meleeAbilityCallback)
   local targetHP = netbot.TargetHP()
 
   if (not isNPC and not isPet)
-      or (targetHP > 0 and targetHP > commonConfig.AssistPct)
+      or (targetHP > 0 and targetHP > settings.assist.engage_at)
       or not hasLineOfSight then
     logger.Debug("Mainassist target is not valid")
     return

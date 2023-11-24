@@ -4,14 +4,12 @@ local logger = require 'utils/logging'
 local plugin = require 'utils/plugins'
 local configLoader = require 'utils/configloader'
 
-local next = next 
+local next = next
 
 ---@class CommonConfig
 local defaultConfig = {
   MainTanks = {},
   MainAssists = {},
-  AssistPct = 90,
-  DoMeleeAsNonMeleeClass = false
 }
 
 ---@return CommonConfig
