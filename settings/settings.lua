@@ -45,13 +45,14 @@ local bot_settings_filename = string.format("%s/gits2/%s/bots/%s_settings.lua", 
 ---@field public requestInCombat boolean request buffs while in combat
 
 ---@class PeerSettingsPet
----@field public type MagePetTypes|nil 
+---@field public type MagePetTypes|nil
 ---@field public engage_at integer engage at this HP %
 ---@field public buffs string[] spell group of pet buffs
 ---@field public taunt boolean pet should taunt
 
 ---@class ApplicationSettings : PeerSettings
----@field public ReloadSettings function Reload settings from files
+---@field public ReloadSettings fun(self: ApplicationSettings) Reload settings from files
+---@field public GetDefaultGem fun(self: ApplicationSettings, spell_group_or_name: string): number Get default gem for given spell group or spell name
 
 ---@type PeerSettings
 local default_settings = {
@@ -111,6 +112,19 @@ end
 local function saveSettings()
 end
 
+---@param spell_group_or_name string
+---@return integer
+function settings:GetDefaultGem(spell_group_or_name)
+  for key, value in pairs(self.gems) do
+    if key == spell_group_or_name then
+      return value
+    end
+  end
+
+  return self.gems.default or 5
+end
+
 settings:ReloadSettings()
 logger.Debug("settings\n %s", lua_utils.ToString(settings))
+
 return settings

@@ -69,29 +69,15 @@ local function loadSettings(default_settings, server_settings_filename, class_se
   local settings = copyValue(default_settings)
   local server_settings = loadFile(server_settings_filename) or {}
   logger.Debug("server_settings\n %s", lua_utils.ToString(server_settings))
+
   local class_settings = loadFile(class_settings_filename) or {}
   logger.Debug("class_settings\n %s", lua_utils.ToString(class_settings))
+
   local bot_settings = loadFile(bot_settings_filename) or {}
   logger.Debug("bot_settings\n %s", lua_utils.ToString(bot_settings))
+
   local new_settings = leftJoin(bot_settings, leftJoin(class_settings, leftJoin(server_settings, settings)))
   return new_settings
-end
-
-
-
-local default_gem = 5
-
----@param current_settings PeerSettings
----@param spell_group string
----@return integer
-local function getDefaultGem(current_settings, spell_group)
-  for key, value in pairs(current_settings.gems) do
-    if key == spell_group then
-      return value
-    end
-  end
-
-  return default_gem
 end
 
 return {

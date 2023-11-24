@@ -59,13 +59,7 @@ local function execute()
     return
   end
 
-  local gem = settings.gems.pet or settings.gems.default
-  if not gem then
-    logger.Error("Unable to set gem to memorize spell in.")
-    return
-  end
-
-  local petSpell = pet_spell:new(spell.Name(), settings.gems.pet or settings.gems.default, 15)
+  local petSpell = pet_spell:new(spell.Name(), settings.gems.pet or settings:GetDefaultGem(spell.Name()), 15)
 
   if not petSpell:CanCast() then
     logger.Info("Can not cast <%s>", petSpell.Name)
