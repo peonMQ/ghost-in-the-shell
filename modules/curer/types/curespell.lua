@@ -52,9 +52,7 @@ function CureSpell:CanCastOnNetBot(netbot)
 
   if (tonumber(netbot.Poisoned()) or 0) > 0 and self.CounterType == "Poison" then
     return self:CanCastOnSpawn(spawn --[[@as spawn]])
-  end
-
-  if (tonumber(netbot.Diseased()) or 0) > 0 and self.CounterType == "Disease" then
+  elseif (tonumber(netbot.Diseased()) or 0) > 0 and self.CounterType == "Disease" then
     return self:CanCastOnSpawn(spawn --[[@as spawn]])
   end
 

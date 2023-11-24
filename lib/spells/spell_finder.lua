@@ -2,23 +2,34 @@ local mq = require('mq')
 local logger = require("knightlinc/Write")
 local spell_groups = require 'data/spell_groups'
 
---- @param spell_group string[]
-local function find_spell(spell_group)
-  local spell = nil
-  for _, spellName in ipairs(spell_group) do
-      local spellSlot = mq.TLO.Me.Book(mq.TLO.Spell(spellName).RankName())
-      if spellSlot() then
-        local spell = mq.TLO.Me.Book((spellSlot()))
-        if spell() ~= nil and (not spell or spell.Level() > spell.Level()) then
-          spell = spell --[[@as spell]]
-          logger.Debug("Found new/upgraded spell in book: [%s] - %s", spell.Level(), spellName)
-        end
-      else
-          logger.Debug("Spell not in book: %s", spellName)
+---@param spell_name string
+---@return spell?
+local function has_spell(spell_name)
+  local spellSlot = mq.TLO.Me.Book(mq.TLO.Spell(spell_name).RankName())
+  if spellSlot() then
+    local spell = mq.TLO.Me.Book(spellSlot())
+    if spell() ~= nil and (not spell or spell.Level() > spell.Level()) then
+      logger.Debug("Found new/upgraded spell in book: [%s] - %s", spell.Level(), spell_name)
+      return spell --[[@as spell]]
+    end
+  else
+      logger.Debug("Spell not in book: %s", spell_name)
+  end
+
+  return nil
+end
+
+--- @param group_spells string[]
+--- @return spell?
+local function find_spell(group_spells)
+  for _, spellName in ipairs(group_spells) do
+      local spell = has_spell(spellName)
+      if spell and spell() ~= nil then
+        return spell
       end
   end
 
-  return spell
+  return nil
 end
 
 --- @param group_name string
@@ -47,6 +58,7 @@ local function find_group_spell(group_name)
 end
 
 return {
+  HasSpell = has_spell,
   FindSpell = find_spell,
   FindGroupSpell = find_group_spell,
 }

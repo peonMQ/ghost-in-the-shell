@@ -6,7 +6,7 @@ local mqUtils = require 'utils/mqhelpers'
 local spawnsearchparams = require 'lib/spawnsearchparams'
 local state = require 'lib/spells/state'
 local numberUtils = require 'lib/numberutils'
-local config = require 'modules/curer/config'
+local settings = require 'settings/settings'
 
 local function checkInterrupt(spellId)
   local target = mq.TLO.Target
@@ -24,38 +24,13 @@ local function checkInterrupt(spellId)
   end
 end
 
-local function checkCurePoison()
-  local spell = config.CurePoison
-  if not spell then
-    logger.Debug("No CurePoison.")
-    return
-  end
-
+local function checkCure(spell)
   for i=1,mq.TLO.NetBots.Counts() do
     local name = mq.TLO.NetBots.Client(i)()
     local netbot = mq.TLO.NetBots(name) --[[@as netbot]]
     if spell:CanCastOnNetBot(netbot) then
       if mqUtils.EnsureTarget(netbot.ID()) then
-        logger.Info("Cure disease netbot '%s' <%s>[%d]", spell.MQSpell.Name(), mq.TLO.Target.Name(), mq.TLO.Target.PctHPs())
-        spell:Cast(checkInterrupt)
-      end
-    end
-  end
-end
-
-local function checkCureDisease()
-  local spell = config.CureDisease
-  if not spell then
-    logger.Debug("No CureDisease.")
-    return
-  end
-
-  for i=1,mq.TLO.NetBots.Counts() do
-    local name = mq.TLO.NetBots.Client(i)()
-    local netbot = mq.TLO.NetBots(name) --[[@as netbot]]
-    if spell:CanCastOnNetBot(netbot) then
-      if mqUtils.EnsureTarget(netbot.ID()) then
-        logger.Info("Cure disease netbot '%s' <%s>[%d]", spell.MQSpell.Name(), mq.TLO.Target.Name(), mq.TLO.Target.PctHPs())
+        logger.Info("Cure netbot with '%s' <%s>[%d]", spell.MQSpell.Name(), mq.TLO.Target.Name(), mq.TLO.Target.PctHPs())
         spell:Cast(checkInterrupt)
       end
     end
@@ -83,8 +58,10 @@ local function doCuring()
     return
   end
 
-  checkCurePoison()
-  checkCureDisease()
+  for _, curespell in ipairs(settings.cures) do
+    checkCure(curespell)
+  end
+
 end
 
 return doCuring

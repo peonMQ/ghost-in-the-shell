@@ -1,6 +1,8 @@
 local mq = require 'mq'
 local logger = require("knightlinc/Write")
 local lua_utils = require 'utils/debug'
+local spell_finder = require 'lib/spells/spell_finder'
+local curespell = require 'modules/curer/types/curespell'
 
 
 logger.prefix = string.format("\at%s\ax", "[GITS]")
@@ -27,7 +29,7 @@ local bot_settings_filename = string.format("%s/gits2/%s/bots/%s_settings.lua", 
 ---@field public buffs PeerSettingsBuff
 ---@field public pet PeerSettingsPet | nil
 ---@field public gems table<string, integer> key is string, val is integer
----@field public cures table<CounterTypes, CureSpell> spell group of buff groups to request
+---@field public cures CureSpell[] spell group of buff groups to request
 ---@field public songs table<string, string[]> a songset with songs
 ---@field public meditate integer Override default mana/endurance % of when to auto med
 
@@ -90,6 +92,18 @@ local default_settings = {
 
 local settings = loader.LoadSettings(default_settings --[[@as ApplicationSettings]], server_settings_filename, class_settings_filename, bot_settings_filename)
 
+---@param spell_group_or_name string
+---@return integer
+function settings:GetDefaultGem(spell_group_or_name)
+  for key, value in pairs(self.gems) do
+    if key == spell_group_or_name then
+      return value
+    end
+  end
+
+  return self.gems.default or 5
+end
+
 function settings:ReloadSettings()
   logger.loglevel = settings.loglevel
 
@@ -107,25 +121,19 @@ function settings:ReloadSettings()
   if not spells_pet(settings.pet.type) then
     self.pet = nil
   end
-  -- local mapped_cures = {}
-  -- for _, value in pairs(self.cures) do
-  --   local cure_spell = cureSpell:new()
-  -- end
-end
 
-local function saveSettings()
-end
-
----@param spell_group_or_name string
----@return integer
-function settings:GetDefaultGem(spell_group_or_name)
-  for key, value in pairs(self.gems) do
-    if key == spell_group_or_name then
-      return value
+  local availableCures = {}
+  for _, value in ipairs(self.cures) do
+    local spell = spell_finder.FindGroupSpell(value.Name)
+    if spell and spell() then
+      table.insert(availableCures, curespell:new(spell.Name(), self:GetDefaultGem(value.Name), value.MinManaPercent, value.GiveUpTimer))
     end
   end
 
-  return self.gems.default or 5
+  self.cures = availableCures
+end
+
+local function saveSettings()
 end
 
 settings:ReloadSettings()
