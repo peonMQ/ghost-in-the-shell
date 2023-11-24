@@ -3,7 +3,7 @@ local logger = require("knightlinc/Write")
 local lua_utils = require 'utils/debug'
 local spell_finder = require 'lib/spells/spell_finder'
 local curespell = require 'modules/curer/types/curespell'
-local nukepell = require 'modules/nukes/types/nukespell'
+local nukepell = require 'modules/nuker/types/nukespell'
 
 
 logger.prefix = string.format("\at%s\ax", "[GITS]")
@@ -133,7 +133,7 @@ function settings:ReloadSettings()
   self.cures = availableCures
 
   local availableNukes = {}
-  for key, spells in ipairs(self.assist.nukes) do
+  for key, spells in pairs(self.assist.nukes) do
     ---@type NukeSpell[]
     local availableSpells = {}
     for _, value in ipairs(spells) do
