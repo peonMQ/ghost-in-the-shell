@@ -1,4 +1,5 @@
 require("application/commands/buff/commands")
+require("application/commands/debuff/commands")
 require("application/commands/loot/commands")
 require("application/commands/movement/commands")
 require("application/commands/nuke/commands")

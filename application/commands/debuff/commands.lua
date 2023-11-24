@@ -1,0 +1,1 @@
+require("application/commands/debuff/toggle_auto_mezz_command")

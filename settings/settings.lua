@@ -3,6 +3,7 @@ local logger = require("knightlinc/Write")
 local lua_utils = require 'utils/debug'
 local spell_finder = require 'lib/spells/spell_finder'
 local curespell = require 'modules/curer/types/curespell'
+local debuffSpell = require 'modules/debuffer/types/debuffspell'
 local nukepell = require 'modules/nuker/types/nukespell'
 
 
@@ -131,6 +132,15 @@ function settings:ReloadSettings()
     end
   end
   self.cures = availableCures
+
+  local availableDebuffs = {}
+  for _, value in ipairs(self.assist.debuffs) do
+    local spell = spell_finder.FindGroupSpell(value.Name)
+    if spell and spell() then
+      table.insert(availableDebuffs, debuffSpell:new(spell.Name(), self:GetDefaultGem(value.Name), value.MinManaPercent, value.GiveUpTimer, value.MaxResists))
+    end
+  end
+  self.assist.debuffs = availableDebuffs
 
   local availableNukes = {}
   for key, spells in pairs(self.assist.nukes) do

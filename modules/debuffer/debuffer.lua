@@ -1,4 +1,3 @@
---- @type Mq
 local mq = require 'mq'
 local logger = require 'utils/logging'
 local broadcast = require 'broadcast/broadcast'
@@ -6,10 +5,8 @@ local mqUtils = require 'utils/mqhelpers'
 local common = require 'lib/common/common'
 local state = require 'lib/spells/state'
 local castReturnTypes = require 'lib/spells/types/castreturn'
-local config = require 'modules/debuffer/config'
+local settings = require 'settings/settings'
 local repository = require 'modules/debuffer/types/debuffRepository'
-
---- @type Timer
 local timer = require 'lib/timer'
 
 local cleanTimer = timer:new(60)
@@ -53,7 +50,7 @@ local function doDebuffs()
     cleanTimer:Reset()
   end
 
-  for _, debuffSpell in ipairs(config.DeBuffs) do
+  for _, debuffSpell in ipairs(settings.assist.debuffs) do
     if debuffSpell:CanCast() then
       local spell = mq.TLO.Spell(debuffSpell.Id)
       if spell.SpellType() == "Detrimental" then
