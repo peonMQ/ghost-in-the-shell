@@ -2,9 +2,9 @@
 local mq = require 'mq'
 local logger = require 'utils/logging'
 local plugin = require 'utils/plugins'
-local config = require 'lib/common/config'
+local settings = require 'settings/settings'
 
-local next = next 
+local next = next
 
 ---@return string?
 local function getMainTank()
@@ -13,12 +13,12 @@ local function getMainTank()
     return nil
   end
 
-  if next(config.MainTanks) == nil then
+  if next(settings.assist.tanks) == nil then
     logger.Debug("No MainTanks defined.")
     return nil
  end
 
- for _, maintank in ipairs(config.MainTanks) do
+ for _, maintank in ipairs(settings.assist.tanks) do
   local netbot = mq.TLO.NetBots(maintank)
   if netbot.ID() ~= "NULL" and netbot.InZone() ~= "NULL" then
     return maintank
@@ -39,9 +39,9 @@ local function amIOfftank()
     return false
   end
 
-  for i=1, #config.MainTanks do
-    if config.MainTanks[i] == mainTank and config.MainTanks[i+1] == mq.TLO.Me.Name() then
-      local netbot = mq.TLO.NetBots(config.MainTanks[i])
+  for i=1, #settings.assist.tanks do
+    if settings.assist.tanks[i] == mainTank and settings.assist.tanks[i+1] == mq.TLO.Me.Name() then
+      local netbot = mq.TLO.NetBots(settings.assist.tanks[i])
       if netbot.ID() ~= "NULL" and netbot.InZone() ~= "NULL" then
         return true
       else
@@ -60,12 +60,12 @@ local function getMainAssist()
     return nil
   end
 
-  if next(config.MainAssists) == nil then
+  if next(settings.assist.main_assist) == nil then
     logger.Debug("No MainAssists defined.")
     return nil
  end
 
- for _, mainAssist in ipairs(config.MainAssists) do
+ for _, mainAssist in ipairs(settings.assist.main_assist) do
   local netbot = mq.TLO.NetBots(mainAssist)
   if netbot.ID() ~= "NULL" and netbot.InZone() ~= "NULL" then
     return mainAssist

@@ -34,6 +34,8 @@ local bot_settings_filename = string.format("%s/gits2/%s/bots/%s_settings.lua", 
 ---@class PeerSettingsAssist
 ---@field public type AssitTypes type of assist
 ---@field public engage_at integer engage at this HP %
+---@field public tanks string[] ordered list of tanks
+---@field public main_assist string[] ordered list of main assists
 ---@field public nukes table<string, NukeSpell[]> spell group of nukes
 ---@field public dots DeBuffSpell[] spell group of dots
 ---@field public debuffs DeBuffSpell[] spell group of debuffs
@@ -66,6 +68,8 @@ local default_settings = {
   assist = {
     type = nil,
     engage_at = 90,
+    tanks = {},
+    main_assist = {},
     nukes = {},
     dots = {},
     debuffs = {}
