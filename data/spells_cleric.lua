@@ -19,6 +19,9 @@ return {
       "Light Healing",                            -- L04 Light Healing (47-65 hp, 2s cast, 28 mana)
       "Minor Healing",                            -- L01 Minor Healing (12-20 hp, 1.5s cast, 10 mana)
   },
+  clr_complete_heal = {
+      "Complete Healing"
+  },
   clr_remedy = {
       "Pious Remedy",                             -- L66 Pious Remedy (1990 hp, 1.8s cast, 495 mana)
       "Supernal Remedy",                          -- L61 Supernal Remedy (1450 hp, 1.8s cast, 400 mana)
@@ -85,14 +88,14 @@ return {
       "Holy Armor",                               -- L05 Holy Armor (slot 4: 6 ac)
   },
   -- NOTE: slot 2 - does not stack with dru_skin
-  clr_aegolism     = {
+  clr_aegolism = {
       "Temerity",                                 -- L77: 2457 hp, 126  ac, SoF
       "Tenacity",                                 -- L72: (2144 hp, 113 ac)
       "Conviction",                               -- L67: (1787 hp, 94 ac)
       "Virtue",                                   -- L62: (1405 hp, 72 ac, single) PoP
       "Aegolism",                                 -- L60: (1150 hp, 60 ac, single) Velious
       "Temperance",                               -- L40: (800 hp, 48 ac, single) LoY - LANDS ON L01
-      "Fortitu    de",                            -- L55: (320-360 hp, 17-18 ac, 2h24m duration) Kunark
+      "Fortitude",                                -- L55: (320-360 hp, 17-18 ac, 2h24m duration) Kunark
       "Heroic Bond",                              -- L52: (360-400 hp, 18-19 ac, group) Kunark
       "Heroism",                                  -- L52: (360-400 hp, 18-19 ac, 1h12m duration) Kunark
       "Resolution",                               -- L44: (232-250 hp, 15-16 ac)

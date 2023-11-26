@@ -57,7 +57,7 @@ local bot_settings_filename = string.format("%s/gits2/%s/bots/%s_settings.lua", 
 ---@class PeerSettingsPet
 ---@field public type MagePetTypes|nil
 ---@field public engage_at integer engage at this HP %
----@field public buffs string[] spell group of pet buffs
+---@field public buffs table<string, BuffSpell> spell group of pet buffs
 ---@field public taunt boolean pet should taunt
 
 ---@class PeerSettingsMana
@@ -138,6 +138,11 @@ function settings:ReloadSettings()
     local spell = spell_finder.FindGroupSpell(name)
     if spell then
       availableConversions[name] = conversionSpell:new(spell.Name(), self:GetDefaultGem(name), value.StartManaPct, value.StopHPPct)
+    else
+      spell = spell_finder.FindSpell(name)
+      if spell then
+        availableConversions[name] = conversionSpell:new(spell.Name(), self:GetDefaultGem(name), value.StartManaPct, value.StopHPPct)
+      end
     end
 
     local hasItem = mq.TLO.FindItem("="..name)()
