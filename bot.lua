@@ -3,7 +3,6 @@ local mq = require 'mq'
 local plugins = require 'utils/plugins'
 local logger = require 'utils/logging'
 local debugutils = require 'utils/debug'
-local doManaStone = require 'lib/caster/manastone'
 local doMeditate = require 'lib/caster/meditate'
 local doManaConversion = require 'lib/caster/manaconversion'
 local doBuffs = require 'modules/buffer/buffer'
@@ -23,19 +22,19 @@ require("application/commands")
 ---@type table<eqclass, fun()[]>
 local classActions = {
   bard = {doBuffs, doMeleeDps},
-  cleric = {doBuffs, doHealing, doNuking, doMeleeDps, doManaStone, doMeditate, doCuring},
-  druid = {doBuffs, doDeBuffs, doHealing, doNuking, doMeleeDps, doManaStone, doMeditate},
-  enchanter = {doMezz, doBuffs, doDeBuffs, doMeleeDps, doNuking, doManaStone, doMeditate},
-  magician = {doBuffs, doDeBuffs, doPet, doNuking, doMeleeDps, doManaStone, doMeditate},
+  cleric = {doBuffs, doHealing, doNuking, doMeleeDps, doMeditate, doCuring},
+  druid = {doBuffs, doDeBuffs, doHealing, doNuking, doMeleeDps, doMeditate},
+  enchanter = {doMezz, doBuffs, doDeBuffs, doMeleeDps, doNuking, doMeditate},
+  magician = {doBuffs, doDeBuffs, doPet, doNuking, doMeleeDps, doMeditate},
   monk = {doBuffs, function() doMeleeDps(combatActions.DoPunchesAndKicks) end},
-  necromancer = {doBuffs, doDeBuffs, doPet, doNuking, doMeleeDps, doManaStone, doMeditate},
+  necromancer = {doBuffs, doDeBuffs, doPet, doNuking, doMeleeDps, doMeditate},
   paladin = {doBuffs, doHealing, doNuking, doMeleeDps, doMeditate},
   ranger = {doBuffs, doHealing, doNuking, doMeleeDps, doMeditate},
   rogue = {doBuffs, function() doMeleeDps(combatActions.DoBackStab) end},
   shadowknight = {doBuffs, doPet, doNuking, doMeleeDps, doMeditate},
-  shaman = {doBuffs, doDeBuffs, doHealing, doPet, doNuking, doMeleeDps, doManaStone, doManaConversion, doMeditate, doCuring},
+  shaman = {doBuffs, doDeBuffs, doHealing, doPet, doNuking, doMeleeDps, doManaConversion, doMeditate, doCuring},
   warrior = {doBuffs, doMeleeDps},
-  wizard = {doBuffs, doNuking, doMeleeDps, doManaStone, doManaConversion, doMeditate}
+  wizard = {doBuffs, doNuking, doMeleeDps, doManaConversion, doMeditate}
 }
 
 local function isFollowing()

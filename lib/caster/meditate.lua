@@ -1,19 +1,8 @@
---- @type Mq
 local mq = require 'mq'
 local mqutil = require 'utils/mqhelpers'
-local configLoader = require 'utils/configloader'
---- @type MQEvent
 local mqEvents = require 'lib/mqevent'
---- @type Timer
 local timer = require 'lib/timer'
-
----@class CommonConfig
-local defaultConfig = {
-  MeditateManaPct = 99,
-  MeditateWithNpcInCamp = true
-}
-
-local config = configLoader("general.mana", defaultConfig)
+local settings = require 'settings/settings'
 
 local tempDisableMeditateTimer = timer:new(10)
 
@@ -22,7 +11,6 @@ local function youHaveBeenHitEvent()
 end
 
 local disableMeditateEvent = mqEvents:new("disableMeditate", "#*# YOU for #1# points of damage.", youHaveBeenHitEvent)
-
 disableMeditateEvent:Register()
 
 local function doMeditate()
@@ -33,10 +21,10 @@ local function doMeditate()
     return
   end
 
-  if me.Sitting() and ((mqutil.NPCInRange(100) and not config.MeditateWithNpcInCamp) or tempDisableMeditateTimer:IsRunning()) then
+  if me.Sitting() and ((mqutil.NPCInRange(100) and not settings.mana.meditate_with_mob_in_camp) or tempDisableMeditateTimer:IsRunning()) then
     mq.cmd("/stand")
     return
-  elseif not me.Sitting() and me.PctMana() < config.MeditateManaPct and (not mqutil.NPCInRange(100) or config.MeditateWithNpcInCamp) and tempDisableMeditateTimer:IsComplete() then
+  elseif not me.Sitting() and me.PctMana() < settings.mana.meditate and (not mqutil.NPCInRange(100) or settings.mana.meditate_with_mob_in_camp) and tempDisableMeditateTimer:IsComplete() then
     mq.cmd("/sit")
     return
   end

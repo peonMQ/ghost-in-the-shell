@@ -55,19 +55,19 @@ function Item:Cast(cancelCallback)
   self:FlushCastEvents()
   state.Reset()
 
-  if (mq.TLO.Window("SpellBookWnd").Open()) then
+  if mq.TLO.Window("SpellBookWnd").Open() then
     mq.cmd("/keypress spellbook")
   end
 
-  if (mq.TLO.Me.Ducking()) then
+  if mq.TLO.Me.Ducking() then
     mq.cmd("/keypress duck")
   end
 
-  if (mq.TLO.Me.Sitting()) then
+  if mq.TLO.Me.Sitting() then
     mq.cmd("/stand")
   end
 
-  if mq.TLO.Me.Animation()  == 16 then
+  if mq.TLO.Me.Animation() == 16 then
     mq.cmd("/stand")
   end
 

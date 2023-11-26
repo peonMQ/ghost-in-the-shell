@@ -17,6 +17,13 @@ return {
       "Ether Skin",                               -- L68: slot 1: absorb 975 dmg, 3 mana/tick
       "Force Shield",                             -- L63: slot 1: absorb 750 dmg, 2 mana/tick
   },
+  -- NOTE: does not stack with druid resists
+  wiz_self_resist = {
+      "Elemental Barrier",                        -- L61 Elemental Barrier (60 cr, 60 fr)
+      "Elemental Cloak",                          -- L54 Elemental Cloak (45 cr, 45 fr)
+      "Elemental Armor",                          -- L41 Elemental Armor (30 cr, 30 fr)
+      "Elemental Shield",                         -- L19 Elemental Shield (14-15 cr, 14-15 fr)
+  },
   wiz_fire_nuke = {
       "Ancient: Core Fire",                       -- L70 Ancient: Core Fire (4070 hp, resist adj -10, cost 850 mana, 8s cast)
       "Corona Flare",                             -- L70 Corona Flare (3770 hp, resist adj -10, cost 800 mana, 8s cast)
@@ -93,6 +100,9 @@ return {
     "Project Lightning",                          -- L14 Project Lightning (55-62 hp, MAGIC, aerange 25, recast 6s, cost 85 mana)
     "Fingers of Fire",                            -- L05 Fingers of Fire (19-28 hp, FIRE, aerange 25, recast 6s, cost 47 mana)
     "Numbing Cold",                               -- L01 Numbing Cold (14 hp, ICE, aerange 25, recast 12s, cost 6 mana)
+  },
+  wiz_mana_conversion = {
+      "Harvest",
   },
   wiz_epic2 = {
       "Staff of Phenomenal Power",                -- epic 2.0: -50% spell resist rate for group, -6% spell hate

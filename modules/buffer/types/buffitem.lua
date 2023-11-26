@@ -78,7 +78,7 @@ end
 ---@return boolean
 function BuffItem:CanCastOnspawn(spawn)
   local spell = mq.TLO.Spell(self.Name)
-  
+
   if spawn.Distance() > spell.Range() then
     return false
   end
@@ -93,7 +93,7 @@ end
 ---@param netbot netbot
 ---@return boolean
 function BuffItem:WillStack(netbot)
-  local netbotBuffs = luaUtils.Split(netbot.Buff(), "%s")
+  local netbotBuffs = luaUtils.Split(netbot.Buff() --[[@as string]], "%s")
 
   for _, buffId in ipairs(netbotBuffs) do
     if self.Id == tonumber(buffId) then
