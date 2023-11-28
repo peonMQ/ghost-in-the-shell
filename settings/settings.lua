@@ -119,6 +119,32 @@ function settings:GetDefaultGem(spell_group_or_name)
   return self.gems.default or 5
 end
 
+---@generic T
+---@param spelldata table<string, T>
+---@param mapSpellFunc fun(groupname: string, name: string, data: T):T
+---@param mapItemFunc? fun(name: string, data: T):T
+---@return table<string, T>
+local function mapSpellOrItem(spelldata, mapSpellFunc, mapItemFunc)
+  local availableSpells = {}
+  for name, value in pairs(spelldata) do
+    if mapItemFunc and mq.TLO.FindItem("="..name)() then
+      availableSpells[name] = mapItemFunc(name, value)
+    else
+      local spell = spell_finder.FindGroupSpell(name)
+      if spell then
+        availableSpells[name] = mapSpellFunc(name, spell.Name(), value)
+      else
+        spell = spell_finder.FindSpell(name)
+        if spell then
+          availableSpells[name] = mapSpellFunc(name, spell.Name(), value)
+        end
+      end
+    end
+  end
+
+  return availableSpells
+end
+
 function settings:ReloadSettings()
   logger.loglevel = settings.loglevel
 
@@ -129,61 +155,32 @@ function settings:ReloadSettings()
     end
   end
 
+  logger.Debug("Checking pet settings")
   if not spells_pet(settings.pet.type) then
     self.pet = nil
   end
-
-  local availableConversions = {}
-  for name, value in pairs(self.mana.conversions) do
-    local spell = spell_finder.FindGroupSpell(name)
-    if spell then
-      availableConversions[name] = conversionSpell:new(spell.Name(), self:GetDefaultGem(name), value.StartManaPct, value.StopHPPct)
-    else
-      spell = spell_finder.FindSpell(name)
-      if spell then
-        availableConversions[name] = conversionSpell:new(spell.Name(), self:GetDefaultGem(name), value.StartManaPct, value.StopHPPct)
-      end
-    end
-
-    local hasItem = mq.TLO.FindItem("="..name)()
-    if hasItem then
-      availableConversions[name] = conversionItem:new(name, value.StartManaPct, value.StopHPPct)
-    end
-  end
-  self.mana.conversions = availableConversions
 
   if not self.buffs.request or not next(self.buffs.request) then
     self.buffs.request = class_buffs[mq.TLO.Me.Class.ShortName()] or {}
   end
 
-  local availableCures = {}
-  for group_name, value in pairs(self.cures) do
-    local spell = spell_finder.FindGroupSpell(group_name)
-    if spell and spell() then
-      availableCures[group_name] = curespell:new(spell.Name(), self:GetDefaultGem(group_name), value.MinManaPercent, value.GiveUpTimer)
-    end
-  end
-  self.cures = availableCures
+  logger.Debug("Loading conversion settings")
+  self.mana.conversions = mapSpellOrItem(self.mana.conversions,
+                                          function (groupname, name, data) return conversionSpell:new(name, self:GetDefaultGem(groupname), data.StartManaPct, data.StopHPPct) end,
+                                          function (name, data) return conversionItem:new(name, data.StartManaPct, data.StopHPPct) end
+                                          )
 
-  local availableDebuffs = {}
-  for group_name, value in pairs(self.assist.debuffs) do
-    local spell = spell_finder.FindGroupSpell(group_name)
-    if spell and spell() then
-      availableDebuffs[group_name] = debuffSpell:new(spell.Name(), self:GetDefaultGem(group_name), value.MinManaPercent, value.GiveUpTimer, value.MaxResists)
-    end
-  end
-  self.assist.debuffs = availableDebuffs
+  logger.Debug("Loading cure settings")
+  self.cures = mapSpellOrItem(self.cures, function (groupname, name, data) return curespell:new(name, self:GetDefaultGem(groupname), data.MinManaPercent, data.GiveUpTimer) end)
 
+  logger.Debug("Loading debuff settings")
+  self.assist.debuffs = mapSpellOrItem(self.assist.debuffs, function (groupname, name, data) return debuffSpell:new(name, self:GetDefaultGem(groupname), data.MinManaPercent, data.GiveUpTimer, data.MaxResists) end)
+
+  logger.Debug("Loading nuke settings")
   local availableNukes = {}
   for key, spells in pairs(self.assist.nukes) do
     ---@type NukeSpell[]
-    local availableSpells = {}
-    for group_name, value in pairs(spells) do
-      local spell = spell_finder.FindGroupSpell(group_name)
-      if spell and spell() then
-        availableSpells[group_name] = nukepell:new(spell.Name(), self:GetDefaultGem(group_name), value.MinManaPercent, value.GiveUpTimer)
-      end
-    end
+    local availableSpells = mapSpellOrItem(spells, function (groupname, name, data) return nukepell:new(name, self:GetDefaultGem(groupname), data.MinManaPercent, data.GiveUpTimer) end)
 
     if next(availableSpells) then
       availableNukes[key] = availableSpells
@@ -191,47 +188,17 @@ function settings:ReloadSettings()
   end
   self.assist.nukes = availableNukes
 
-  local availableSelfBuffs = {}
-  for name, value in pairs(self.buffs.self) do
-    local spell = spell_finder.FindGroupSpell(name)
-    if spell then
-      availableSelfBuffs[name] = buffspell:new(spell.Name(), self:GetDefaultGem(name), value.MinManaPercent, value.GiveUpTimer, value.ClassRestrictions)
-    end
+  logger.Debug("Loading self buff settings")
+  self.buffs.self = mapSpellOrItem(self.buffs.self,
+                                          function (groupname, name, data) return buffspell:new(name, self:GetDefaultGem(groupname), data.MinManaPercent, data.GiveUpTimer, data.ClassRestrictions) end,
+                                          function (name, data) return buffitem:new(name, data.ClassRestrictions) end
+                                          )
 
-    local hasItem = mq.TLO.FindItem("="..name)()
-    if hasItem then
-      availableSelfBuffs[name] = buffitem:new(name, value.ClassRestrictions)
-    end
-  end
-  self.buffs.self = availableSelfBuffs
-
-  local availableRequestBuffs = {}
-  for name, value in pairs(self.buffs.request) do
-    local spell = spell_finder.FindGroupSpell(name)
-    if spell then
-      availableRequestBuffs[name] = buffspell:new(spell.Name(), self:GetDefaultGem(name), value.MinManaPercent, value.GiveUpTimer, value.ClassRestrictions)
-    end
-
-    local hasItem = mq.TLO.FindItem("="..name)()
-    if hasItem then
-      availableRequestBuffs[name] = buffitem:new(name, value.ClassRestrictions)
-    end
-  end
-  self.buffs.request = availableRequestBuffs
-
-  local availableCombatBuffs = {}
-  for name, value in pairs(self.buffs.combat) do
-    local spell = spell_finder.FindGroupSpell(name)
-    if spell then
-      availableCombatBuffs[name] = buffspell:new(spell.Name(), self:GetDefaultGem(name), value.MinManaPercent, value.GiveUpTimer, value.ClassRestrictions)
-    end
-
-    local hasItem = mq.TLO.FindItem("="..name)()
-    if hasItem then
-      availableCombatBuffs[name] = buffitem:new(name, value.ClassRestrictions)
-    end
-  end
-  self.buffs.combat = availableCombatBuffs
+  logger.Debug("Loading combat buff settings")
+  self.buffs.combat = mapSpellOrItem(self.buffs.combat,
+                                          function (groupname, name, data) return buffspell:new(name, self:GetDefaultGem(groupname), data.MinManaPercent, data.GiveUpTimer, data.ClassRestrictions) end,
+                                          function (name, data) return buffitem:new(name, data.ClassRestrictions) end
+                                          )
 end
 
 local function saveSettings()
