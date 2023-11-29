@@ -1,5 +1,5 @@
 local mq = require 'mq'
-local logger = require 'utils/logging'
+local logger = require("knightlinc/Write")
 local mqUtils = require 'utils/mqhelpers'
 local common = require 'lib/common/common'
 local settings = require 'settings/settings'
@@ -26,14 +26,16 @@ end
 
 local function doNuking()
   local nukes = settings.assist.nukes[assist_state.spell_set]
-  if not next(nukes) then
+  if not next(nukes or {}) then
+    logger.Debug("No nuke for <%s>", assist_state.spell_set)
     return
   end
 
   -- might want to fetch nuke based on target type for 'Undead' and 'Summoned'
   local nukeSpell = nil
-  for _, nuke in ipairs(nukes) do
+  for _, nuke in pairs(nukes) do
     if nuke:MemSpell() and mq.TLO.Me.SpellReady(nuke.Name)() then
+      logger.Debug("Nuke chosen <%s>", nuke.Name)
       nukeSpell = nuke
       break
     end

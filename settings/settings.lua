@@ -9,6 +9,7 @@ local buffspell = require 'modules/buffer/types/buffspell'
 local buffitem = require 'modules/buffer/types/buffitem'
 local debuffSpell = require 'modules/debuffer/types/debuffspell'
 local nukepell = require 'modules/nuker/types/nukespell'
+local healSpell = require 'modules/healer/types/healspell'
 
 
 logger.prefix = string.format("\at%s\ax", "[GITS]")
@@ -36,6 +37,7 @@ local bot_settings_filename = string.format("%s/gits2/%s/bots/%s_settings.lua", 
 ---@field public pet PeerSettingsPet | nil
 ---@field public gems table<string, integer> key is string, val is integer
 ---@field public cures table<string, CureSpell> spell group of buff groups to request
+---@field public heal PeerSettingsHealing spell group of buff groups to request
 ---@field public songs table<string, string[]> a songset with songs
 ---@field public mana PeerSettingsMana Override default mana/endurance regeneration
 
@@ -64,6 +66,13 @@ local bot_settings_filename = string.format("%s/gits2/%s/bots/%s_settings.lua", 
 ---@field public meditate number
 ---@field public meditate_with_mob_in_camp boolean
 ---@field public conversions table<string, ConversionItem|ConversionSpell>
+
+---@class PeerSettingsHealing
+---@field public default table<string, HealSpell>|nil
+---@field public mt_heal table<string, HealSpell>|nil
+---@field public mt_emergency_heal table<string, HealSpell>|nil
+---@field public hot table<string, HealSpell>|nil
+---@field public ae_group table<string, HealSpell>|nil
 
 ---@class ApplicationSettings : PeerSettings
 ---@field public ReloadSettings fun(self: ApplicationSettings) Reload settings from files
@@ -96,6 +105,8 @@ local default_settings = {
     combat = {},
     request = {},
     requestInCombat = false,
+  },
+  heal = {
   },
   pet = {
     type = nil,
@@ -145,6 +156,19 @@ local function mapSpellOrItem(spelldata, mapSpellFunc, mapItemFunc)
   return availableSpells
 end
 
+---@generic T
+---@param spelldata table<string, T>
+---@param mapSpellFunc fun(groupname: string, name: string, data: T):T
+---@param mapItemFunc? fun(name: string, data: T):T
+---@return table<string, T>|nil
+local function mapOptionalSpellOrItem(spelldata, mapSpellFunc, mapItemFunc)
+  if not spelldata then
+    return nil
+  end
+
+  return mapSpellOrItem(spelldata, mapSpellFunc, mapItemFunc)
+end
+
 function settings:ReloadSettings()
   logger.loglevel = settings.loglevel
 
@@ -158,11 +182,15 @@ function settings:ReloadSettings()
   logger.Debug("Checking pet settings")
   if not spells_pet(settings.pet.type) then
     self.pet = nil
+  else
+    self.pet.buffs = mapSpellOrItem(self.pet.buffs,
+                                      function (groupname, name, data) return buffspell:new(name, self:GetDefaultGem(groupname), data.MinManaPercent, data.GiveUpTimer, data.ClassRestrictions) end,
+                                      function (name, data) return buffitem:new(name, data.ClassRestrictions) end)
   end
 
-  if not self.buffs.request or not next(self.buffs.request) then
-    self.buffs.request = class_buffs[mq.TLO.Me.Class.ShortName()] or {}
-  end
+  -- if not self.buffs.request or not next(self.buffs.request) then
+  --   self.buffs.request = class_buffs[mq.TLO.Me.Class.ShortName()] or {}
+  -- end
 
   logger.Debug("Loading conversion settings")
   self.mana.conversions = mapSpellOrItem(self.mana.conversions,
@@ -199,6 +227,38 @@ function settings:ReloadSettings()
                                           function (groupname, name, data) return buffspell:new(name, self:GetDefaultGem(groupname), data.MinManaPercent, data.GiveUpTimer, data.ClassRestrictions) end,
                                           function (name, data) return buffitem:new(name, data.ClassRestrictions) end
                                           )
+
+  logger.Debug("Loading combat buff settings")
+  self.buffs.request = mapSpellOrItem(self.buffs.request,
+                                          function (groupname, name, data) return buffspell:new(name, self:GetDefaultGem(groupname), data.MinManaPercent, data.GiveUpTimer, data.ClassRestrictions) end,
+                                          function (name, data) return buffitem:new(name, data.ClassRestrictions) end
+                                          )
+
+  logger.Debug("Loading heal default settings")
+  self.heal.default = mapOptionalSpellOrItem(self.heal.default,
+                                          function (groupname, name, data) return healSpell:new(name, self:GetDefaultGem(groupname), data.MinManaPercent, data.GiveUpTimer, data.HealPercent, data.HealDistance) end
+                                          )
+
+  logger.Debug("Loading heal mt_heal settings")
+  self.heal.mt_heal = mapOptionalSpellOrItem(self.heal.mt_heal,
+                                          function (groupname, name, data) return healSpell:new(name, self:GetDefaultGem(groupname), data.MinManaPercent, data.GiveUpTimer, data.HealPercent, data.HealDistance) end
+                                          )
+
+  logger.Debug("Loading heal mt_emergency_heal settings")
+  self.heal.mt_emergency_heal = mapOptionalSpellOrItem(self.heal.mt_emergency_heal,
+                                          function (groupname, name, data) return healSpell:new(name, self:GetDefaultGem(groupname), data.MinManaPercent, data.GiveUpTimer, data.HealPercent, data.HealDistance) end
+                                          )
+
+  logger.Debug("Loading heal hot settings")
+  self.heal.hot = mapOptionalSpellOrItem(self.heal.hot,
+                                          function (groupname, name, data) return healSpell:new(name, self:GetDefaultGem(groupname), data.MinManaPercent, data.GiveUpTimer, data.HealPercent, data.HealDistance) end
+                                          )
+
+  logger.Debug("Loading heal ae_group settings")
+  self.heal.ae_group = mapOptionalSpellOrItem(self.heal.ae_group,
+                                          function (groupname, name, data) return healSpell:new(name, self:GetDefaultGem(groupname), data.MinManaPercent, data.GiveUpTimer, data.HealPercent, data.HealDistance) end
+                                          )
+
 end
 
 local function saveSettings()

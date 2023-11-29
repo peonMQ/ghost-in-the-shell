@@ -102,6 +102,7 @@ local anatonica = {
   southkarana="South Karana",
   -- southro="South Ro (B)",
   sro="South Ro (A)",
+  surefall="Surefall Glade",
 }
 
 local faydwer = {

@@ -2,7 +2,7 @@ local mq = require("mq")
 local logger = require("knightlinc/Write")
 local broadcast = require 'broadcast/broadcast'
 local commandQueue  = require("application/command_queue")
-local config = require 'modules/pet/config'
+local assist_state = require 'settings/assist_state'
 
 local function execute()
   local me = mq.TLO.Me
@@ -10,7 +10,7 @@ local function execute()
     mq.cmd("/pet back off")
   end
 
-  config.CurrentPetTarget = 0
+  assist_state.current_pet_target_id = 0
 end
 
 local function createCommand()

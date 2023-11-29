@@ -2,6 +2,7 @@ local mq = require("mq")
 local logger = require("knightlinc/Write")
 local broadcast = require 'broadcast/broadcast'
 local commandQueue  = require("application/command_queue")
+local memorize_command  = require("application/commands/memorize_command")
 local loot_corpse_command  = require("application/commands/wait4rez/loot_corpse_command")
 
 local function waitToZone()
@@ -22,6 +23,7 @@ local function execute()
   broadcast.WarnAll("Ready for rezz.")
   mq.cmd("/consent guild")
 
+  memorize_command()
   repeat
     mq.delay(10)
   until mq.TLO.Window("ConfirmationDialogBox").Open() and mq.TLO.Window("ConfirmationDialogBox").Child("cd_textoutput").Text():find("percent)")

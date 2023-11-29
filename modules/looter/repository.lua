@@ -1,9 +1,7 @@
---- @type Mq
 local mq = require 'mq'
 local logger = require 'utils/logging'
 local luaLoader = require 'utils/loaders/lua-table'
 local debugUtils = require 'utils/debug'
---- @type LootItem
 local item = require 'modules/looter/types/lootitem'
 
 local configDir = mq.configDir.."/"

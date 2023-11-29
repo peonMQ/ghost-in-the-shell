@@ -8,6 +8,7 @@ local loader = require 'settings/loader'
 ---@field spell_set string the nuke spell_set
 ---@field pbaoe_active boolean toggle pbaoe
 ---@field mezz_mode MezzMode auto mezz mode
+---@field current_pet_target_id number
 
 ---@class AssistState : AssistStateData
 ---@field Reset fun(self: AssistState, property?: string) reset state to default state
@@ -17,7 +18,8 @@ local defaultState = {
   mode = 'normal',
   spell_set = 'main',
   pbaoe_active = false,
-  mezz_mode = nil
+  mezz_mode = nil,
+  current_pet_target_id = 0
 }
 
 local state = loader.Clone(defaultState) --[[@as AssistState]]

@@ -5,13 +5,9 @@ local broadcast = require 'broadcast/broadcast'
 local plugin = require 'utils/plugins'
 local mqUtils = require 'utils/mqhelpers'
 local moveUtils = require 'lib/moveutils'
----@type Timer
 local timer = require 'lib/timer'
---- @type LootItem
 local item = require 'modules/looter/types/lootitem'
----@type LooterStates
 local looterStates = require 'modules/looter/types/looterState'
---- @type Repository
 local repository = require 'modules/looter/repository'
 
 local state = looterStates.Idle
@@ -215,7 +211,7 @@ local function lootNearestCorpse(seekRadius)
 
   else
     logger.Info("Unable to loot corpse, currently casting.")
-  end 
+  end
 
   moveUtils.MoveToLoc(startX, startY, startZ, 20, 1)
 end

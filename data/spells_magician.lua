@@ -145,6 +145,10 @@ return {
       "Burst of Flame",                           -- L01 Burst of Flame
   },
   mag_magic_nuke = {
+    "Shock of Steel",                             -- L57 Shock of Steel (275 mana, 795-825  dd)
+    "Shock of Swords",                            -- L44 Shock of Swords
+    "Shock of Spikes",                            -- L24 Shock of Spikes
+    "Shock of Blades",                            -- L08 Shock of Blades
   },
   mag_malo = {
       "Malosinia",                                -- L63: -70 cr, -70 mr, -70 pr, -70 fr, cost 300 mana

@@ -4,23 +4,20 @@ local logger = require 'utils/logging'
 local mqUtils = require 'utils/mqhelpers'
 local common = require 'lib/common/common'
 local settings = require 'settings/settings'
-
-local config = {
-  CurrentPetTarget = 0
-}
+local assist_state = require 'settings/assist_state'
 
 local function doPet()
   if not mq.TLO.Me.Pet.ID() or mq.TLO.Me.Pet.ID() == 0 then
     return
   end
 
-  local query = "id "..config.CurrentPetTarget
-  if config.CurrentPetTarget > 0 and (mq.TLO.SpawnCount(query)() == 0 or mq.TLO.Spawn(query).Type() == "Corpse") then
+  local query = "id "..assist_state.current_pet_target_id
+  if assist_state.current_pet_target_id > 0 and (mq.TLO.SpawnCount(query)() == 0 or mq.TLO.Spawn(query).Type() == "Corpse") then
     mq.cmd("/pet back off")
-    config.CurrentPetTarget = 0
-  elseif config.CurrentPetTarget > 0 then
+    assist_state.current_pet_target_id = 0
+  elseif assist_state.current_pet_target_id > 0 then
     if not mq.TLO.Me.Pet.Combat() then
-      if mqUtils.EnsureTarget(config.CurrentPetTarget) then
+      if mqUtils.EnsureTarget(assist_state.current_pet_target_id) then
         mq.cmd("/pet attack")
         mq.delay(5)
         mq.cmd("/pet attack")
@@ -28,7 +25,7 @@ local function doPet()
     end
 
     if not mq.TLO.Me.Pet.Combat() then
-      logger.Error("Pet not able to engage <%s>", config.CurrentPetTarget)
+      logger.Error("Pet not able to engage <%s>", assist_state.current_pet_target_id)
     end
 
     logger.Debug("Pet has target and hopefully attacking")
@@ -60,7 +57,7 @@ local function doPet()
   end
 
   if mqUtils.EnsureTarget(targetId) then
-    config.CurrentPetTarget = targetId
+    assist_state.current_pet_target_id = targetId
     mq.cmd("/pet back off")
     mq.delay(5)
     mq.cmd("/pet attack")

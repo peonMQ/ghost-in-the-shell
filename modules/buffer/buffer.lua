@@ -78,6 +78,10 @@ local function checkNetBotBuffs()
 end
 
 local function checkPetBuffs()
+  if not settings.pet or not settings.pet.buffs then
+    return
+  end
+
   local me = mq.TLO.Me
   for key, buffSpell in pairs(settings.pet.buffs) do
     if buffSpell:CanCast() then
