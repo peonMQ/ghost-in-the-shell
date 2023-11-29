@@ -1,4 +1,3 @@
---- @type Mq
 local mq = require 'mq'
 local logger = require("knightlinc/Write")
 local debugUtils = require 'utils/debug'
@@ -6,11 +5,8 @@ local broadcast = require 'broadcast/broadcast'
 local moveUtils = require 'lib/moveutils'
 local timer = require 'lib/timer'
 local merchant = require 'modules/looter/merchant'
---- @type LootItem
 local item = require 'modules/looter/types/lootitem'
----@type LooterStates
 local looterStates = require 'modules/looter/types/looterState'
---- @type Repository
 local repository = require 'modules/looter/repository'
 
 local state = looterStates.Idle
