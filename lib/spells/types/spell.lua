@@ -4,7 +4,7 @@ local timer = require 'lib/timer'
 
 local castReturnTypes = require 'lib/spells/types/castreturn'
 local debugutils = require 'utils/debug'
-local logger = require 'utils/logging'
+local logger = require("knightlinc/Write")
 local state = require 'lib/spells/state'
 
 ---@class Spell : Cast
@@ -36,7 +36,7 @@ function Spell:new (name, defaultGem, minManaPercent, giveUpTimer, maxResists)
   if not mq.TLO.Spell(name)() then
     logger.Fatal("<%s> is not a valid spell.", name)
   end
-  
+
   local spellBookPosition = mq.TLO.Me.Book(name)()
   if not spellBookPosition then
     logger.Fatal("<%s> is not availbable in spellbook.", name)

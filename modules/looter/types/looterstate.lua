@@ -1,4 +1,4 @@
-local logger = require 'utils/logging'
+local logger = require("knightlinc/Write")
 
 ---@class LooterState
 ---@field public Name string
@@ -15,7 +15,7 @@ end
 
 function LooterState:__eq(looterState)
   return self.Name == looterState.Name
-end 
+end
 
 function LooterState:__tostring()
   return self.Name

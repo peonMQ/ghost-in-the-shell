@@ -2,7 +2,7 @@ local mq = require 'mq'
 local cast = require 'lib/spells/types/cast'
 
 local castReturnTypes = require 'lib/spells/types/castreturn'
-local logger = require 'utils/logging'
+local logger = require("knightlinc/Write")
 local state = require 'lib/spells/state'
 
 ---@class Item : Cast

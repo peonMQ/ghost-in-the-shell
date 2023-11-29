@@ -1,4 +1,4 @@
-local logger = require 'utils/logging'
+local logger = require("knightlinc/Write")
 
 ---@class CastReturn
 ---@field public Name string
@@ -20,8 +20,8 @@ function CastReturn:new (name, spellRetry, abilityRetry)
 end
 
 function CastReturn:__eq(castReturn)
-  return self.Name == castReturn.Name 
-end 
+  return self.Name == castReturn.Name
+end
 
 function CastReturn:__tostring()
   return self.Name

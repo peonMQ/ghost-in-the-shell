@@ -1,6 +1,6 @@
 --- @type Mq
 local mq = require 'mq'
-local logger = require 'utils/logging'
+local logger = require("knightlinc/Write")
 local luaUtils = require 'utils/lua-table'
 ---@type Spell
 local spell = require 'lib/spells/types/spell'

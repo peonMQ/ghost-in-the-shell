@@ -1,6 +1,6 @@
 --- @type Mq
 local mq = require 'mq'
-local logger = require 'utils/logging'
+local logger = require("knightlinc/Write")
 local castReturnTypes = require 'lib/spells/types/castreturn'
 local state = require 'lib/spells/state'
 --- @type MQEvent

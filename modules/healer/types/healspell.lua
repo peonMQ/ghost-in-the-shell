@@ -2,7 +2,7 @@
 local mq = require 'mq'
 ---@type Spell
 local spell = require 'lib/spells/types/spell'
-local logger = require 'utils/logging'
+local logger = require("knightlinc/Write")
 local luaUtils = require 'utils/lua-table'
 
 ---@class HealSpell : Spell

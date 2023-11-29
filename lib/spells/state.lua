@@ -1,6 +1,6 @@
 local mq = require 'mq'
 local broadcast = require 'broadcast/broadcast'
-local logger = require 'utils/logging'
+local logger = require("knightlinc/Write")
 local timer = require 'lib/timer'
 local castReturnTypes = require 'lib/spells/types/castreturn'
 
@@ -45,7 +45,7 @@ function state.interrupt()
 end
 
 ---@param castReturn CastReturn
-function state.setCastReturn(castReturn) 
+function state.setCastReturn(castReturn)
   logger.Debug("setCastReturn <%s>.", castReturn.Name)
   state.castReturn = castReturn
 end

@@ -1,6 +1,6 @@
 --- @type Mq
 local mq = require 'mq'
-local logger = require 'utils/logging'
+local logger = require("knightlinc/Write")
 local debugUtils = require 'utils/debug'
 local broadcast = require 'broadcast/broadcast'
 local moveUtils = require 'lib/moveutils'

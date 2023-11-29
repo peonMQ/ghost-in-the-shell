@@ -1,5 +1,5 @@
 local mq = require 'mq'
-local logger = require 'utils/logging'
+local logger = require("knightlinc/Write")
 
 ---@class MQEvent
 ---@field public Name string

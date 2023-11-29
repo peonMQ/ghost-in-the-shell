@@ -1,7 +1,7 @@
 --- @type Mq
 local mq = require 'mq'
 local plugins = require 'utils/plugins'
-local logger = require 'utils/logging'
+local logger = require("knightlinc/Write")
 local luapaths = require 'utils/lua-paths'
 local broadCastInterfaceFactory = require('broadcast/broadcastinterface')
 

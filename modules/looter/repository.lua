@@ -1,5 +1,5 @@
 local mq = require 'mq'
-local logger = require 'utils/logging'
+local logger = require("knightlinc/Write")
 local luaLoader = require 'utils/loaders/lua-table'
 local debugUtils = require 'utils/debug'
 local item = require 'modules/looter/types/lootitem'

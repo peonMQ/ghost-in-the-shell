@@ -1,7 +1,7 @@
 --- @type Mq
 local mq = require 'mq'
 local plugins = require 'utils/plugins'
-local logger = require 'utils/logging'
+local logger = require("knightlinc/Write")
 local debugutils = require 'utils/debug'
 local doMeditate = require 'lib/caster/meditate'
 local doManaConversion = require 'lib/caster/manaconversion'

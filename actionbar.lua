@@ -2,7 +2,7 @@ require 'ImGui'
 
 local mq = require 'mq'
 local icons = require 'mq/Icons'
-local logger = require 'utils/logging'
+local logger = require("knightlinc/Write")
 local debugUtils = require 'utils/debug'
 local plugins = require 'utils/plugins'
 local luapaths = require 'utils/lua-paths'
@@ -167,7 +167,7 @@ local navFollow = {
   icon = icons.MD_MY_LOCATION, -- MD_DIRECTIONS_RUN
   tooltip = "Toggle Nav to 'Me'",
   isDisabled = function (state) return not state.bots.active or not plugins.IsLoaded("MQ2Nav") end,
-  activate = function(state) 
+  activate = function(state)
     state.navFollow.active = true
     state.advFollow.active = false
     bci.ExecuteZoneCommand(string.format('/navto %i', mq.TLO.Me.ID()))
@@ -291,7 +291,7 @@ local quit = {
   icon = icons.FA_POWER_OFF,
   tooltip = "Camp Desktop",
   isDisabled = function (state) return false end,
-  activate = function(state) 
+  activate = function(state)
     bci.ExecuteAllWithSelfCommand('/lua stop')
     bci.ExecuteAllWithSelfCommand('/twist off')
     bci.ExecuteAllWithSelfCommand('/camp desktop')
@@ -307,7 +307,7 @@ local door = {
   icon = icons.FA_KEY,
   tooltip = "Click Nearest Door",
   isDisabled = function (state) return false end,
-  activate = function(state) 
+  activate = function(state)
     bci.ExecuteZoneCommand('/multiline ; /doortarget; /click left door')
   end,
 }
