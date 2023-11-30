@@ -52,7 +52,7 @@ end
 
 local function loadFile(file_name)
   local file = loadfile(file_name)
-  if(file) then
+  if file then
       return file()
   end
 

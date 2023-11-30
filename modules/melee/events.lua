@@ -1,8 +1,6 @@
---- @type Mq
 local mq = require 'mq'
 local logger = require("knightlinc/Write")
-local state = require 'modules/melee/state'
---- @type MQEvent
+local assist_state = require 'settings/assist_state'
 local mqEvents = require 'lib/mqevent'
 
 local tooFarAWay = mqEvents:new("tooFarAway", "Your target is too far away, get closer!", function() end)
@@ -11,7 +9,7 @@ local function enragedOnEvent(enragedMobName)
   if mq.TLO.Target.ID() == mq.TLO.Spawn(enragedMobName).ID() then
     if mq.TLO.Me.Combat() then
       mq.cmd("/attack off")
-      state.enraged = true
+      assist_state.enraged = true
     end
   end
 end
@@ -20,7 +18,7 @@ local function enragedOnOff(enragedMobName)
   if mq.TLO.Target.ID() == mq.TLO.Spawn(enragedMobName).ID() then
     if mq.TLO.Me.Combat() then
       mq.cmd("/attack on")
-      state.enraged = false
+      assist_state.enraged = false
     end
   end
 end

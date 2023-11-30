@@ -112,7 +112,7 @@ local function checkHealNetBots()
   for i=1,mq.TLO.NetBots.Counts() do
     local name = mq.TLO.NetBots.Client(i)()
     local netbot = mq.TLO.NetBots(name) --[[@as netbot]]
-    if spell:CanCastOnNetBot(netbot) and (not netbotTimers[netbot.ID()] or netbotTimers[netbot.ID()]:IsComplete()) then
+    if spell:CanCastOnNetBot(netbot, 15) and (not netbotTimers[netbot.ID()] or netbotTimers[netbot.ID()]:IsComplete()) then
       if netbot.PctHPs() < lowestMember.percentHP then
         lowestMember.id = netbot.ID()
         lowestMember.percentHP = netbot.PctHPs()

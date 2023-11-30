@@ -4,12 +4,12 @@ local luaLoader = require 'utils/loaders/lua-table'
 local debugUtils = require 'utils/debug'
 local item = require 'modules/looter/types/lootitem'
 
-local configDir = mq.configDir.."/"
+local configDir = mq.configDir
 local serverName = mq.TLO.MacroQuest.Server()
 
 local function getFilePath()
   local fileName = "loot_settings.lua"
-  return string.format("%s/%s/gits/data/%s", configDir, serverName, fileName)
+  return string.format("%s/gits/%s/data/%s", configDir, serverName, fileName)
 end
 
 local function loadStore()

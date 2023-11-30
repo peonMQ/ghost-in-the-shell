@@ -1,7 +1,7 @@
---- @type Mq
 local mq = require 'mq'
-local plugins = require 'utils/plugins'
 local logger = require("knightlinc/Write")
+local broadcast = require 'broadcast/broadcast'
+local plugins = require 'utils/plugins'
 local debugutils = require 'utils/debug'
 local doMeditate = require 'lib/caster/meditate'
 local doManaConversion = require 'lib/caster/manaconversion'
@@ -22,12 +22,12 @@ require("application/commands")
 ---@type table<eqclass, fun()[]>
 local classActions = {
   bard = {doBuffs, doMeleeDps},
-  cleric = {doBuffs, doHealing, doNuking, doMeleeDps, doMeditate, doCuring},
-  druid = {doBuffs, doDeBuffs, doHealing, doNuking, doMeleeDps, doMeditate},
-  enchanter = {doMezz, doBuffs, doDeBuffs, doMeleeDps, doNuking, doMeditate},
-  magician = {doBuffs, doDeBuffs, doPet, doNuking, doMeleeDps, doMeditate},
+  cleric = {doBuffs, doHealing, doNuking, doMeleeDps, doMeditate, doCuring, doManaConversion},
+  druid = {doBuffs, doDeBuffs, doHealing, doNuking, doMeleeDps, doMeditate, doManaConversion},
+  enchanter = {doMezz, doBuffs, doDeBuffs, doMeleeDps, doNuking, doMeditate, doManaConversion},
+  magician = {doBuffs, doDeBuffs, doPet, doNuking, doMeleeDps, doMeditate, doManaConversion},
   monk = {doBuffs, function() doMeleeDps(combatActions.DoPunchesAndKicks) end},
-  necromancer = {doBuffs, doDeBuffs, doPet, doNuking, doMeleeDps, doMeditate},
+  necromancer = {doBuffs, doDeBuffs, doPet, doNuking, doMeleeDps, doMeditate, doManaConversion},
   paladin = {doBuffs, doHealing, doNuking, doMeleeDps, doMeditate},
   ranger = {doBuffs, doHealing, doNuking, doMeleeDps, doMeditate},
   rogue = {doBuffs, function() doMeleeDps(combatActions.DoBackStab) end},
@@ -61,8 +61,8 @@ if mq.TLO.Me.GM() then
   return
 end
 
+broadcast.SuccessAll("Bot starting up <%s>...", mq.TLO.Me.CleanName())
 local botActions = classActions[mq.TLO.Me.Class():lower()] or {}
-
 while true do
   if not isFollowing() then
     for _,action in ipairs(botActions) do

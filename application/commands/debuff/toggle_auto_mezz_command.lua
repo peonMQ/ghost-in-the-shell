@@ -24,7 +24,7 @@ local function execute(mezz_mode)
   end
 
   if not assist_state.mezz_mode then
-    broadcast.ErrorAll("%s is no longer doing crowd control", mq.TLO.Me.Name())
+    broadcast.WarnAll("%s is no longer doing crowd control", mq.TLO.Me.Name())
   else
     broadcast.SuccessAll("%s is now doing crowd control", mq.TLO.Me.Name())
   end

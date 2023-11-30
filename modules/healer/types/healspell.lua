@@ -1,9 +1,6 @@
---- @type Mq
 local mq = require 'mq'
----@type Spell
-local spell = require 'lib/spells/types/spell'
 local logger = require("knightlinc/Write")
-local luaUtils = require 'utils/lua-table'
+local spell = require 'lib/spells/types/spell'
 
 ---@class HealSpell : Spell
 ---@field public Id integer
@@ -57,9 +54,10 @@ function HealSpell:CanCastOnTarget(target)
 end
 
 ---@param netbot netbot
+---@param heal_pct_adjustment? number
 ---@return boolean
-function HealSpell:CanCastOnNetBot(netbot)
-  if (tonumber(netbot.PctHPs()) or 100) > self.HealPercent then
+function HealSpell:CanCastOnNetBot(netbot, heal_pct_adjustment)
+  if (tonumber(netbot.PctHPs()) or 100) > self.HealPercent - (heal_pct_adjustment or 0) then
     return false
   end
 
@@ -83,28 +81,6 @@ function HealSpell:CanCastOnGroupMember(groupMember)
   end
 
   return self:CanCastOnSpawn(groupMember)
-end
-
----@param netbot netbot
----@return boolean
-function HealSpell:WillStack(netbot)
-  local netbotBuffs = luaUtils.Split(netbot.Buff(), "%s")
-  for _, buffId in ipairs(netbotBuffs) do
-    if self.Id == tonumber(buffId) then
-      return false
-    end
-
-    local buffSpell = mq.TLO.Spell(buffId)
-    if buffSpell() and not mq.TLO.Spell(self.Id).WillStack(buffSpell.Name())() then
-      return false
-    end
-  end
-
-  if #netbotBuffs == 15 then
-    return false
-  end
-
-  return true
 end
 
 return HealSpell

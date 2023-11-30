@@ -1,4 +1,3 @@
---- @type Mq
 local mq = require 'mq'
 local logger = require("knightlinc/Write")
 local broadcast = require 'broadcast/broadcast'

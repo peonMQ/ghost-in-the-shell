@@ -4,8 +4,8 @@ local logger = require("knightlinc/Write")
 local mqUtils = require 'utils/mqhelpers'
 local common = require 'lib/common/common'
 local settings = require 'settings/settings'
-local state = require 'modules/melee/state'
 local events = require 'modules/melee/events'
+local assist_state = require 'settings/assist_state'
 
 local function doEvents()
   for key, value in pairs(events) do
@@ -49,7 +49,7 @@ local function doMeleeDps(meleeAbilityCallback)
   end
 
   doEvents()
-  if state.enraged and me.Combat() then
+  if assist_state.enraged and me.Combat() then
     mq.cmd("/attack off")
     logger.Debug("Enraged, attack off")
     return
@@ -68,7 +68,7 @@ local function doMeleeDps(meleeAbilityCallback)
       if mq.TLO.Stick.Active() then
         mq.cmd("/stick off")
       end
-      state.enraged = false
+      assist_state.enraged = false
       return
     end
   end
@@ -81,7 +81,7 @@ local function doMeleeDps(meleeAbilityCallback)
     if mq.TLO.Stick.Active() then
       mq.cmd("/stick off")
     end
-    state.enraged = false
+    assist_state.enraged = false
     logger.Debug("Mainassist not found")
     return
   end

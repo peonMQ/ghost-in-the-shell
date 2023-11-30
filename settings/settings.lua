@@ -1,6 +1,7 @@
 local mq = require 'mq'
 local logger = require("knightlinc/Write")
 local lua_utils = require 'utils/debug'
+local luapaths = require 'utils/lua-paths'
 local spell_finder = require 'lib/spells/spell_finder'
 local conversionSpell = require 'lib/caster/conversionspell'
 local conversionItem = require 'lib/caster/conversionitem'
@@ -10,6 +11,7 @@ local buffitem = require 'modules/buffer/types/buffitem'
 local debuffSpell = require 'modules/debuffer/types/debuffspell'
 local nukepell = require 'modules/nuker/types/nukespell'
 local healSpell = require 'modules/healer/types/healspell'
+local hotSpell = require 'modules/healer/types/hotspell'
 
 
 logger.prefix = string.format("\at%s\ax", "[GITS]")
@@ -21,10 +23,14 @@ local loader = require 'settings/loader'
 local class_buffs = require 'data/class_buffs'
 local spells_pet = require 'data/spells_pet'
 
+local runningDir = luapaths.RunningDir:new()
+local currentScript = runningDir:Parent():GetRelativeToMQLuaPath("")
+
 local server_shortname = mq.TLO.MacroQuest.Server()
-local server_settings_filename = string.format("%s/gits2/%s/server_settings.lua", mq.configDir, server_shortname)
-local class_settings_filename = string.format("%s/gits2/%s/%s_settings.lua", mq.configDir, server_shortname, mq.TLO.Me.Class.Name():lower())
-local bot_settings_filename = string.format("%s/gits2/%s/bots/%s_settings.lua", mq.configDir, server_shortname, mq.TLO.Me.Name():lower())
+local settings_path = string.format("%s/%s/%s", mq.configDir, currentScript, server_shortname)
+local server_settings_filename = string.format("%s/server_settings.lua",settings_path)
+local class_settings_filename = string.format("%s/%s_settings.lua", settings_path, mq.TLO.Me.Class.Name():lower())
+local bot_settings_filename = string.format("%s/bots/%s_settings.lua", settings_path, mq.TLO.Me.Name():lower())
 
 ---@alias ClassShortNames 'CLR'| 'ENC'
 ---@alias LogLevel 'trace'|'debug'|'info'|'warn'|'error'|'fail'
@@ -71,7 +77,7 @@ local bot_settings_filename = string.format("%s/gits2/%s/bots/%s_settings.lua", 
 ---@field public default table<string, HealSpell>|nil
 ---@field public mt_heal table<string, HealSpell>|nil
 ---@field public mt_emergency_heal table<string, HealSpell>|nil
----@field public hot table<string, HealSpell>|nil
+---@field public hot table<string, HotSpell>|nil
 ---@field public ae_group table<string, HealSpell>|nil
 
 ---@class ApplicationSettings : PeerSettings
@@ -251,7 +257,7 @@ function settings:ReloadSettings()
 
   logger.Debug("Loading heal hot settings")
   self.heal.hot = mapOptionalSpellOrItem(self.heal.hot,
-                                          function (groupname, name, data) return healSpell:new(name, self:GetDefaultGem(groupname), data.MinManaPercent, data.GiveUpTimer, data.HealPercent, data.HealDistance) end
+                                          function (groupname, name, data) return hotSpell:new(name, self:GetDefaultGem(groupname), data.MinManaPercent, data.GiveUpTimer, data.HealPercent, data.HealDistance) end
                                           )
 
   logger.Debug("Loading heal ae_group settings")
