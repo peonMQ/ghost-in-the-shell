@@ -2,10 +2,6 @@
 	path = utils
 	url = https://github.com/peonMQ/utils.git
 	branch = main
-[submodule "wait4rez"]
-	path = wait4rez
-	url = https://github.com/peonMQ/wait4rez.git
-	branch = main
 [submodule "broadcast"]
 	path = broadcast
 	url = https://github.com/peonMQ/broadcast.git
@@ -17,3 +13,4 @@
 [submodule "knightlinc"]
 	path = knightlinc
 	url = https://gitlab.com/Knightly1/knightlinc.git
+	branch = master
