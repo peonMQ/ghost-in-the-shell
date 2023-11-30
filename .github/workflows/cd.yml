@@ -21,7 +21,7 @@ jobs:
     - name: Create Bundle  
       shell: pwsh
       run: |
-        $excludeDirs = @('.github','.vscode','definitions','utils','autopilot','wait4rez','broadcast','hud','util')
+        $excludeDirs = @('.github','.vscode','definitions','utils','autopilot','wait4rez','broadcast','hud','util', 'knightlinc')
         $releaseDir = $env:PROJECT + "\"
         $Directories = Get-ChildItem -Directory "." -Exclude $excludeDirs 
 
@@ -51,6 +51,7 @@ jobs:
         CopyLib("utils/loaders")
         CopyLib("broadcast")
         CopyLib("wait4rez")
+        CopyLib("knightlinc")
 
         7z a -tzip $env:BUNDLE_FILE_NAME -r ($env:PROJECT + "/*.lua")
 

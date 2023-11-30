@@ -5,6 +5,7 @@
         "broadcast/": true,
         "utils/": true,
         "wait4rez/": true,
+        "knightlinc/": true
     },
     "workbench.colorCustomizations": {
         "editorBracketHighlight.foreground1": "#5caeef",
@@ -25,6 +26,7 @@
         "./broadcast",
         "./utils",
         "./wait4rez",
+        "./knightlinc",
         "C:/Games/Macroquest/lua/mq"
     ]
 }
