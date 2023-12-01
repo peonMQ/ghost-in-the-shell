@@ -53,7 +53,7 @@ local function doNuking()
 
   local netbot = mq.TLO.NetBots(mainAssist)
   local targetId = netbot.TargetID()
-  if targetId == "NULL" then
+  if not targetId or targetId == "NULL" then
     return
   end
 
