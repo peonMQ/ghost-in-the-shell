@@ -1,8 +1,12 @@
-require 'ImGui'
-
 local mq = require 'mq'
+local imgui = require 'ImGui'
 local icons = require 'mq/Icons'
 local logger = require("knightlinc/Write")
+
+
+logger.prefix = string.format("\at%s\ax", "[GITS-BAR]")
+logger.postfix = function () return string.format(" %s", os.date("%X")) end
+
 local debugUtils = require 'utils/debug'
 local plugins = require 'utils/plugins'
 local luapaths = require 'utils/lua-paths'
@@ -11,7 +15,6 @@ local broadCastInterfaceFactory = require 'broadcast/broadcastinterface'
 
 local zoneselector = require 'ui/zoneselector'
 
----@type RunningDir
 local runningDir = luapaths.RunningDir:new()
 runningDir:AppendToPackagePath()
 
@@ -67,7 +70,7 @@ local looter = nil
 local doInvites = false
 
 local function create(h, s, v)
-  local r, g, b = ImGui.ColorConvertHSVtoRGB(h / 7.0, s, v)
+  local r, g, b = imgui.ColorConvertHSVtoRGB(h / 7.0, s, v)
   return ImVec4(r, g, b, 1)
 end
 
@@ -456,12 +459,12 @@ local function travelToo(zoneShortName)
 end
 
 local function DrawTooltip(text)
-  if ImGui.IsItemHovered() and text and string.len(text) > 0 then
-      ImGui.BeginTooltip()
-      ImGui.PushTextWrapPos(ImGui.GetFontSize() * 35.0)
-      ImGui.Text(text)
-      ImGui.PopTextWrapPos()
-      ImGui.EndTooltip()
+  if imgui.IsItemHovered() and text and string.len(text) > 0 then
+      imgui.BeginTooltip()
+      imgui.PushTextWrapPos(imgui.GetFontSize() * 35.0)
+      imgui.Text(text)
+      imgui.PopTextWrapPos()
+      imgui.EndTooltip()
   end
 end
 
@@ -472,30 +475,30 @@ local function createStateButton(state)
   end
 
   if not state.active then
-    ImGui.PushStyleColor(ImGuiCol.Button, blueButton.default)
-    ImGui.PushStyleColor(ImGuiCol.ButtonHovered, greenButton.hovered)
-    ImGui.PushStyleColor(ImGuiCol.ButtonActive, greenButton.active)
+    imgui.PushStyleColor(ImGuiCol.Button, blueButton.default)
+    imgui.PushStyleColor(ImGuiCol.ButtonHovered, greenButton.hovered)
+    imgui.PushStyleColor(ImGuiCol.ButtonActive, greenButton.active)
     local isDisabled = state.isDisabled(uiState)
-    ImGui.BeginDisabled(isDisabled)
-    ImGui.Button(state.icon, buttonSize)
-    ImGui.EndDisabled()
+    imgui.BeginDisabled(isDisabled)
+    imgui.Button(state.icon, buttonSize)
+    imgui.EndDisabled()
   else
-    ImGui.PushStyleColor(ImGuiCol.Button, greenButton.default)
-    ImGui.PushStyleColor(ImGuiCol.ButtonHovered, redButton.hovered)
-    ImGui.PushStyleColor(ImGuiCol.ButtonActive, redButton.hovered)
+    imgui.PushStyleColor(ImGuiCol.Button, greenButton.default)
+    imgui.PushStyleColor(ImGuiCol.ButtonHovered, redButton.hovered)
+    imgui.PushStyleColor(ImGuiCol.ButtonActive, redButton.hovered)
     local isDisabled = state.isDisabled(uiState)
-    ImGui.BeginDisabled(isDisabled)
+    imgui.BeginDisabled(isDisabled)
     if not state.activeIcon then
-      ImGui.Button(state.icon, buttonSize)
+      imgui.Button(state.icon, buttonSize)
     else
-      ImGui.Button(state.activeIcon, buttonSize)
+      imgui.Button(state.activeIcon, buttonSize)
     end
-    ImGui.EndDisabled()
+    imgui.EndDisabled()
   end
 
   DrawTooltip(state.tooltip)
 
-  if ImGui.IsItemClicked(0) then
+  if imgui.IsItemClicked(0) then
     if not state.active then
       state.activate(uiState)
     else
@@ -503,77 +506,77 @@ local function createStateButton(state)
     end
   end
 
-  ImGui.PopStyleColor(3)
+  imgui.PopStyleColor(3)
 end
 
 ---@param state ActionButton
 ---@param buttonColor any
 local function createButton(state, buttonColor)
-  ImGui.PushStyleColor(ImGuiCol.Button, buttonColor.default)
-  ImGui.PushStyleColor(ImGuiCol.ButtonHovered, buttonColor.hovered)
-  ImGui.PushStyleColor(ImGuiCol.ButtonActive, buttonColor.active)
+  imgui.PushStyleColor(ImGuiCol.Button, buttonColor.default)
+  imgui.PushStyleColor(ImGuiCol.ButtonHovered, buttonColor.hovered)
+  imgui.PushStyleColor(ImGuiCol.ButtonActive, buttonColor.active)
 
   local isDisabled = state.isDisabled(uiState)
-  ImGui.BeginDisabled(isDisabled)
-  ImGui.Button(state.icon, buttonSize)
-  ImGui.EndDisabled()
+  imgui.BeginDisabled(isDisabled)
+  imgui.Button(state.icon, buttonSize)
+  imgui.EndDisabled()
   DrawTooltip(state.tooltip)
-  if not isDisabled and ImGui.IsItemClicked(0) then
+  if not isDisabled and imgui.IsItemClicked(0) then
     state.activate(uiState)
   end
 
-  ImGui.PopStyleColor(3)
+  imgui.PopStyleColor(3)
 end
 
 local function actionbarUI()
-  openGUI = ImGui.Begin('Actions', openGUI, windowFlags)
+  openGUI = imgui.Begin('Actions', openGUI, windowFlags)
 
   createStateButton(uiState.bots)
-  ImGui.SameLine()
+  imgui.SameLine()
   createStateButton(uiState.bard)
-  ImGui.SameLine()
+  imgui.SameLine()
   createStateButton(uiState.toggleCrowdControl)
-  ImGui.SameLine()
+  imgui.SameLine()
   createStateButton(uiState.advFollow)
-  ImGui.SameLine()
+  imgui.SameLine()
   createButton(uiState.navFollow, blueButton)
-  ImGui.SameLine()
+  imgui.SameLine()
   createStateButton(uiState.easyfind)
-  ImGui.SameLine()
+  imgui.SameLine()
   createButton(uiState.loot, blueButton)
-  ImGui.SameLine()
+  imgui.SameLine()
   createButton(uiState.group, blueButton)
-  ImGui.SameLine()
+  imgui.SameLine()
   createButton(uiState.pets, blueButton)
-  ImGui.SameLine()
+  imgui.SameLine()
   createButton(uiState.petWeapons, blueButton)
 
   -- next button line
   createButton(uiState.magicNuke, fuchsiaButton)
-  ImGui.SameLine()
+  imgui.SameLine()
   createButton(uiState.fireNuke, orangeButton)
-  ImGui.SameLine()
+  imgui.SameLine()
   createButton(uiState.coldNuke, darkBlueButton)
-  ImGui.SameLine()
+  imgui.SameLine()
   createButton(uiState.resetNuke, darkBlueButton)
-  ImGui.SameLine()
+  imgui.SameLine()
   createButton(uiState.pacify, yellowButton)
-  ImGui.SameLine()
+  imgui.SameLine()
   createButton(uiState.door, blueButton)
-  ImGui.SameLine()
+  imgui.SameLine()
   createButton(uiState.instance, blueButton)
-  ImGui.SameLine()
+  imgui.SameLine()
   createButton(uiState.fooddrink, blueButton)
-  ImGui.SameLine()
+  imgui.SameLine()
   createButton(uiState.removeBuffs, blueButton)
-  ImGui.SameLine()
+  imgui.SameLine()
   createButton(uiState.killthis, blueButton)
-  ImGui.SameLine()
+  imgui.SameLine()
   createButton(uiState.clearconsole, orangeButton)
-  ImGui.SameLine()
+  imgui.SameLine()
   createButton(uiState.quit, redButton)
 
-  ImGui.End()
+  imgui.End()
 
   if selectTravelTo then
     zoneselector("Travel too", travelToo)

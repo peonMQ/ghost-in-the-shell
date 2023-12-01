@@ -1,5 +1,9 @@
 local mq = require 'mq'
 local logger = require("knightlinc/Write")
+
+logger.prefix = string.format("\at%s\ax", "[GITS]")
+logger.postfix = function () return string.format(" %s", os.date("%X")) end
+
 local broadcast = require 'broadcast/broadcast'
 local plugins = require 'utils/plugins'
 local debugutils = require 'utils/debug'

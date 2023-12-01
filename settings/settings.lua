@@ -14,9 +14,6 @@ local healSpell = require 'modules/healer/types/healspell'
 local hotSpell = require 'modules/healer/types/hotspell'
 
 
-logger.prefix = string.format("\at%s\ax", "[GITS]")
-logger.postfix = function () return string.format(" %s", os.date("%X")) end
-
 -- logger.callstringlevel = logger.loglevels.trace.level
 
 local loader = require 'settings/loader'

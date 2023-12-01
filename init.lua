@@ -1,6 +1,10 @@
 local mq = require 'mq'
 local plugins = require 'utils/plugins'
 local logger = require("knightlinc/Write")
+
+logger.prefix = string.format("\at%s\ax", "[GITS]")
+logger.postfix = function () return string.format(" %s", os.date("%X")) end
+
 local luapaths = require 'utils/lua-paths'
 local filetutils = require 'utils/file'
 local broadCastInterfaceFactory = require('broadcast/broadcastinterface')
