@@ -2,7 +2,7 @@ local mq = require("mq")
 local logger = require("knightlinc/Write")
 local broadcast = require 'broadcast/broadcast'
 local commandQueue  = require("application/command_queue")
-local assist_state = require 'settings/assist_state'
+local assist_state = require 'application/assist_state'
 
 local function execute()
   local me = mq.TLO.Me

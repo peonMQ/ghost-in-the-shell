@@ -11,7 +11,7 @@ local castReturnTypes = require 'lib/spells/types/castreturn'
 local spell_finder = require 'lib/spells/spell_finder'
 local spells_mezmerize = require 'data/spells_mezmerize'
 local settings = require 'settings/settings'
-local assist_state = require 'settings/assist_state'
+local assist_state = require 'application/assist_state'
 local debuffspell = require 'modules/debuffer/types/debuffspell'
 local repository = require 'modules/debuffer/types/debuffRepository'
 

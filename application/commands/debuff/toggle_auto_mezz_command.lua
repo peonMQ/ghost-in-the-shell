@@ -3,7 +3,7 @@ local logger = require("knightlinc/Write")
 local broadcast = require 'broadcast/broadcast'
 local spell_finder = require 'lib/spells/spell_finder'
 local spells_mezmerize = require 'data/spells_mezmerize'
-local assist_state = require 'settings/assist_state'
+local assist_state = require 'application/assist_state'
 local commandQueue  = require("application/command_queue")
 
 local function execute(mezz_mode)

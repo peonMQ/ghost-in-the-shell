@@ -4,7 +4,7 @@ local logger = require("knightlinc/Write")
 local mqUtils = require 'utils/mqhelpers'
 local common = require 'lib/common/common'
 local settings = require 'settings/settings'
-local assist_state = require 'settings/assist_state'
+local assist_state = require 'application/assist_state'
 
 local function doPet()
   if not mq.TLO.Me.Pet.ID() or mq.TLO.Me.Pet.ID() == 0 then

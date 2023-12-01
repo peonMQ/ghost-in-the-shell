@@ -1,6 +1,6 @@
 local mq = require 'mq'
 local logger = require("knightlinc/Write")
-local assist_state = require 'settings/assist_state'
+local assist_state = require 'application/assist_state'
 local mqEvents = require 'lib/mqevent'
 
 local tooFarAWay = mqEvents:new("tooFarAway", "Your target is too far away, get closer!", function() end)

@@ -5,7 +5,7 @@ local mqUtils = require 'utils/mqhelpers'
 local common = require 'lib/common/common'
 local settings = require 'settings/settings'
 local events = require 'modules/melee/events'
-local assist_state = require 'settings/assist_state'
+local assist_state = require 'application/assist_state'
 
 local function doEvents()
   for key, value in pairs(events) do
