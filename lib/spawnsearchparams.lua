@@ -3,10 +3,11 @@
 local SpawnSearchFilter = {filter = ''}
 
 ---@return SpawnSearchFilter
-function SpawnSearchFilter:new ()
+---@param startFilter? string
+function SpawnSearchFilter:new (startFilter)
   self.__index = self
   local o = setmetatable({}, self)
-  o.filter = ""
+  o.filter = startFilter or ""
   return o
 end
 

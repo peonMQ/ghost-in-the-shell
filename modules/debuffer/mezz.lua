@@ -9,7 +9,7 @@ local timer = require 'lib/timer'
 local state = require 'lib/spells/state'
 local castReturnTypes = require 'lib/spells/types/castreturn'
 local spell_finder = require 'lib/spells/spell_finder'
-local spells_mezmerize = require 'data/spells_mezmerize'
+local spells_mesmerize = require 'data/spells_mesmerize'
 local settings = require 'settings/settings'
 local assist_state = require 'application/assist_state'
 local debuffspell = require 'modules/debuffer/types/debuffspell'
@@ -50,7 +50,7 @@ local function doMezz()
     return
   end
 
-  local mezz_spell_group = spells_mezmerize[mq.TLO.Me.Class.ShortName()] and spells_mezmerize[mq.TLO.Me.Class.ShortName()][assist_state.mezz_mode]
+  local mezz_spell_group = spells_mesmerize[mq.TLO.Me.Class.ShortName()] and spells_mesmerize[mq.TLO.Me.Class.ShortName()][assist_state.mezz_mode]
   if not mezz_spell_group then
     return
   end
@@ -86,7 +86,7 @@ local function doMezz()
     if immunities and immunities[mezzName] then
       logger.Info("[%s] is immune to <%s>, skipping.", mezzName, mezz_spell.Name)
     elseif maTargetId ~= mezzSpawn.ID() and mqUtils.IsMaybeAggressive(mezzSpawn --[[@as spawn]]) then
-      if mqUtils.EnsureTarget(mezzSpawn.ID()) and mezz_spell:CanCastOnTarget(mq.TLO.Target --[[@as target]]) then
+      if mqUtils.EnsureTarget(mezzSpawn.ID()) and mezz_spell:CanCastOnTarget(mq.TLO.Target --[[@as target]]) and mezz_spell.MQSpell.Max(1) >= mq.TLO.Target.Level() then
         logger.Info("Attempting to mezz [%s] with <%s>.", mezzName, mezz_spell.Name)
         local castResult = mezz_spell:Cast(checkInterrupt)
         if castResult == castReturnTypes.Immune then

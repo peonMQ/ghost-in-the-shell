@@ -1,3 +1,5 @@
+require("application/commands/movement/click_nearest_door_command")
+require("application/commands/movement/enter_instance_command")
 require("application/commands/movement/evac_command")
 require("application/commands/movement/follow_command")
 require("application/commands/movement/nav_to_command")

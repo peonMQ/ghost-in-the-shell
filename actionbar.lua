@@ -11,18 +11,12 @@ local debugUtils = require 'utils/debug'
 local plugins = require 'utils/plugins'
 local luapaths = require 'utils/lua-paths'
 local filetutils = require 'utils/file'
-local broadCastInterfaceFactory = require 'broadcast/broadcastinterface'
+local bci = require('broadcast/broadcastinterface')()
 
 local zoneselector = require 'ui/zoneselector'
+local portalselector = require 'ui/portalselector'
 
 local runningDir = luapaths.RunningDir:new()
-runningDir:AppendToPackagePath()
-
-local bci = broadCastInterfaceFactory()
-if not bci then
-  logger.Fatal("No networking interface found, please start eqbc or dannet")
-  return
-end
 
 -- local classes
 ---@class ActionButton
@@ -56,6 +50,7 @@ end
 ---@field public fooddrink ActionButton
 ---@field public killthis ActionButton
 ---@field public easyfind ActionButton
+---@field public portal ActionButton
 
 -- GUI Control variables
 local openGUI = true
@@ -227,7 +222,7 @@ local magicNuke = {
   icon = icons.FA_MAGIC,
   tooltip = "Set 'Magic' nukes",
   isDisabled = function (state) return not state.bots.active end,
-  activate = function(state) bci.ExecuteAllCommand('/setlineup Magic') end,
+  activate = function(state) bci.ExecuteAllCommand('/activespellset Magic') end,
 }
 
 ---@type ActionButton
@@ -236,7 +231,7 @@ local fireNuke = {
   icon = icons.FA_FIRE,
   tooltip = "Set 'Fire' nukes",
   isDisabled = function (state) return not state.bots.active end,
-  activate = function(state) bci.ExecuteAllCommand('/setlineup Fire') end,
+  activate = function(state) bci.ExecuteAllCommand('/activespellset Fire') end,
 }
 
 ---@type ActionButton
@@ -245,7 +240,7 @@ local coldNuke = {
   icon = icons.FA_SNOWFLAKE_O,
   tooltip = "Set 'Cold' nukes",
   isDisabled = function (state) return not state.bots.active end,
-  activate = function(state) bci.ExecuteAllCommand('/setlineup Cold') end,
+  activate = function(state) bci.ExecuteAllCommand('/activespellset Cold') end,
 }
 
 ---@type ActionButton
@@ -254,7 +249,7 @@ local resetNuke = {
   icon = icons.FA_MAGIC,
   tooltip = "Reset nukes",
   isDisabled = function (state) return not state.bots.active end,
-  activate = function(state) bci.ExecuteAllCommand('/clearlineup') end,
+  activate = function(state) bci.ExecuteAllCommand('/resetactivespellset') end,
 }
 
 local bards = {"Marillion", "Renaissance", "Soundgarden", "Genesis"}
@@ -311,7 +306,7 @@ local door = {
   tooltip = "Click Nearest Door",
   isDisabled = function (state) return false end,
   activate = function(state)
-    bci.ExecuteZoneCommand('/multiline ; /doortarget; /click left door')
+    bci.ExecuteZoneCommand('/clickdoor')
   end,
 }
 
@@ -322,7 +317,7 @@ local pacify = {
   tooltip = "Pacify Target",
   isDisabled = function (state) return false end,
   activate = function(state)
-    bci.ExecuteCommand('/multiline ; /target id '..mq.TLO.Target.ID()..'; /cast  "Wake of Tranquility" ', {"Ithildin"})
+    bci.ExecuteCommand('/pacify '..mq.TLO.Target.ID(), {"Ithildin"})
   end,
 }
 
@@ -333,11 +328,11 @@ local toggleCrowdControl = {
   tooltip = "Toggle Crowd Control",
   isDisabled = function (state) return not state.bots.active end,
   activate = function(state)
-    bci.ExecuteZoneCommand('/docc on')
+    bci.ExecuteZoneCommand('/mezzmode single_mez')
     state.toggleCrowdControl.active = true
   end,
   deactivate = function(state)
-    bci.ExecuteZoneCommand('/docc off')
+    bci.ExecuteZoneCommand('/mezzmode')
     state.toggleCrowdControl.active = false
   end,
 }
@@ -349,20 +344,18 @@ local instance = {
   tooltip = "Enter Instance",
   isDisabled = function (state) return false end,
   activate = function(state)
-    bci.ExecuteAllCommand('/target id '..mq.TLO.Target.ID())
-    bci.ExecuteAllWithSelfCommand('/say ready')
+    bci.ExecuteAllWithSelfCommand('/enterinstance')
   end,
 }
 
-local removeBuffsScriptExists = filetutils.Exists(mq.luaDir.."/mini-apps/removebuffs.lua")
 ---@type ActionButton
 local removeBuffs = {
   active = false,
   icon = icons.MD_AV_TIMER, --FA_EXCHANGE,
   tooltip = "Remove Low Duration Buffs",
-  isDisabled = function (state) return not removeBuffsScriptExists end,
+  isDisabled = function (state) return false end,
   activate = function(state)
-    bci.ExecuteAllWithSelfCommand("/lua run mini-apps/removebuffs 120")
+    bci.ExecuteAllWithSelfCommand("/cleanbuffs 120")
   end,
 }
 
@@ -417,6 +410,20 @@ local easyfind = {
   end,
 }
 
+---@type ActionButton
+local portal = {
+  active = false,
+  icon = icons.FA_SPACE_SHUTTLE,
+  tooltip = "Portal Too",
+  isDisabled = function (state) return false end,
+  activate = function(state)
+    state.portal.active = true
+  end,
+  deactivate = function(state)
+    state.portal.active = false
+  end,
+}
+
 ---@type ActionButtons
 local uiState = {
   bots = bots,
@@ -441,6 +448,7 @@ local uiState = {
   killthis = killthis,
   clearconsole = clearconsole,
   easyfind = easyfind,
+  portal = portal,
 }
 
 ---@param zoneShortName Zone
@@ -456,6 +464,19 @@ local function travelToo(zoneShortName)
   end
 
   selectTravelTo = false
+end
+
+---@param zoneShortName Zone
+local function portToo(zoneShortName)
+  if zoneShortName then
+    if not mq.TLO.Zone(zoneShortName.shortname).ID() then
+      logger.Error("Zone shortname does not exist <%s>", zoneShortName.shortname)
+    else
+      bci.ExecuteAllCommand(string.format("/port %s", zoneShortName.shortname))
+    end
+  end
+
+  uiState.portal.active = false
 end
 
 local function DrawTooltip(text)
@@ -543,6 +564,8 @@ local function actionbarUI()
   imgui.SameLine()
   createStateButton(uiState.easyfind)
   imgui.SameLine()
+  createStateButton(uiState.portal)
+  imgui.SameLine()
   createButton(uiState.loot, blueButton)
   imgui.SameLine()
   createButton(uiState.group, blueButton)
@@ -580,6 +603,10 @@ local function actionbarUI()
 
   if selectTravelTo then
     zoneselector("Travel too", travelToo)
+  end
+
+  if uiState.portal.active then
+    portalselector("Port too", portToo)
   end
 
   if not openGUI then

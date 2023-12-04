@@ -103,26 +103,26 @@ return {
       "Tashan",                                   -- L04 Tashan (-9-13 mr, 10 mana) Original
   },
   enc_mez = {
-      "Euphoria/MaxLevel|73",                     -- L69: 0.9 min/L73, resist adj -10, 70% memblur, 375 mana, OOW
-      "Felicity/MaxLevel|70",                     -- L67: 0.9 min/L70, resist adj -10, 70% memblur, 340 mana, OOW
-      "Bliss/MaxLevel|68",                        -- L64: 0.9 min/L68, resist adj -10, 80% memblur, 300 mana, PoP
-      "Sleep/MaxLevel|65",                        -- L63: 0.9 min/L65, resist adj -10, 75% memblur, 275 mana, PoP
-      "Apathy/MaxLevel|62",                       -- L61: 0.9 min/L62, reisst adj -10, 70% memblur, 225 mana, PoP
-      "Glamour of Kintaz/MaxLevel|57",            -- L54: 0.9 min/L57, resist adj -10, 70% memblur, 125 mana, 1.5s recast, Kunark
-      "Dazzle/MaxLevel|55",                       -- L49: 1.6 min/L55, 1% memblur, 125 mana, 5s recast, Original
-      "Entrance/MaxLevel|55",                     -- L34: 1.2 min/L55, 1% memblur, 85 mana, 3.75s recast, Original
-      "Enthrall/MaxLevel|55",                     -- L16: 0.8 min/L55, 1% memblur, 50 mana, 2.5s recasat, Original
-      "Mesmerize/MaxLevel|55",                    -- L04: 0.4 min/L55, 1% memblur, 20 mana, 2.25s recast, Original
+      "Euphoria",                                 -- L69: 0.9 min/L73, resist adj -10, 70% memblur, 375 mana, OOW
+      "Felicity",                                 -- L67: 0.9 min/L70, resist adj -10, 70% memblur, 340 mana, OOW
+      "Bliss",                                    -- L64: 0.9 min/L68, resist adj -10, 80% memblur, 300 mana, PoP
+      "Sleep",                                    -- L63: 0.9 min/L65, resist adj -10, 75% memblur, 275 mana, PoP
+      "Apathy",                                   -- L61: 0.9 min/L62, reisst adj -10, 70% memblur, 225 mana, PoP
+      "Glamour of Kintaz",                        -- L54: 0.9 min/L57, resist adj -10, 70% memblur, 125 mana, 1.5s recast, Kunark
+      "Dazzle",                                   -- L49: 1.6 min/L55, 1% memblur, 125 mana, 5s recast, Original
+      "Entrance",                                 -- L34: 1.2 min/L55, 1% memblur, 85 mana, 3.75s recast, Original
+      "Enthrall",                                 -- L16: 0.8 min/L55, 1% memblur, 50 mana, 2.5s recasat, Original
+      "Mesmerize",                                -- L04: 0.4 min/L55, 1% memblur, 20 mana, 2.25s recast, Original
   },
   enc_unresistable_mez = {
-      "Rapture/MaxLevel|61",                      -- L59: 0.7 min/L61, resist adj -1000, 80% memblur, 250 mana, 24s recast, Kunark
+      "Rapture",                                  -- L59: 0.7 min/L61, resist adj -1000, 80% memblur, 250 mana, 24s recast, Kunark
   },
   enc_ae_mez = {
-      "Wake of Felicity/MaxLevel|70",             -- L69: 0.9 min/L70, 25 aerange, 6 sec recast
-      "Bliss of the Nihil/MaxLevel|68",           -- L65: 0.6 min/L68, aerange 25, cost 850 mana, 6 sec recast, GoD
-      "Word of Morell/MaxLevel|65",               -- L62: 0.3 min/L65, aerange 30, cost 300 mana, PoP
-      "Fascination/MaxLevel|55",                  -- L52: 36 sec/L55, 35 aerange resist adj -10, 1% memblur, cost 200 mana, Kunark
-      "Mesmerization/MaxLevel|55",                -- L16: 0.4 min/L55, aerange 30, 1% memblur, cost 70 mana, Original
+      "Wake of Felicity",                         -- L69: 0.9 min/L70, 25 aerange, 6 sec recast
+      "Bliss of the Nihil",                       -- L65: 0.6 min/L68, aerange 25, cost 850 mana, 6 sec recast, GoD
+      "Word of Morell",                           -- L62: 0.3 min/L65, aerange 30, cost 300 mana, PoP
+      "Fascination",                              -- L52: 36 sec/L55, 35 aerange resist adj -10, 1% memblur, cost 200 mana, Kunark
+      "Mesmerization",                            -- L16: 0.4 min/L55, aerange 30, 1% memblur, cost 70 mana, Original
   },
   enc_slow = {
       "Desolate Deeds",                           -- L69: MAGIC 70% slow, resist adj -30, 1.5 min, cost 300 mana, OOW
