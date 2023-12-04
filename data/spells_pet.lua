@@ -7,7 +7,7 @@ local logger = require("knightlinc/Write")
 ---@alias MagePetTypes 'Air'|'Earth'|'Fire'|'Water'
 
 --- @param type MagePetTypes
---- @return string[] 
+--- @return string[]
 local function magicianPetSpells(type)
   if not type then
     type = "Water"
@@ -117,8 +117,8 @@ local function getNecromancerPetFocusItem(type, spell)
 end
 
 ---@class PetTypeSpells
----@field FocusItem? fun(string, spell):string|nil 
----@field Spells fun(string?):string[] 
+---@field FocusItem? fun(string, spell):string|nil
+---@field Spells fun(string?):string[]
 
 ---@type { [string]: PetTypeSpells }
 local petSpells = {
@@ -131,6 +131,7 @@ local petSpells = {
     Spells = necromancerPetSpells
   },
   SHM = {
+    FocusItem=function(string, spell) return nil end,
     Spells = shamanSpells
   }
 }

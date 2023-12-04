@@ -3,11 +3,12 @@ local logger = require("knightlinc/Write")
 local broadcast = require 'broadcast/broadcast'
 local commandQueue  = require("application/command_queue")
 local port_spells = require "data/spells_ports"
+local settings = require 'settings/settings'
 local state = require 'lib/spells/state'
 local spell = require 'lib/spells/types/spell'
 
 local function execute(port_spell)
-  local evacSpell = spell:new(port_spell, 8, 0, 30)
+  local evacSpell = spell:new(port_spell, settings:GetDefaultGem(port_spell), 0, 30)
 
   if not mq.TLO.Me.SpellReady(evacSpell.Name)() then
     mq.delay("10s", function() return mq.TLO.Me.SpellReady(evacSpell.Name)() end )

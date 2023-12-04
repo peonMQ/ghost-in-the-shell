@@ -21,8 +21,9 @@ end
 ---@param buffSpell BuffSpell
 ---@param targetId  integer
 local function castBuff(buffSpell, targetId)
-  if mqUtils.EnsureTarget(targetId) then
-    if buffSpell:CanCastOnspawn(mq.TLO.Target --[[@as target]]) then
+  local spawn = mq.TLO.Spawn(targetId)
+  if spawn() then
+    if buffSpell:CanCastOnspawn(spawn --[[@as spawn]]) and mqUtils.EnsureTarget(targetId)then
       logger.Info("Casting [%s] on <%s>", buffSpell.Name, mq.TLO.Target.Name())
       buffSpell:Cast(checkInterrupt)
       return true
