@@ -12,9 +12,11 @@ local function execute()
   end
 
   local t = mq.TLO.Me.NumGems()
-  for i = 0, mq.TLO.Me.NumGems()-1, 1 do
+  for i = 1, mq.TLO.Me.NumGems(), 1 do
     if  mq.TLO.Me.Gem(i)() then
-      mq.TLO.Window("CastSpellWnd/CSPW_Spell"..i).RightMouseUp()
+      logger.Info("Clearing %s in gem %d", mq.TLO.Me.Gem(i)(), i)
+      mq.TLO.Window("CastSpellWnd/CSPW_Spell"..(i-1)).RightMouseUp()
+      mq.delay(1000, function() return not mq.TLO.Me.Gem(i)() end)
     end
   end
 
@@ -22,7 +24,7 @@ local function execute()
       if not mq.TLO.Me.Gem(gem)() then
         local spell = spell_finder.FindGroupSpell(spell_group)
         if spell and spell() then
-          logger.Info("Memorizing %s in gem %d", broadCastInterfaceFactory:ColorWrap(spell.RankName(), "Green"), gem)
+          logger.Info("Memorizing \ag%s\ax in gem %d", spell.RankName(), gem)
           mq.cmdf('/memspell  %d "%s"', gem, spell.RankName())
           mq.delay("10s", function() return mq.TLO.Me.Gem(spell.RankName())() ~= nil end)
           mq.delay(500)

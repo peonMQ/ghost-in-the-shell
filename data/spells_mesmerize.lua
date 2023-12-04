@@ -1,6 +1,6 @@
 ---@class MezzSpells
----@field ENC table<MezzMode, string|nil>
----@field BRD table<MezzMode, string|nil>
+---@field ENC table<CrowdControlMode, string|nil>
+---@field BRD table<CrowdControlMode, string|nil>
 return {
   ENC = {
     single_mez = "enc_mez",

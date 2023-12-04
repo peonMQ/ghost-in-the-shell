@@ -1,13 +1,13 @@
 local loader = require 'settings/loader'
 
 ---@alias AssistMode 'normal'|'powerlevel'
----@alias MezzMode 'single_mez'|'ae_mez'|'unresistable_mez'|nil
+---@alias CrowdControlMode 'single_mez'|'ae_mez'|'unresistable_mez'|nil
 
 ---@class AssistStateData
 ---@field mode AssistMode what kind of assist mode are we in
 ---@field spell_set string the nuke spell_set
 ---@field pbaoe_active boolean toggle pbaoe
----@field mezz_mode MezzMode auto mezz mode
+---@field crowd_control_mode CrowdControlMode auto mezz mode
 ---@field current_pet_target_id number
 ---@field enraged boolean
 

@@ -35,6 +35,7 @@ local bot_settings_filename = string.format("%s/bots/%s_settings.lua", settings_
 
 ---@class PeerSettings
 ---@field public loglevel LogLevel Enable debug logs
+---@field public looter boolean Is looter
 ---@field public assist PeerSettingsAssist
 ---@field public buffs PeerSettingsBuff
 ---@field public pet PeerSettingsPet | nil
@@ -84,6 +85,7 @@ local bot_settings_filename = string.format("%s/bots/%s_settings.lua", settings_
 ---@type PeerSettings
 local default_settings = {
   loglevel = 'info',
+  looter = false,
   gems = {
     default = 5
   },

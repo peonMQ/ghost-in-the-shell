@@ -61,7 +61,6 @@ local windowFlags = bit32.bor(ImGuiWindowFlags.NoDecoration, ImGuiWindowFlags.No
 
 local followZone = nil
 local travelToZone = nil
-local looter = nil
 local doInvites = false
 
 local function create(h, s, v)
@@ -180,11 +179,7 @@ local loot = {
   tooltip = "Do Loot",
   isDisabled = function (state) return not state.bots.active end,
   activate = function (state)
-    if not looter then
-      logger.Warn("No looter defined. use /setlooter 'looter' to define one.")
-    else
-      bci.ExecuteCommand('/doloot', {looter})
-    end
+    bci.ExecuteAllCommand('/doloot')
   end
 }
 
@@ -261,14 +256,12 @@ local bard = {
   isDisabled = function (state) return not plugins.IsLoaded("MQ2Twist") or not plugins.IsLoaded("MQ2BardSwap") end,
   activate = function(state)
     state.bard.active = true
-    for _, name in pairs(bards) do
-      bci.ExecuteCommand('/twist 1 2 3 4', {name})
-      bci.ExecuteCommand('/if (!${BardSwap}) /bardswap', {name})
-    end
+    bci.ExecuteCommand('/twist 1 2 3 4', bards)
+    bci.ExecuteCommand('/if (!${BardSwap}) /bardswap', bards)
   end,
   deactivate = function(state)
     state.bard.active = false
-    bci.ExecuteAllCommand('/twist stop')
+    bci.ExecuteCommand('/twist stop', bards)
   end
 }
 
@@ -328,11 +321,11 @@ local toggleCrowdControl = {
   tooltip = "Toggle Crowd Control",
   isDisabled = function (state) return not state.bots.active end,
   activate = function(state)
-    bci.ExecuteZoneCommand('/mezzmode single_mez')
+    bci.ExecuteZoneCommand('/crowdcontrol single_mez')
     state.toggleCrowdControl.active = true
   end,
   deactivate = function(state)
-    bci.ExecuteZoneCommand('/mezzmode')
+    bci.ExecuteZoneCommand('/crowdcontrol')
     state.toggleCrowdControl.active = false
   end,
 }
@@ -415,13 +408,24 @@ local portal = {
   active = false,
   icon = icons.FA_SPACE_SHUTTLE,
   tooltip = "Portal Too",
-  isDisabled = function (state) return false end,
+  isDisabled = function (state) return not state.bots.active end,
   activate = function(state)
     state.portal.active = true
   end,
   deactivate = function(state)
     state.portal.active = false
   end,
+}
+
+---@type ActionButton
+local reload_settings = {
+  active = false,
+  icon = icons.FA_RECYCLE,
+  tooltip = "Reload settings",
+  isDisabled = function (state) return not state.bots.active end,
+  activate = function(state)
+    bci.ExecuteAllWithSelfCommand("/reloadsettings")
+  end
 }
 
 ---@type ActionButtons
@@ -449,6 +453,7 @@ local uiState = {
   clearconsole = clearconsole,
   easyfind = easyfind,
   portal = portal,
+  reload_settings = reload_settings
 }
 
 ---@param zoneShortName Zone
@@ -597,6 +602,8 @@ local function actionbarUI()
   imgui.SameLine()
   createButton(uiState.clearconsole, orangeButton)
   imgui.SameLine()
+  createButton(uiState.reload_settings, orangeButton)
+  imgui.SameLine()
   createButton(uiState.quit, redButton)
 
   imgui.End()
@@ -616,16 +623,6 @@ end
 
 mq.imgui.init('ActionBar', actionbarUI)
 
-local function setLooter(arg)
-  if not arg or string.len(arg) < 3 then
-    logger.Warn("<looter> param is not set.")
-    return
-  end
-
-  looter = arg
-  logger.Info("Looter set to <%s>", looter)
-end
-
 local function triggerInvites()
   for leader, members in pairs(groups) do
     for _, member in ipairs(members) do
@@ -644,13 +641,6 @@ local function triggerInvites()
   end
   doInvites = false
 end
-
-local function createAliases()
-  mq.unbind('/setlooter')
-  mq.bind("/setlooter", setLooter)
-end
-
-createAliases()
 
 while not terminate do
   if doInvites then

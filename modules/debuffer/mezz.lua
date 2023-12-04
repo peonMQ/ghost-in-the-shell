@@ -46,11 +46,11 @@ local function checkInterrupt(spellId)
 end
 
 local function doMezz()
-  if not assist_state.mezz_mode then
+  if not assist_state.crowd_control_mode then
     return
   end
 
-  local mezz_spell_group = spells_mesmerize[mq.TLO.Me.Class.ShortName()] and spells_mesmerize[mq.TLO.Me.Class.ShortName()][assist_state.mezz_mode]
+  local mezz_spell_group = spells_mesmerize[mq.TLO.Me.Class.ShortName()] and spells_mesmerize[mq.TLO.Me.Class.ShortName()][assist_state.crowd_control_mode]
   if not mezz_spell_group then
     return
   end

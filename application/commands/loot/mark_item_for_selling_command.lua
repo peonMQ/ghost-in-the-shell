@@ -1,5 +1,6 @@
 local mq = require("mq")
 local logger = require("knightlinc/Write")
+local broadcast = require 'broadcast/broadcast'
 local commandQueue  = require("application/command_queue")
 local repository = require 'modules/looter/repository'
 local item = require 'modules/looter/types/lootitem'
@@ -23,6 +24,7 @@ local function execute()
     sellItem.DoSell = true
     repository:upsert(sellItem)
     logger.Info("Marked <%d:%s> for selling.", sellItem.Id, sellItem.Name)
+    broadcast.SuccessAll("Marked <%d:%s> for selling.", sellItem.Id, sellItem.Name)
   end
 
   logger.Info("Mark item for selling command completed.")
