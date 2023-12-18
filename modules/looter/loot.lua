@@ -212,7 +212,7 @@ local function lootNearestCorpse(seekRadius)
     logger.Info("Unable to loot corpse, currently casting.")
   end
 
-  moveUtils.MoveToLoc(startX, startY, startZ, 20, 1)
+  moveUtils.MoveToLoc(startX, startY, startZ, 20, 8)
 end
 
 return lootNearestCorpse
