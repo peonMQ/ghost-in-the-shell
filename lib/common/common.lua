@@ -20,7 +20,7 @@ local function getMainTank()
 
  for _, maintank in ipairs(settings.assist.tanks) do
   local netbot = mq.TLO.NetBots(maintank)
-  if netbot.ID() and netbot.ID() ~= "NULL" and netbot.InZone() ~= "NULL" then
+  if netbot.ID() and netbot.InZone() then
     return maintank
   end
  end
@@ -42,7 +42,7 @@ local function amIOfftank()
   for i=1, #settings.assist.tanks do
     if settings.assist.tanks[i] == mainTank and settings.assist.tanks[i+1] == mq.TLO.Me.Name() then
       local netbot = mq.TLO.NetBots(settings.assist.tanks[i])
-      if netbot.ID() and netbot.ID() ~= "NULL" and netbot.InZone() ~= "NULL" then
+      if netbot.ID() and netbot.InZone() then
         return true
       else
         return false
@@ -67,7 +67,7 @@ local function getMainAssist()
 
  for _, mainAssist in ipairs(settings.assist.main_assist) do
   local netbot = mq.TLO.NetBots(mainAssist)
-  if netbot.ID() ~= "NULL" and netbot.InZone() ~= "NULL" then
+  if netbot.ID() and netbot.InZone() then
     return mainAssist
   end
  end
