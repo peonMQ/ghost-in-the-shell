@@ -29,7 +29,7 @@ local server_settings_filename = string.format("%s/server_settings.lua",settings
 local class_settings_filename = string.format("%s/%s_settings.lua", settings_path, mq.TLO.Me.Class.Name():lower())
 local bot_settings_filename = string.format("%s/bots/%s_settings.lua", settings_path, mq.TLO.Me.Name():lower())
 
----@alias ClassShortNames 'CLR'| 'ENC'
+---@alias ClassShortNames 'BRD'|'BST'|'BER'|'CLR'|'DRU'|'ENC'|'MAG'|'MNK'|'NEC'|'PAL'|'RNG'|'ROG'|'SHD'|'SHM'|'WAR'|'WIZ'
 ---@alias LogLevel 'trace'|'debug'|'info'|'warn'|'error'|'fail'
 ---@alias AssitTypes 'melee'|'ranged'|nil
 
