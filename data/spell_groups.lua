@@ -24,7 +24,7 @@ local function extractGroups(classGroups)
   return groups
 end
 
----@type table<ClassShortNames, string[]>
+---@type table<ClassShortNames, table<string, string[]>>
 local SpellGroups = {
   BRD = bardSpells,
   BST = beastlordSpells,
