@@ -94,7 +94,7 @@ end
 function BuffSpell:CanCastOnspawn(spawn)
   local buffSpell = mq.TLO.Spell(self.Name)
 
-  if (spawn.Distance() or 9999) > (buffSpell.Range()  or 0) then
+  if (spawn.Distance() or 9999) > (buffSpell.Range() or 0) then
     return false
   end
 
