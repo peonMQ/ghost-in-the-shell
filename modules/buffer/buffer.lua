@@ -59,7 +59,7 @@ local function checkNetBotBuffs()
 
   for _, buffSpell in pairs(settings.buffs.request) do
     if buffSpell:CanCast() then
-      local spell = mq.TLO.Spell(buffSpell.Id)
+      local spell = buffSpell.MQSpell
       if spell.TargetType() == "Single" then
         for i=1,mq.TLO.NetBots.Counts() do
           local name = mq.TLO.NetBots.Client(i)()
@@ -84,7 +84,7 @@ local function checkPetBuffs()
   end
 
   local me = mq.TLO.Me
-  for key, buffSpell in pairs(settings.pet.buffs) do
+  for _, buffSpell in pairs(settings.pet.buffs) do
     if buffSpell:CanCast() then
       local spell = mq.TLO.Spell(buffSpell.Id)
       if spell.TargetType() == "Single" and plugin.IsLoaded("mq2netbots") then
