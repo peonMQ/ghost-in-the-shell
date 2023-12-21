@@ -31,21 +31,21 @@ function Cast:new (id, name)
 end
 
 function Cast:DoCastEvents()
-  -- for key, value in pairs(events) do
-  --   value:DoEvent()
-  -- end
-  for i=1, #events do
-    events[i]:DoEvent()
+  for _, value in ipairs(events) do
+    value:DoEvent()
   end
+  -- for i=1, #events do
+  --   events[i]:DoEvent()
+  -- end
 end
 
 function Cast:FlushCastEvents()
-  -- for key, value in pairs(events) do
-  --   value:Flush()
-  -- end
-  for i=1, #events do
-    events[i]:Flush()
+  for _, value in ipairs(events) do
+    value:Flush()
   end
+  -- for i=1, #events do
+  --   events[i]:Flush()
+  -- end
 end
 
 ---@param cancelCallback? fun(spelLId:integer)
@@ -81,6 +81,11 @@ function Cast:CanCast()
   local me = mq.TLO.Me
   if me.Stunned() then
     logger.Debug("Unable to cast <%s>, I am stunned.", self.Name)
+    return false
+  end
+
+  if me.Casting() then
+    logger.Debug("Unable to cast <%s>, I am already casting <%s>.", self.Name, me.Casting.Name())
     return false
   end
 
