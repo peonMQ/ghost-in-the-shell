@@ -12,6 +12,7 @@ local debuffSpell = require 'modules/debuffer/types/debuffspell'
 local nukepell = require 'modules/nuker/types/nukespell'
 local healSpell = require 'modules/healer/types/healspell'
 local hotSpell = require 'modules/healer/types/hotspell'
+local song = require 'lib/spells/types/song'
 
 
 -- logger.callstringlevel = logger.loglevels.trace.level
@@ -42,8 +43,9 @@ local bot_settings_filename = string.format("%s/bots/%s_settings.lua", settings_
 ---@field public gems table<string, integer> key is string, val is integer
 ---@field public cures table<string, CureSpell> spell group of buff groups to request
 ---@field public heal PeerSettingsHealing spell group of buff groups to request
----@field public songs table<string, string[]> a songset with songs
 ---@field public mana PeerSettingsMana Override default mana/endurance regeneration
+---@field public medleys table<string, Song[]> | nil Medley settings for bards
+---@field public medleyPadTimeMs number # Timer in MS added to each cast to determine when to do stopcast
 
 ---@class PeerSettingsAssist
 ---@field public type AssitTypes type of assist
@@ -90,7 +92,6 @@ local default_settings = {
     default = 5
   },
   cures = {},
-  songs = {},
   mana = {
     meditate = 90,
     meditate_with_mob_in_camp = false,
@@ -118,7 +119,8 @@ local default_settings = {
     engage_at = 0,
     buffs = {},
     taunt = false
-  }
+  },
+  medleyPadTimeMs = 0
 }
 
 local settings = loader.LoadSettings(default_settings --[[@as ApplicationSettings]], server_settings_filename, class_settings_filename, bot_settings_filename)
@@ -146,11 +148,11 @@ local function mapSpellOrItem(spelldata, mapSpellFunc, mapItemFunc)
     if mapItemFunc and mq.TLO.FindItem("="..name)() then
       availableSpells[name] = mapItemFunc(name, value)
     else
-      local spell = spell_finder.FindGroupSpell(name)
+      local spell = spell_finder.FindSpell(name)
       if spell then
         availableSpells[name] = mapSpellFunc(name, spell.Name(), value)
       else
-        spell = spell_finder.FindSpell(name)
+        spell = spell_finder.FindGroupSpell(name)
         if spell then
           availableSpells[name] = mapSpellFunc(name, spell.Name(), value)
         end
@@ -172,6 +174,27 @@ local function mapOptionalSpellOrItem(spelldata, mapSpellFunc, mapItemFunc)
   end
 
   return mapSpellOrItem(spelldata, mapSpellFunc, mapItemFunc)
+end
+
+---@generic T
+---@param songlist string[]
+---@param mapSongFunc fun(groupname: string, name: string): Song
+---@return array<Song>
+local function mapSong(songlist, mapSongFunc)
+  local availableSpells = {}
+  for _, name in ipairs(songlist) do
+    local spell = spell_finder.FindSpell(name)
+    if spell then
+      table.insert(availableSpells, mapSongFunc(name, spell.Name()))
+    else
+      spell = spell_finder.FindGroupSpell(name)
+      if spell then
+        table.insert(availableSpells, mapSongFunc(name, spell.Name()))
+      end
+    end
+  end
+
+  return availableSpells
 end
 
 function settings:ReloadSettings()
@@ -264,6 +287,18 @@ function settings:ReloadSettings()
                                           function (groupname, name, data) return healSpell:new(name, self:GetDefaultGem(groupname), data.MinManaPercent, data.GiveUpTimer, data.HealPercent, data.HealDistance) end
                                           )
 
+  logger.Debug("Loading medley settings")
+  if self.medleys then
+    local availableMedleys = {}
+    for key, medley in pairs(self.medleys) do
+      local availableSongs = mapSong(medley, function (groupname, name) return song:new(name, self:GetDefaultGem(groupname)) end)
+      if next(availableSongs) then
+        availableMedleys[key] = availableSongs
+      end
+    end
+
+    self.medleys = availableMedleys
+  end
 end
 
 local function saveSettings()
