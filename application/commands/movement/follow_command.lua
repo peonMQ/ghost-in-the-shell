@@ -13,6 +13,11 @@ local function execute(targetId)
     return
   end
 
+  if plugins.IsLoaded("mqactoradvpath") and mq.TLO.ActorAdvPath.IsFollowing() then
+    mq.cmd("/actfollow off")
+    return
+  end
+
   if plugins.IsLoaded("mq2nav") and mq.TLO.Navigation.Active() then
     mq.cmd("/nav stop")
   end
@@ -24,7 +29,7 @@ local function execute(targetId)
 
   local stickSpawn = mq.getFilteredSpawns(function(spawn)  return spawn.ID() == tonumber(targetId) and spawn.Type() == "PC" end)
   if stickSpawn[1] then
-    mq.cmdf("/afollow spawn %d", stickSpawn[1].ID())
+    mq.cmdf("/actfollow %s", stickSpawn[1].Name())
   end
 end
 

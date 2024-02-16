@@ -17,6 +17,10 @@ local function execute(targetId)
     mq.cmd("/afollow off")
   end
 
+  if plugins.IsLoaded("mqactoradvpath") and mq.TLO.ActorAdvPath.IsFollowing() then
+    mq.cmd("/actfollow off")
+  end
+
   if not targetId then
     logger.Warn("Missing <targetId> to navigate to.")
     return
