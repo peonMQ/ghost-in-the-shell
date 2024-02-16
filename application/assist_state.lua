@@ -6,6 +6,7 @@ local loader = require 'settings/loader'
 ---@class AssistStateData
 ---@field mode AssistMode what kind of assist mode are we in
 ---@field spell_set string the nuke spell_set
+---@field medley string the medley
 ---@field pbaoe_active boolean toggle pbaoe
 ---@field crowd_control_mode CrowdControlMode auto mezz mode
 ---@field current_pet_target_id number
@@ -18,6 +19,7 @@ local loader = require 'settings/loader'
 local defaultState = {
   mode = 'normal',
   spell_set = 'main',
+  medley = "general",
   pbaoe_active = false,
   mezz_mode = nil,
   current_pet_target_id = 0,

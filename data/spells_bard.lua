@@ -53,6 +53,7 @@ return {
       "Ancient: Lcea's Lament",                   -- L60: Velious
       "Chorus of Replenishment",                  -- L58: Luclin
       "Cantata of Replenishment",                 -- L55: Original
+      "Cantana of Replenishment",                 -- L55: Original
       "Cantana of Soothing",                      -- L34: 4 hp/tick, 5 mana/tick, Velious
   },
   brd_haste = {

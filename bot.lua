@@ -16,6 +16,7 @@ local doHealing = require 'modules/healer/healing'
 local doCuring = require 'modules/curer/curer'
 local combatActions = require 'modules/melee/combatactions'
 local doMeleeDps = require 'modules/melee/melee'
+local doMedley = require 'modules/medley/medley'
 local doNuking = require 'modules/nuker/nuke'
 local doPet = require 'modules/pet/pet'
 local commandQueue  = require("application/command_queue")
@@ -25,7 +26,7 @@ require("application/commands")
 
 ---@type table<eqclass, fun()[]>
 local classActions = {
-  bard = {doBuffs, doMeleeDps},
+  bard = {doBuffs, doMeleeDps, doMedley},
   cleric = {doBuffs, doHealing, doNuking, doMeleeDps, doMeditate, doCuring, doManaConversion},
   druid = {doBuffs, doDeBuffs, doHealing, doNuking, doMeleeDps, doMeditate, doManaConversion},
   enchanter = {doMezz, doBuffs, doDeBuffs, doMeleeDps, doNuking, doMeditate, doManaConversion},
@@ -50,6 +51,10 @@ local function isFollowing()
     return true
   end
 
+  if plugins.IsLoaded("mqactoradvpath") and mq.TLO.ActorAdvPath.IsFollowing() then
+    return true
+  end
+
   if plugins.IsLoaded("mq2moveutils") and mq.TLO.Stick.Active() then
     local stickSpawn = mq.getFilteredSpawns(function(spawn) return spawn.ID() == mq.TLO.Stick.StickTarget() and  spawn.Type() =="PC" end)
     if next(stickSpawn) then
@@ -68,13 +73,16 @@ end
 broadcast.SuccessAll("Bot starting up <%s>...", mq.TLO.Me.CleanName())
 local botActions = classActions[mq.TLO.Me.Class():lower()] or {}
 while true do
+  mq.doevents()
+  commandQueue.Process()
+
   if not isFollowing() then
     for _,action in ipairs(botActions) do
       action()
     end
+  elseif mq.TLO.Me.Class.ShortName() == "BRD" then
+    doMedley()
   end
 
-  mq.doevents()
-  commandQueue.Process()
-  mq.delay(50)
+  mq.delay(1)
 end
