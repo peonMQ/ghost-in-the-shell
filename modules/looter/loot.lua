@@ -71,7 +71,7 @@ local function canLootItem(item)
   end
 
   if  mq.TLO.Me.FreeInventory() < 1 then
-    if item.Stackable() and item.FreeStack() > 0 then
+    if item.Stackable() and item.FreeStack() > 0 or canDestroyItem(item.ID(), item.Name()) then
       return true
     end
 
@@ -199,7 +199,7 @@ local function lootNearestCorpse(seekRadius)
         moveUtils.MoveToLoc(target.X(), target.Y(), target.Z(), 20, 12)
       end
 
-      if target.Distance() <= 20 and target.DistanceZ() < 40 then
+      if target.Distance() and target.Distance() <= 20 and target.DistanceZ() < 40 then
         lootCorpse()
       else
         logger.Info("Corpse %s is %d|%d distance, skipping", target.Name(), target.Distance(), target.DistanceZ())
