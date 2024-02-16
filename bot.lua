@@ -72,6 +72,10 @@ end
 
 broadcast.SuccessAll("Bot starting up <%s>...", mq.TLO.Me.CleanName())
 local botActions = classActions[mq.TLO.Me.Class():lower()] or {}
+if mq.TLO.Me.Class.ShortName() == "BRD" then
+  mq.cmd('/if (!${BardSwap}) /bardswap')
+end
+
 while true do
   mq.doevents()
   commandQueue.Process()
