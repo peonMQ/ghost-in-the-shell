@@ -8,11 +8,6 @@ local function execute(targetId)
     return
   end
 
-  if mq.TLO.AdvPath.Following() then
-    mq.cmd("/afollow off")
-    return
-  end
-
   if plugins.IsLoaded("mqactoradvpath") and mq.TLO.ActorAdvPath.IsFollowing() then
     mq.cmd("/actfollow off")
     return
