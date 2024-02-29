@@ -42,6 +42,14 @@ end
 
 ---@param meleeAbilityCallback? fun()
 local function doMeleeDps(meleeAbilityCallback)
+  if common.IsOrchestrator() then
+    if mq.TLO.Stick.Active() then
+      mq.cmd("/stick off")
+    end
+
+    return
+  end
+
   local me = mq.TLO.Me
 
   if settings.assist.type ~= 'melee' then
@@ -68,6 +76,7 @@ local function doMeleeDps(meleeAbilityCallback)
       if mq.TLO.Stick.Active() then
         mq.cmd("/stick off")
       end
+
       assist_state.enraged = false
       return
     end
@@ -78,9 +87,11 @@ local function doMeleeDps(meleeAbilityCallback)
     if me.Combat() then
       mq.cmd("/attack off")
     end
+
     if mq.TLO.Stick.Active() then
       mq.cmd("/stick off")
     end
+
     assist_state.enraged = false
     logger.Debug("Mainassist not found")
     return
@@ -96,8 +107,12 @@ local function doMeleeDps(meleeAbilityCallback)
   local isPet = targetSpawn.Type() == "Pet"
   local hasLineOfSight = targetSpawn.LineOfSight()
   local targetHP = netbot.TargetHP()
+  local isPetOwnerNPC = true
+  if isPet then
+    isPetOwnerNPC = targetSpawn.Owner.Type() == "NPC"
+  end
 
-  if (not isNPC and not isPet)
+  if (not isNPC and not isPet and not isPetOwnerNPC)
       or (targetHP > 0 and targetHP > settings.assist.engage_at)
       or not hasLineOfSight then
     logger.Debug("Mainassist target is not valid")

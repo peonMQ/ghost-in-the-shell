@@ -28,7 +28,6 @@ local function getMainTank()
  return nil
 end
 
-
 local function amIOfftank()
   local mainTank = getMainTank()
   if not mainTank then
@@ -75,10 +74,18 @@ local function getMainAssist()
  return nil
 end
 
+-- Am I the foreground instance?
+---@return boolean
+local function is_orchestrator()
+  return mq.TLO.EverQuest.Foreground() -- or mq.TLO.FrameLimiter.Status() == "Foreground"
+end
+
+
 local commonUtil = {
   GetMainAssist = getMainAssist,
   GetMainTank = getMainTank,
-  AmIOfftank = amIOfftank
+  AmIOfftank = amIOfftank,
+  IsOrchestrator = is_orchestrator
 }
 
 return commonUtil

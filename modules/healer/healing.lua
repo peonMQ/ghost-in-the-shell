@@ -17,15 +17,18 @@ local function checkInterrupt(spellId)
   local target = mq.TLO.Target
   if not target() then
     state.interrupt()
+    return
   end
 
   if target.Type() == "Corpse" then
     state.interrupt()
+    return
   end
 
   local spell = mq.TLO.Spell(spellId)
   if numberUtils.IsLargerThan(target.Distance(), spell.Range()) then
     state.interrupt()
+    return
   end
 
   local _, emergencyHeal = next(settings.heal.mt_emergency_heal or {})
@@ -33,6 +36,7 @@ local function checkInterrupt(spellId)
     if emergencyHeal:CanCastOnTarget(target --[[@as target]]) and mq.TLO.Me.Gem(emergencyHeal.Name)() then
       state.interrupt()
       emergencyHeal:Cast(checkInterrupt)
+      return
     end
   end
 end

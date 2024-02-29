@@ -1,5 +1,6 @@
 local mq = require 'mq'
 local mqutil = require 'utils/mqhelpers'
+local common = require 'lib/common/common'
 local mqEvents = require 'lib/mqevent'
 local timer = require 'lib/timer'
 local settings = require 'settings/settings'
@@ -14,6 +15,10 @@ local disableMeditateEvent = mqEvents:new("disableMeditate", "#*# YOU for #1# po
 disableMeditateEvent:Register()
 
 local function doMeditate()
+  if common.IsOrchestrator() then
+    return
+  end
+
   disableMeditateEvent:DoEvent()
 
   local me = mq.TLO.Me

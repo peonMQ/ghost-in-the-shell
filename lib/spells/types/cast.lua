@@ -58,10 +58,8 @@ function Cast:WhileCasting(cancelCallback)
     logger.Debug("Whilecasting <%s> [%s]", self.Name, state.castReturn.Name)
     if(cancelCallback) then
       cancelCallback(self.Id)
-    end
-
-    if(currentTargetId and mq.TLO.Spawn(currentTargetId).Type() ~= currentTargetType) then
-      logger.Info("Cancelling spell <%d>, current target <%s> is no longer available", self.Id, currentTarget())
+    elseif(currentTargetId and mq.TLO.Spawn(currentTargetId).Type() ~= currentTargetType) then
+      logger.Info("Cancelling spell <%d>, current target <%s> is no longer available", self.Id, currentTargetId)
       state.interrupt()
     end
 

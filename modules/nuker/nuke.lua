@@ -12,19 +12,26 @@ local function checkInterrupt(spellId)
   local target = mq.TLO.Target
   if not target() then
     state.interrupt()
+    return
   end
 
   if target.Type() == "Corpse" then
     state.interrupt()
+    return
   end
 
   local spell = mq.TLO.Spell(spellId)
   if not target.Distance() or target.Distance() > spell.Range() then
     state.interrupt()
+    return
   end
 end
 
 local function doNuking()
+  if common.IsOrchestrator() then
+    return
+  end
+
   local nukes = settings.assist.nukes[assist_state.spell_set]
   if not next(nukes or {}) then
     logger.Debug("No nuke for <%s>", assist_state.spell_set)
