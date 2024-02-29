@@ -40,6 +40,10 @@ function Item:CanCast()
   end
 
   local item = mq.TLO.FindItem("="..self.ItemName)
+  if not item then
+    return false
+  end
+
   local refreshTimer = item.TimerReady()
   local me = mq.TLO.Me
   if me.Casting() or refreshTimer > 0 then
