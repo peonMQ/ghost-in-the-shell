@@ -134,7 +134,7 @@ function settings:GetDefaultGem(spell_group_or_name)
     end
   end
 
-  return self.gems.default or 5
+  return self.gems.default or default_settings.gems.default
 end
 
 ---@generic T
@@ -178,18 +178,18 @@ end
 
 ---@generic T
 ---@param songlist string[]
----@param mapSongFunc fun(groupname: string, name: string): Song
+---@param mapSongFunc fun(name: string, defaultgem: number): Song
 ---@return array<Song>
 local function mapSong(songlist, mapSongFunc)
   local availableSpells = {}
-  for _, name in ipairs(songlist) do
+  for index, name in ipairs(songlist) do
     local spell = spell_finder.FindSpell(name)
     if spell then
-      table.insert(availableSpells, mapSongFunc(name, spell.Name()))
+      table.insert(availableSpells, mapSongFunc(spell.Name(), index))
     else
       spell = spell_finder.FindGroupSpell(name)
       if spell then
-        table.insert(availableSpells, mapSongFunc(name, spell.Name()))
+        table.insert(availableSpells, mapSongFunc(spell.Name(), index))
       end
     end
   end
@@ -291,7 +291,7 @@ function settings:ReloadSettings()
   if self.medleys then
     local availableMedleys = {}
     for key, medley in pairs(self.medleys) do
-      local availableSongs = mapSong(medley, function (groupname, name) return song:new(name, self:GetDefaultGem(groupname)) end)
+      local availableSongs = mapSong(medley, function (name, defaultgem) return song:new(name, defaultgem) end)
       if next(availableSongs) then
         availableMedleys[key] = availableSongs
       end
