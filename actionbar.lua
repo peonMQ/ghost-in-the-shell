@@ -59,7 +59,6 @@ local buttonSize = ImVec2(30, 30)
 local windowFlags = bit32.bor(ImGuiWindowFlags.NoDecoration, ImGuiWindowFlags.NoDocking, ImGuiWindowFlags.AlwaysAutoResize, ImGuiWindowFlags.NoFocusOnAppearing, ImGuiWindowFlags.NoNav)
 
 
-local followZone = nil
 local travelToZone = nil
 local doInvites = false
 
@@ -144,16 +143,14 @@ local advFollow = {
   active = false,
   icon = icons.MD_DIRECTIONS_RUN,
   tooltip = "Toggle AdvPath Follow 'Me'",
-  isDisabled = function (state) return not state.bots.active or not plugins.IsLoaded("MQ2AdvPath") end,
+  isDisabled = function (state) return not state.bots.active or not plugins.IsLoaded("mqactoradvpath") end,
   activate = function(state)
     state.advFollow.active = true
     state.navFollow.active = false
     bci.ExecuteZoneCommand(string.format('/stalk %i', mq.TLO.Me.ID()))
-    followZone = mq.TLO.Zone.ID()
   end,
   deactivate = function(state)
     state.advFollow.active = false
-    advFollowZone = nil
     bci.ExecuteZoneCommand("/stalk")
   end
 }
@@ -163,7 +160,7 @@ local navFollow = {
   active = false,
   icon = icons.MD_MY_LOCATION, -- MD_DIRECTIONS_RUN
   tooltip = "Toggle Nav to 'Me'",
-  isDisabled = function (state) return not state.bots.active or not plugins.IsLoaded("MQ2Nav") end,
+  isDisabled = function (state) return not state.bots.active or not plugins.IsLoaded("mq2nav") end,
   activate = function(state)
     state.navFollow.active = true
     state.advFollow.active = false
@@ -187,8 +184,9 @@ local groups = {
   Eredhrin = {"Hamfast", "Newt", "Bill", "Marillion", "Ithildin"},
   Renaissance = {"Inara", "Tedd", "Araushnee", "Freyja", "Milamber"},
   Soundgarden = {"Lolth", "Ronin", "Tyrion", "Sheperd", "Valsharess"},
-  Genesis = {"Vierna", "Osiris", "Eilistraee", "Regis", "Aredhel"},
-  Mizzfit = {"Komodo", "Izzy", "Lulz", "Tiamat", "Nozdormu"},
+  Genesis = {"Vierna", "Osiris", "Regis", "Tiamat", "Mordenkainen"},
+  Zeppelin = {"Mizzfit", "Eilistraee", "Komodo", "Nozdormu", "Voiron"},
+  Supertramp = {"Moradin", "Aredhel", "Izzy", "Lulz", "Gwydion"},
 }
 
 ---@type ActionButton
@@ -196,7 +194,7 @@ local group = {
   active = false,
   icon = icons.MD_GROUP,
   tooltip = "Create Groups",
-  isDisabled = function (state) return false end,
+  isDisabled = function (state) return doInvites == true end,
   activate = function (state)
     doInvites = true
   end
@@ -247,7 +245,7 @@ local resetNuke = {
   activate = function(state) bci.ExecuteAllCommand('/resetactivespellset') end,
 }
 
-local bards = {"Marillion", "Renaissance", "Soundgarden", "Genesis"}
+local bards = {"Marillion", "Renaissance", "Soundgarden", "Genesis", "Supertramp", "Zeppelin"}
 ---@type ActionButton
 local bard = {
   active = false,
@@ -558,8 +556,8 @@ local function actionbarUI()
   openGUI = imgui.Begin('Actions', openGUI, windowFlags)
 
   createStateButton(uiState.bots)
-  imgui.SameLine()
-  createStateButton(uiState.bard)
+  -- imgui.SameLine()
+  -- createStateButton(uiState.bard)
   imgui.SameLine()
   createStateButton(uiState.toggleCrowdControl)
   imgui.SameLine()
@@ -645,11 +643,6 @@ end
 while not terminate do
   if doInvites then
     triggerInvites()
-  end
-
-  if followZone and followZone ~= mq.TLO.Zone.ID() then
-    uiState.advFollow.active = false
-    followZone = nil
   end
 
   if travelToZone and travelToZone.shortname == mq.TLO.Zone.ShortName() then
