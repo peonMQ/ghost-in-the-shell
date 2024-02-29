@@ -82,7 +82,7 @@ local function sellItem(itemToSell)
     mq.delay(500, function() return not quantityWindow() or not quantityWindow.Open() end)
   end
 
-  mq.delay("3s", function() return not merchantWindow.Child("MW_Sell_Button").Enabled() and itemSold(packslot, itemToSell) end)
+  mq.delay("3s", function() return not merchantWindow.Child("MW_Sell_Button").Enabled() and mq.TLO.Window('MerchantWnd/MW_SelectedItemLabel').Text() == '' and itemSold(packslot, itemToSell) end)
 
   if(itemToSell.ItemSlot2() >= 0 and mq.TLO.Me.Inventory("pack"..packslot).Item(itemToSell.ItemSlot2()+1).Item())
     or mq.TLO.Me.Inventory("pack"..packslot).Item() then
