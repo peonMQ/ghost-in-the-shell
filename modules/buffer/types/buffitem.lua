@@ -41,15 +41,15 @@ end
 
 ---@return boolean
 function BuffItem:CanCast()
-  local buffItem = mq.TLO.FindItem("="..self.ItemName)
-  local refreshTimer = buffItem.TimerReady()
-  local wornSlot = buffItem.EffectType()
-  -- ${FindItem[${spellName}].EffectType.Find[worn]}
-  -- /varset slotName ${FindItem[${spellName}].WornSlot[1].Name}
-  local me = mq.TLO.Me
-  if me.Casting() or (refreshTimer and refreshTimer > 0) then
+  local superCanCast = item.CanCast(self)
+  if not superCanCast then
     return false
   end
+
+  -- local wornSlot = buffItem.EffectType()
+  -- local effectType = buffItem.EffectType()
+  -- ${FindItem[${spellName}].EffectType.Find[worn]}
+  -- /varset slotName ${FindItem[${spellName}].WornSlot[1].Name}
 
   if self:DoesIncreaseRunSpeed() and currentZoneIsIndoors() then
     return false
