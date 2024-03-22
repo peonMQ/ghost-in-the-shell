@@ -89,7 +89,7 @@ local function doMezz()
     if immunities and immunities[mezzName] then
       logger.Info("[%s] is immune to <%s>, skipping.", mezzName, mezz_spell.Name)
     elseif maTargetId ~= mezzSpawn.ID() and mqUtils.IsMaybeAggressive(mezzSpawn --[[@as spawn]]) then
-      if mqUtils.EnsureTarget(mezzSpawn.ID()) and mezz_spell:CanCastOnTarget(mq.TLO.Target --[[@as target]]) and mezz_spell.MQSpell.Max(1) >= mq.TLO.Target.Level() then
+      if mqUtils.EnsureTarget(mezzSpawn.ID()) and mezz_spell:CanCastOnTarget(mq.TLO.Target --[[@as target]]) and mezz_spell.MQSpell.Max(1)() >= mezzSpawn.Level() then
         logger.Info("Attempting to mezz [%s] with <%s>.", mezzName, mezz_spell.Name)
         local castResult = mezz_spell:Cast(checkInterrupt)
         if castResult == castReturnTypes.Immune then
