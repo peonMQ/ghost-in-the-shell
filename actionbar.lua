@@ -121,6 +121,7 @@ local function stopBots(state)
   logger.Info("stop bots.")
   local command = string.format('/lua stop %s', runningDir:GetRelativeToMQLuaPath("/bot"))
   bci.ExecuteAllCommand(command)
+  bci.ExecuteAllCommand("/stopsong")
   state.bots.active = false
   state.toggleCrowdControl.active = false
   logger.Info("Bots stopped.")
@@ -185,7 +186,7 @@ local groups = {
   Renaissance = {"Inara", "Tedd", "Araushnee", "Freyja", "Milamber"},
   Soundgarden = {"Lolth", "Ronin", "Tyrion", "Sheperd", "Valsharess"},
   Genesis = {"Vierna", "Osiris", "Regis", "Tiamat", "Mordenkainen"},
-  Zeppelin = {"Mizzfit", "Eilistraee", "Komodo", "Nozdormu", "Voiron"},
+  Zeppelin = {"Mizzfit", "Eilistraee", "Komodo", "Nozdormu", "Vorion"},
   Supertramp = {"Moradin", "Aredhel", "Izzy", "Lulz", "Gwydion"},
 }
 
