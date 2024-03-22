@@ -55,8 +55,7 @@ function Repository:upsert (upsertItem)
   end
 
   self:add(upsertItem)
-  local fileName = "loot_settings.lua"
-  local filePath = string.format("%s/%s/gits/data/%s", configDir, serverName, fileName)
+  local filePath = getFilePath()
   luaLoader.SaveTable(filePath, Repository.items)
 end
 
