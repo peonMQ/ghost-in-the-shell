@@ -6,6 +6,42 @@ local plugin = require 'utils/plugins'
 local state = require 'lib/spells/state'
 local settings = require 'settings/settings'
 
+local SPA_MOVEMENT_RATE = 3
+---@param buffSpell spell
+---@param currentBuff spell
+---@return boolean
+local function willStack(buffSpell, currentBuff)
+  if buffSpell() and not mq.TLO.Spell(buffSpell.ID()).WillStack(currentBuff.Name())() then
+    return false
+  end
+
+  if buffSpell.HasSPA(SPA_MOVEMENT_RATE)() then
+    for i=1,buffSpell.NumEffects() do
+      local buffspellSPA = buffSpell.Attrib(i)()
+      if buffspellSPA == SPA_MOVEMENT_RATE and currentBuff.Attrib(i)() == buffspellSPA then
+        if buffSpell.Base(i)() > 0 and currentBuff.Base(i)() < 0 then
+          return false
+        end
+      end
+    end
+  end
+
+  return true
+end
+
+---@param buffSpell spell
+---@return boolean
+local function willStackOnMe(buffSpell)
+  for i=1,mq.TLO.Me.MaxBuffSlots() do
+    local currentBuff = mq.TLO.Me.Buff(i) --[[@as buff]]
+    if currentBuff() and not willStack(buffSpell, currentBuff) then
+      return false
+    end
+  end
+
+  return true
+end
+
 ---@param spellId integer
 local function checkInterrupt(spellId)
   local target = mq.TLO.Target
@@ -40,7 +76,7 @@ local function checkSelfBuffs()
 
   for _, buffSpell in pairs(settings.buffs.self) do
     if buffSpell:CanCast() then
-      if not me.Buff(buffSpell.Name)() and (mq.TLO.Spell(buffSpell.Name).Stacks() or mq.TLO.Spell(buffSpell.Name).NewStacks()) then
+      if (not me.Buff(buffSpell.Name)() and not me.Song(buffSpell.Name)()) and (willStackOnMe(buffSpell.MQSpell)) then
         castBuff(buffSpell, me.ID())
         return;
       end
