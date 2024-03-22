@@ -80,6 +80,8 @@ local function canPlayMelody()
     return false
   elseif me.Invulnerable() then
     return false
+  -- elseif mq.TLO.Window("CastingWindow").Open() then
+  --   return false;
   elseif me.Casting() then
   -- elseif me.CastTimeLeft() > 0 and me.CastTimeLeft() < 100000 then -- Attempt to check if we are currently casting a spell (active spell cast bar)
     return false
@@ -158,13 +160,20 @@ local function scheduleNextSong()
   return stalest_song
 end
 
+
+
+local SPA_INVISIBILITY = 12
+local function currentSongHasInvisEffect()
+  return currentSong and currentSong.MQSpell.HasSPA(SPA_INVISIBILITY)()
+end
+
 local function createPostCommand()
   return coroutine.create(function ()
     for _, value in ipairs(events) do
       value:DoEvent()
     end
 
-    while mq.TLO.Me.Casting() and castCompleteDue:IsRunning() and not wasInterrupted do
+    while mq.TLO.Me.Casting() and (castCompleteDue:IsRunning() or currentSongHasInvisEffect()) and not wasInterrupted do
       coroutine.yield()
     end
 
