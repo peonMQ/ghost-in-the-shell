@@ -9,6 +9,7 @@ local state = require 'lib/spells/state'
 ---@field public Id integer
 ---@field public Name string
 ---@field public ItemName string
+---@field public MQSpell spell
 local Item = cast:base()
 
 ---@param itemName string
@@ -29,6 +30,7 @@ function Item:new (itemName)
   local name = itemspell.Spell.Name()
   local o = setmetatable(cast:new(id, name), self)
   o.ItemName = itemName
+  o.MQSpell = itemspell.Spell --[[@as spell]];
   return o --[[@as Item]]
 end
 
