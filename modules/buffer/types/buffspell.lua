@@ -5,6 +5,29 @@ local luaUtils = require 'utils/lua-table'
 ---@type Spell
 local spell = require 'lib/spells/types/spell'
 
+local SPA_MOVEMENT_RATE = 3
+---@param buffSpell spell
+---@param currentBuff spell
+---@return boolean
+local function willStack(buffSpell, currentBuff)
+  if buffSpell() and not buffSpell.WillStack(currentBuff.Name())() then
+    return false
+  end
+
+  if buffSpell.HasSPA(SPA_MOVEMENT_RATE)() then
+    for i=1,buffSpell.NumEffects() do
+      local buffspellSPA = buffSpell.Attrib(i)()
+      if buffspellSPA == SPA_MOVEMENT_RATE and currentBuff.Attrib(i)() == buffspellSPA then
+        if buffSpell.Base(i)() > 0 and currentBuff.Base(i)() < 0 then
+          return false
+        end
+      end
+    end
+  end
+
+  return true
+end
+
 local function currentZoneIsNoLevitate()
   local currentZone = mq.TLO.Zone.ShortName()
   return currentZone == "airplane"
@@ -119,8 +142,37 @@ function BuffSpell:WillStack(netbot)
     end
 
     local buffSpell = mq.TLO.Spell(buffId)
-    if buffSpell() and not mq.TLO.Spell(self.Id).WillStack(buffSpell.Name())() then
+    if buffSpell() and not willStack(self.MQSpell, buffSpell) then
       return false
+    end
+  end
+
+  return true
+end
+
+---@return boolean
+function BuffSpell:WillStackOnMe()
+  if self.MQSpell.DurationWindow() == 0 then
+    if mq.TLO.Me.Buff(self.Name)() then
+      return false
+    end
+
+    for i=1,mq.TLO.Me.MaxBuffSlots() do
+      local currentBuff = mq.TLO.Me.Buff(i) --[[@as buff]]
+      if currentBuff() and not willStack(self.MQSpell, currentBuff) then
+        return false
+      end
+    end
+  elseif self.MQSpell.DurationWindow() == 1 then
+    if mq.TLO.Me.Song(self.Name)() then
+      return false
+    end
+
+    for i=1,12 do
+      local currentBuff = mq.TLO.Me.Song(i) --[[@as buff]]
+      if currentBuff() and not willStack(self.MQSpell, currentBuff) then
+        return false
+      end
     end
   end
 
