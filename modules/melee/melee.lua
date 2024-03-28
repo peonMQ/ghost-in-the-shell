@@ -106,15 +106,16 @@ local function doMeleeDps(meleeAbilityCallback)
   local isNPC = targetSpawn.Type() == "NPC"
   local isPet = targetSpawn.Type() == "Pet"
   local hasLineOfSight = targetSpawn.LineOfSight()
-  local targetHP = netbot.TargetHP()
+  local targetHP = netbot.TargetHP() or 0
   local isPetOwnerNPC = true
   if isPet then
     isPetOwnerNPC = targetSpawn.Owner.Type() == "NPC"
   end
 
-  if (not isNPC and not isPet and not isPetOwnerNPC)
-      or (targetHP > 0 and targetHP > settings.assist.engage_at)
-      or not hasLineOfSight then
+  if not (isNPC or (isPet and not isPetOwnerNPC)) or
+     not hasLineOfSight or
+     targetHP > settings.assist.engage_at
+     then
     logger.Debug("Mainassist target is not valid")
     return
   end
