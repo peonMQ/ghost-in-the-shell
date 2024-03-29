@@ -1,5 +1,6 @@
 local mq = require 'mq'
 local logger = require("knightlinc/Write")
+local common = require 'lib/common/common'
 local mqEvents = require 'lib/mqevent'
 local timer = require 'lib/timer'
 local settings = require 'settings/settings'
@@ -210,6 +211,10 @@ local function queueSong(song)
 end
 
 local function onTick()
+  if common.IsOrchestrator() then
+    return
+  end
+
   local medley = settings.medleys[assist_state.medley]
   if not medley then
     logger.Info("No medley found for [%s]", assist_state.medley)

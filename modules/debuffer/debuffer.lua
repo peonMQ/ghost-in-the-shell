@@ -27,6 +27,10 @@ local function checkInterrupt(spellId)
 end
 
 local function doDebuffs()
+  if common.IsOrchestrator() then
+    return
+  end
+
   local mainAssist = common.GetMainAssist()
   if not mainAssist then
     return

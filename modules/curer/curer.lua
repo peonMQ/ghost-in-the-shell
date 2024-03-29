@@ -3,6 +3,7 @@ local mq = require 'mq'
 local logger = require("knightlinc/Write")
 local plugin = require 'utils/plugins'
 local mqUtils = require 'utils/mqhelpers'
+local common = require 'lib/common/common'
 local spawnsearchparams = require 'lib/spawnsearchparams'
 local state = require 'lib/spells/state'
 local numberUtils = require 'lib/numberutils'
@@ -41,8 +42,7 @@ local function checkCure(spell)
 end
 
 local function doCuring()
-  if plugin.IsLoaded("mq2netbots") == false then
-    logger.Debug("mq2netbots is not loaded")
+  if common.IsOrchestrator() then
     return
   end
 

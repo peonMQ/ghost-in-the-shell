@@ -1,6 +1,7 @@
 --- @type Mq
 local mq = require 'mq'
 local logger = require("knightlinc/Write")
+local common = require 'lib/common/common'
 local plugin = require 'utils/plugins'
 local mqUtils = require 'utils/mqhelpers'
 local common = require 'lib/common/common'
@@ -216,6 +217,10 @@ local function checkHotNetBots()
 end
 
 local function doHealing()
+  if common.IsOrchestrator() then
+    return
+  end
+
   checkHealMainTank()
   checkAEGroupHeal()
   checkHealGroup()

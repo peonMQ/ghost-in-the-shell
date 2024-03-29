@@ -3,6 +3,7 @@ local mq = require 'mq'
 local logger = require("knightlinc/Write")
 local mqUtils = require 'utils/mqhelpers'
 local plugin = require 'utils/plugins'
+local common = require 'lib/common/common'
 local state = require 'lib/spells/state'
 local settings = require 'settings/settings'
 
@@ -125,6 +126,10 @@ end
 
 local function doBuffs()
   checkCombatBuffs()
+  if common.IsOrchestrator() then
+    return
+  end
+
   if not settings.buffs.requestInCombat then
     if mqUtils.NPCInRange() then
       logger.Debug("NPCs in camp, cannot buff.")

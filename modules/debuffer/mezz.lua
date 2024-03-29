@@ -49,6 +49,10 @@ local function checkInterrupt(spellId)
 end
 
 local function doMezz()
+  if common.IsOrchestrator() then
+    return
+  end
+
   if not assist_state.crowd_control_mode then
     return
   end
