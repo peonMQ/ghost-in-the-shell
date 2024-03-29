@@ -3,15 +3,12 @@ local imgui = require 'ImGui'
 local icons = require 'mq/Icons'
 local logger = require("knightlinc/Write")
 
-
-logger.prefix = string.format("\at%s\ax", "[GITS-BAR]")
-logger.postfix = function () return string.format(" %s", os.date("%X")) end
-
 local debugUtils = require 'utils/debug'
 local plugins = require 'utils/plugins'
 local luapaths = require 'utils/lua-paths'
 local filetutils = require 'utils/file'
 local bci = require('broadcast/broadcastinterface')()
+local app_state = require 'app_state'
 
 local zoneselector = require 'ui/zoneselector'
 local portalselector = require 'ui/portalselector'
@@ -54,6 +51,7 @@ local runningDir = luapaths.RunningDir:new()
 
 -- GUI Control variables
 local openGUI = true
+local shouldDrawGUI = true
 local terminate = false
 local buttonSize = ImVec2(30, 30)
 local windowFlags = bit32.bor(ImGuiWindowFlags.NoDecoration, ImGuiWindowFlags.NoDocking, ImGuiWindowFlags.AlwaysAutoResize, ImGuiWindowFlags.NoFocusOnAppearing, ImGuiWindowFlags.NoNav)
@@ -110,35 +108,29 @@ local fuchsiaButton = {
 }
 
 local function startBots(state)
-  logger.Info("Start up bots.")
-  local command = string.format('/lua run %s', runningDir:GetRelativeToMQLuaPath("/bot"))
-  bci.ExecuteAllCommand(command)
-  state.bots.active = true
-  logger.Info("Bots initialized.")
+  app_state.Activate()
+
+  state.bots.active = app_state.IsActive()
 end
 
 local function stopBots(state)
-  logger.Info("stop bots.")
-  local command = string.format('/lua stop %s', runningDir:GetRelativeToMQLuaPath("/bot"))
-  bci.ExecuteAllCommand(command)
-  bci.ExecuteAllCommand("/stopsong")
-  state.bots.active = false
-  state.toggleCrowdControl.active = false
-  logger.Info("Bots stopped.")
+  app_state.Pause()
+  bci.ExecuteAllWithSelfCommand("/stopsong")
+  bci.ExecuteAllWithSelfCommand("/stopcast")
+  state.bots.active = app_state.IsActive()
 end
 
 ---@type ActionButton
 local bots = {
-  active = false,
-  icon = icons.MD_PLAY_ARROW, -- MD_ANDRIOD
-  activeIcon = icons.MD_STOP,
+  active = app_state.IsActive(),
+  icon = icons.MD_PAUSE, -- MD_ANDRIOD
+  activeIcon = icons.MD_PLAY_ARROW,
   tooltip = "Toogle Bots",
   isDisabled = function (state) return false end,
   activate = function(state) startBots(state) end,
   deactivate = function(state) stopBots(state) end
 }
 
-local advFollowZone = nil
 ---@type ActionButton
 local advFollow = {
   active = false,
@@ -554,73 +546,74 @@ local function createButton(state, buttonColor)
 end
 
 local function actionbarUI()
-  openGUI = imgui.Begin('Actions', openGUI, windowFlags)
+  if not openGUI then return end
 
-  createStateButton(uiState.bots)
-  -- imgui.SameLine()
-  -- createStateButton(uiState.bard)
-  imgui.SameLine()
-  createStateButton(uiState.toggleCrowdControl)
-  imgui.SameLine()
-  createStateButton(uiState.advFollow)
-  imgui.SameLine()
-  createStateButton(uiState.navFollow)
-  imgui.SameLine()
-  createStateButton(uiState.easyfind)
-  imgui.SameLine()
-  createStateButton(uiState.portal)
-  imgui.SameLine()
-  createButton(uiState.loot, blueButton)
-  imgui.SameLine()
-  createButton(uiState.group, blueButton)
-  imgui.SameLine()
-  createButton(uiState.pets, blueButton)
-  imgui.SameLine()
-  createButton(uiState.petWeapons, blueButton)
+  openGUI, shouldDrawGUI = imgui.Begin('Actions', openGUI, windowFlags)
+  if shouldDrawGUI then
+    createStateButton(uiState.bots)
+    imgui.SameLine()
+    -- createStateButton(uiState.bard)
+    -- imgui.SameLine()
+    createStateButton(uiState.toggleCrowdControl)
+    imgui.SameLine()
+    createStateButton(uiState.advFollow)
+    imgui.SameLine()
+    createStateButton(uiState.navFollow)
+    imgui.SameLine()
+    createStateButton(uiState.easyfind)
+    imgui.SameLine()
+    createStateButton(uiState.portal)
+    imgui.SameLine()
+    createButton(uiState.loot, blueButton)
+    imgui.SameLine()
+    createButton(uiState.group, blueButton)
+    imgui.SameLine()
+    createButton(uiState.pets, blueButton)
+    imgui.SameLine()
+    createButton(uiState.petWeapons, blueButton)
 
-  -- next button line
-  createButton(uiState.magicNuke, fuchsiaButton)
-  imgui.SameLine()
-  createButton(uiState.fireNuke, orangeButton)
-  imgui.SameLine()
-  createButton(uiState.coldNuke, darkBlueButton)
-  imgui.SameLine()
-  createButton(uiState.resetNuke, darkBlueButton)
-  imgui.SameLine()
-  createButton(uiState.pacify, yellowButton)
-  imgui.SameLine()
-  createButton(uiState.door, blueButton)
-  imgui.SameLine()
-  createButton(uiState.instance, blueButton)
-  imgui.SameLine()
-  createButton(uiState.fooddrink, blueButton)
-  imgui.SameLine()
-  createButton(uiState.removeBuffs, blueButton)
-  imgui.SameLine()
-  createButton(uiState.killthis, blueButton)
-  imgui.SameLine()
-  createButton(uiState.clearconsole, orangeButton)
-  imgui.SameLine()
-  createButton(uiState.reload_settings, orangeButton)
-  imgui.SameLine()
-  createButton(uiState.quit, redButton)
+    -- next button line
+    createButton(uiState.magicNuke, fuchsiaButton)
+    imgui.SameLine()
+    createButton(uiState.fireNuke, orangeButton)
+    imgui.SameLine()
+    createButton(uiState.coldNuke, darkBlueButton)
+    imgui.SameLine()
+    createButton(uiState.resetNuke, darkBlueButton)
+    imgui.SameLine()
+    createButton(uiState.pacify, yellowButton)
+    imgui.SameLine()
+    createButton(uiState.door, blueButton)
+    imgui.SameLine()
+    createButton(uiState.instance, blueButton)
+    imgui.SameLine()
+    createButton(uiState.fooddrink, blueButton)
+    imgui.SameLine()
+    createButton(uiState.removeBuffs, blueButton)
+    imgui.SameLine()
+    createButton(uiState.killthis, blueButton)
+    imgui.SameLine()
+    createButton(uiState.clearconsole, orangeButton)
+    imgui.SameLine()
+    createButton(uiState.reload_settings, orangeButton)
+    imgui.SameLine()
+    createButton(uiState.quit, redButton)
 
-  imgui.End()
+    imgui.End()
 
-  if selectTravelTo then
-    zoneselector("Travel too", travelToo)
-  end
+    if selectTravelTo then
+      zoneselector("Travel too", travelToo)
+    end
 
-  if uiState.portal.active then
-    portalselector("Port too", portToo)
-  end
+    if uiState.portal.active then
+      portalselector("Port too", portToo)
+    end
 
-  if not openGUI then
-      terminate = true
+    if not openGUI then
+        terminate = true
+    end
   end
 end
-
-mq.imgui.init('ActionBar', actionbarUI)
 
 local function triggerInvites()
   for leader, members in pairs(groups) do
@@ -641,7 +634,13 @@ local function triggerInvites()
   doInvites = false
 end
 
-while not terminate do
+local function init()
+  mq.imgui.init('ActionBar', actionbarUI)
+end
+
+---@param is_orchestrator boolean
+local function process(is_orchestrator)
+  openGUI = is_orchestrator
   if doInvites then
     triggerInvites()
   end
@@ -650,6 +649,10 @@ while not terminate do
     uiState.easyfind.active = false
     travelToZone = nil
   end
-
-  mq.delay(500)
 end
+
+return {
+  Terminate = terminate,
+  Init = init,
+  Process = process
+}

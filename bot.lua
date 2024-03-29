@@ -1,9 +1,5 @@
 local mq = require 'mq'
 local logger = require("knightlinc/Write")
-
-logger.prefix = string.format("\at%s\ax", "[GITS]")
-logger.postfix = function () return string.format(" %s", os.date("%X")) end
-
 local broadcast = require 'broadcast/broadcast'
 local plugins = require 'utils/plugins'
 local debugutils = require 'utils/debug'
@@ -21,6 +17,7 @@ local doNuking = require 'modules/nuker/nuke'
 local doPet = require 'modules/pet/pet'
 local commandQueue  = require("application/command_queue")
 require("application/commands")
+local app_state = require 'app_state'
 
 ---@alias eqclass 'bard'|'cleric'|'druid'|'enchanter'|'magician'|'monk'|'necromancer'|'paladin'|'ranger'|'rogue'|'shadowknight'|'shaman'|'warrior'|'wizard'
 
@@ -72,7 +69,11 @@ if mq.TLO.Me.Class.ShortName() == "BRD" then
   mq.cmd('/if (!${BardSwap}) /bardswap')
 end
 
-while true do
+local function process()
+  if not app_state.IsActive() then
+    return
+  end
+
   mq.doevents()
   commandQueue.Process()
 
@@ -83,6 +84,13 @@ while true do
   elseif mq.TLO.Me.Class.ShortName() == "BRD" then
     doMedley()
   end
-
-  mq.delay(1)
 end
+
+-- while true do
+--   process()
+--   mq.delay(1)
+-- end
+
+return {
+  Process = process
+}
