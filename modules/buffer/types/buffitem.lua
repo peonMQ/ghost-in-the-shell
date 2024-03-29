@@ -1,8 +1,29 @@
---- @type Mq
 local mq = require 'mq'
 local luaUtils = require 'utils/lua-table'
----@type Item
 local item = require 'lib/spells/types/item'
+
+local SPA_MOVEMENT_RATE = 3
+---@param buffSpell spell
+---@param currentBuff spell
+---@return boolean
+local function willStack(buffSpell, currentBuff)
+  if buffSpell() and not buffSpell.WillStack(currentBuff.Name())() then
+    return false
+  end
+
+  if buffSpell.HasSPA(SPA_MOVEMENT_RATE)() then
+    for i=1,buffSpell.NumEffects() do
+      local buffspellSPA = buffSpell.Attrib(i)()
+      if buffspellSPA == SPA_MOVEMENT_RATE and currentBuff.Attrib(i)() == buffspellSPA then
+        if buffSpell.Base(i)() > 0 and currentBuff.Base(i)() < 0 then
+          return false
+        end
+      end
+    end
+  end
+
+  return true
+end
 
 local function currentZoneIsNoLevitate()
   local currentZone = mq.TLO.Zone.ShortName()
@@ -43,15 +64,15 @@ end
 
 ---@return boolean
 function BuffItem:CanCast()
-  local buffItem = mq.TLO.FindItem("="..self.ItemName)
-  local refreshTimer = buffItem.TimerReady()
-  local wornSlot = buffItem.EffectType()
-  -- ${FindItem[${spellName}].EffectType.Find[worn]}
-  -- /varset slotName ${FindItem[${spellName}].WornSlot[1].Name}
-  local me = mq.TLO.Me
-  if me.Casting() or (refreshTimer and refreshTimer > 0) then
+  local superCanCast = item.CanCast(self)
+  if not superCanCast then
     return false
   end
+
+  -- local wornSlot = buffItem.EffectType()
+  -- local effectType = buffItem.EffectType()
+  -- ${FindItem[${spellName}].EffectType.Find[worn]}
+  -- /varset slotName ${FindItem[${spellName}].WornSlot[1].Name}
 
   if self:DoesIncreaseRunSpeed() and currentZoneIsIndoors() then
     return false
@@ -78,7 +99,7 @@ end
 ---@return boolean
 function BuffItem:CanCastOnspawn(spawn)
   local spell = mq.TLO.Spell(self.Name)
-  
+
   if spawn.Distance() > spell.Range() then
     return false
   end
@@ -93,7 +114,7 @@ end
 ---@param netbot netbot
 ---@return boolean
 function BuffItem:WillStack(netbot)
-  local netbotBuffs = luaUtils.Split(netbot.Buff(), "%s")
+  local netbotBuffs = luaUtils.Split(netbot.Buff() --[[@as string]], "%s")
 
   for _, buffId in ipairs(netbotBuffs) do
     if self.Id == tonumber(buffId) then
@@ -101,8 +122,37 @@ function BuffItem:WillStack(netbot)
     end
 
     local buffSpell = mq.TLO.Spell(buffId)
-    if buffSpell() and not mq.TLO.Spell(self.Name).WillStack(buffSpell.Name())() then
+    if buffSpell() and not willStack(self.MQSpell, buffSpell) then
       return false
+    end
+  end
+
+  return true
+end
+
+---@return boolean
+function BuffItem:WillStackOnMe()
+  if self.MQSpell.DurationWindow() == 0 then
+    if mq.TLO.Me.Buff(self.Name)() then
+      return false
+    end
+
+    for i=1,mq.TLO.Me.MaxBuffSlots() do
+      local currentBuff = mq.TLO.Me.Buff(i) --[[@as buff]]
+      if currentBuff() and not willStack(self.MQSpell, currentBuff) then
+        return false
+      end
+    end
+  elseif self.MQSpell.DurationWindow() == 1 then
+    if mq.TLO.Me.Song(self.Name)() then
+      return false
+    end
+
+    for i=1,12 do
+      local currentBuff = mq.TLO.Me.Song(i) --[[@as buff]]
+      if currentBuff() and not willStack(self.MQSpell, currentBuff) then
+        return false
+      end
     end
   end
 

@@ -1,0 +1,1 @@
+require("application/commands/buff/clean_buffs_command")

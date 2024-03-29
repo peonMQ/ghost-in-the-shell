@@ -1,28 +1,32 @@
 --- @type Mq
 local mq = require 'mq'
-local logger = require 'utils/logging'
+local logger = require("knightlinc/Write")
 local mqUtils = require 'utils/mqhelpers'
 local plugin = require 'utils/plugins'
-local config = require 'modules/buffer/config'
+local common = require 'lib/common/common'
 local state = require 'lib/spells/state'
+local settings = require 'settings/settings'
 
 ---@param spellId integer
 local function checkInterrupt(spellId)
   local target = mq.TLO.Target
   if not target() then
     state.interrupt()
+    return
   end
 
   if target.Type() == "Corpse" then
     state.interrupt()
+    return
   end
 end
 
 ---@param buffSpell BuffSpell
 ---@param targetId  integer
 local function castBuff(buffSpell, targetId)
-  if mqUtils.EnsureTarget(targetId) then
-    if buffSpell:CanCastOnspawn(mq.TLO.Target) then
+  local spawn = mq.TLO.Spawn(targetId)
+  if spawn() then
+    if buffSpell:CanCastOnspawn(spawn --[[@as spawn]]) and mqUtils.EnsureTarget(targetId)then
       logger.Info("Casting [%s] on <%s>", buffSpell.Name, mq.TLO.Target.Name())
       buffSpell:Cast(checkInterrupt)
       return true
@@ -32,15 +36,24 @@ local function castBuff(buffSpell, targetId)
   return false
 end
 
+local function checkCombatBuffs()
+  local me = mq.TLO.Me
+
+  for _, buffSpell in pairs(settings.buffs.combat) do
+    if buffSpell:CanCast() and buffSpell:WillStackOnMe() then
+      castBuff(buffSpell, me.ID())
+      return
+    end
+  end
+end
+
 local function checkSelfBuffs()
   local me = mq.TLO.Me
 
-  for key, buffSpell in pairs(config.SelfBuffs) do
-    if buffSpell:CanCast() then
-      if not me.Buff(buffSpell.Name)() and (mq.TLO.Spell(buffSpell.Name).Stacks() or mq.TLO.Spell(buffSpell.Name).NewStacks()) then
-        castBuff(buffSpell, me.ID())
-        return;
-      end
+  for _, buffSpell in pairs(settings.buffs.self) do
+    if buffSpell:CanCast() and buffSpell:WillStackOnMe() then
+      castBuff(buffSpell, me.ID())
+      return
     end
   end
 end
@@ -56,9 +69,9 @@ local function checkNetBotBuffs()
     return
   end
 
-  for key, buffSpell in pairs(config.NetBotBuffs) do
+  for _, buffSpell in pairs(settings.buffs.request) do
     if buffSpell:CanCast() then
-      local spell = mq.TLO.Spell(buffSpell.Id)
+      local spell = buffSpell.MQSpell
       if spell.TargetType() == "Single" then
         for i=1,mq.TLO.NetBots.Counts() do
           local name = mq.TLO.NetBots.Client(i)()
@@ -78,8 +91,12 @@ local function checkNetBotBuffs()
 end
 
 local function checkPetBuffs()
+  if not settings.pet or not settings.pet.buffs then
+    return
+  end
+
   local me = mq.TLO.Me
-  for key, buffSpell in pairs(config.PetBuffs) do
+  for _, buffSpell in pairs(settings.pet.buffs) do
     if buffSpell:CanCast() then
       local spell = mq.TLO.Spell(buffSpell.Id)
       if spell.TargetType() == "Single" and plugin.IsLoaded("mq2netbots") then
@@ -108,7 +125,12 @@ local function checkPetBuffs()
 end
 
 local function doBuffs()
-  if not config.DoBuffsWithNpcInCamp then
+  checkCombatBuffs()
+  if common.IsOrchestrator() then
+    return
+  end
+
+  if not settings.buffs.requestInCombat then
     if mqUtils.NPCInRange() then
       logger.Debug("NPCs in camp, cannot buff.")
       return
@@ -116,22 +138,19 @@ local function doBuffs()
   end
 
   checkSelfBuffs()
-  if not config.DoBuffsWithNpcInCamp then
-    if mqUtils.NPCInRange() then
-      logger.Debug("NPCs in camp, cannot buff.")
-      return
-    end
-  end
-
   checkNetBotBuffs()
-  if not config.DoBuffsWithNpcInCamp then
-    if mqUtils.NPCInRange() then
-      logger.Debug("NPCs in camp, cannot buff.")
-      return
-    end
-  end
-
   checkPetBuffs()
 end
 
 return doBuffs
+
+-- https://stackoverflow.com/questions/9168058/how-to-dump-a-table-to-console
+-- https://gist.github.com/paulmoore/1429475
+-- https://stackoverflow.com/questions/65961478/how-to-mimic-simple-inheritance-with-base-and-child-class-constructors-in-lua-t
+-- https://www.tutorialspoint.com/lua/lua_object_oriented.htm
+
+-- /lua parse mq.TLO.Spawn(mq.TLO.Me.ID()).FindBuff("id 647")
+
+-- /lua parse mq.TLO.Me.FindBuff("id 647")
+
+-- /lua parse mq.TLO.Spawn(mq.TLO.Me.ID()).FindBuff('spa charisma')

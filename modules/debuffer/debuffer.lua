@@ -1,15 +1,12 @@
---- @type Mq
 local mq = require 'mq'
-local logger = require 'utils/logging'
+local logger = require("knightlinc/Write")
 local broadcast = require 'broadcast/broadcast'
 local mqUtils = require 'utils/mqhelpers'
 local common = require 'lib/common/common'
 local state = require 'lib/spells/state'
 local castReturnTypes = require 'lib/spells/types/castreturn'
-local config = require 'modules/debuffer/config'
+local settings = require 'settings/settings'
 local repository = require 'modules/debuffer/types/debuffRepository'
-
---- @type Timer
 local timer = require 'lib/timer'
 
 local cleanTimer = timer:new(60)
@@ -20,14 +17,20 @@ local function checkInterrupt(spellId)
   local target = mq.TLO.Target
   if not target() then
     state.interrupt()
+    return
   end
 
   if target.Type() == "Corpse" then
     state.interrupt()
+    return
   end
 end
 
 local function doDebuffs()
+  if common.IsOrchestrator() then
+    return
+  end
+
   local mainAssist = common.GetMainAssist()
   if not mainAssist then
     return
@@ -53,7 +56,7 @@ local function doDebuffs()
     cleanTimer:Reset()
   end
 
-  for _, debuffSpell in ipairs(config.DeBuffs) do
+  for _, debuffSpell in pairs(settings.assist.debuffs) do
     if debuffSpell:CanCast() then
       local spell = mq.TLO.Spell(debuffSpell.Id)
       if spell.SpellType() == "Detrimental" then
@@ -69,7 +72,7 @@ local function doDebuffs()
             logger.Info("[%s] resisted <%s> %d times, retrying next run.", targetSpawn.Name(), debuffSpell.Name, debuffSpell.MaxResists)
           elseif castResult == castReturnTypes.Success then
             logger.Info("[%s] debuffed with <%s>.", targetSpawn.Name(), debuffSpell.Name)
-            broadcast.Success({}, "[%s] debuffed with <%s>.", targetSpawn.Name(), debuffSpell.Name)
+            broadcast.SuccessAll("[%s] debuffed with <%s>.", targetSpawn.Name(), debuffSpell.Name)
             repository.Insert(targetSpawn.ID(), debuffSpell)
           else
             logger.Info("[%s] <%s> debuff failed with. [%s]", targetSpawn.Name(), debuffSpell.Name, castResult)

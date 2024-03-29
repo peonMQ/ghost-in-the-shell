@@ -2,13 +2,14 @@ local mq = require 'mq'
 local cast = require 'lib/spells/types/cast'
 
 local castReturnTypes = require 'lib/spells/types/castreturn'
-local logger = require 'utils/logging'
+local logger = require("knightlinc/Write")
 local state = require 'lib/spells/state'
 
 ---@class Item : Cast
 ---@field public Id integer
 ---@field public Name string
 ---@field public ItemName string
+---@field public MQSpell spell
 local Item = cast:base()
 
 ---@param itemName string
@@ -29,6 +30,7 @@ function Item:new (itemName)
   local name = itemspell.Spell.Name()
   local o = setmetatable(cast:new(id, name), self)
   o.ItemName = itemName
+  o.MQSpell = itemspell.Spell --[[@as spell]];
   return o --[[@as Item]]
 end
 
@@ -40,6 +42,10 @@ function Item:CanCast()
   end
 
   local item = mq.TLO.FindItem("="..self.ItemName)
+  if not item then
+    return false
+  end
+
   local refreshTimer = item.TimerReady()
   local me = mq.TLO.Me
   if me.Casting() or refreshTimer > 0 then
@@ -55,19 +61,19 @@ function Item:Cast(cancelCallback)
   self:FlushCastEvents()
   state.Reset()
 
-  if (mq.TLO.Window("SpellBookWnd").Open()) then
+  if mq.TLO.Window("SpellBookWnd").Open() then
     mq.cmd("/keypress spellbook")
   end
 
-  if (mq.TLO.Me.Ducking()) then
+  if mq.TLO.Me.Ducking() then
     mq.cmd("/keypress duck")
   end
 
-  if (mq.TLO.Me.Sitting()) then
+  if mq.TLO.Me.Sitting() then
     mq.cmd("/stand")
   end
 
-  if mq.TLO.Me.Animation()  == 16 then
+  if mq.TLO.Me.Animation() == 16 then
     mq.cmd("/stand")
   end
 

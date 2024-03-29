@@ -1,14 +1,17 @@
 --- @type Mq
 local mq = require 'mq'
-local logger = require 'utils/logging'
+local logger = require("knightlinc/Write")
 local broadcast = require 'broadcast/broadcast'
 local mqUtils = require 'utils/mqhelpers'
-local configLoader = require 'utils/configloader'
-local debugUtils = require 'utils/debug'
 local spawnsearchparams = require 'lib/spawnsearchparams'
 local common = require 'lib/common/common'
+local timer = require 'lib/timer'
 local state = require 'lib/spells/state'
 local castReturnTypes = require 'lib/spells/types/castreturn'
+local spell_finder = require 'lib/spells/spell_finder'
+local spells_mesmerize = require 'data/spells_mesmerize'
+local settings = require 'settings/settings'
+local assist_state = require 'application/assist_state'
 local debuffspell = require 'modules/debuffer/types/debuffspell'
 local repository = require 'modules/debuffer/types/debuffRepository'
 
@@ -17,32 +20,20 @@ local repository = require 'modules/debuffer/types/debuffRepository'
 -- possible Aggro Animations
 -- 5,8,12,17,18,32,42,44,80,106,129,144
 
---- @type Timer
-local timer = require 'lib/timer'
-
----@class MezzConfig
-local defaultConfig = {
-  DoCrowdControl = false,
-  Radius = 100,
-  MezzSpell = "",
-}
-
-local config = configLoader("general.crowdcontrol", defaultConfig)
+local maxRadius = 100
 local cleanTimer = timer:new(60)
-local mezzSpell = nil
 local immunities = {}
-if config.MezzSpell ~= "" then
-  mezzSpell = debuffspell:new(config.MezzSpell, 8, 0, 30, 3)
-end
 
 local function checkInterrupt(spellId)
   local target = mq.TLO.Target
   if not target() then
     state.interrupt()
+    return
   end
 
   if target.Type() == "Corpse" then
     state.interrupt()
+    return
   end
 
   local mainAssist = common.GetMainAssist()
@@ -53,17 +44,21 @@ local function checkInterrupt(spellId)
   local targetId = mq.TLO.NetBots(mainAssist).TargetID()
   if targetId == target.ID() then
     state.interrupt()
+    return
   end
 end
 
 local function doMezz()
-  if not config.DoCrowdControl then
+  if common.IsOrchestrator() then
     return
   end
 
-  if not mezzSpell then
-    logger.Error("No mezz spell defined!")
-    config.DoCrowdControl = false
+  if not assist_state.crowd_control_mode then
+    return
+  end
+
+  local mezz_spell_group = spells_mesmerize[mq.TLO.Me.Class.ShortName()] and spells_mesmerize[mq.TLO.Me.Class.ShortName()][assist_state.crowd_control_mode]
+  if not mezz_spell_group then
     return
   end
 
@@ -77,28 +72,40 @@ local function doMezz()
                                             :IsNPC()
                                             :HasLineOfSight()
                                             :IsTargetable()
-                                            :WithinRadius(config.Radius).filter
+                                            :WithinRadius(maxRadius).filter
   local mezzTargetCount = mq.TLO.SpawnCount(spawnQueryFilter)()
+
+  if mezzTargetCount <= 0 then
+    return
+  end
+
+  local class_spell = spell_finder.FindGroupSpell(mezz_spell_group)
+  if not class_spell then
+    logger.Error("No mezz spell defined!")
+    return
+  end
+
+  local mezz_spell = debuffspell:new(class_spell.Name(), settings:GetDefaultGem(mezz_spell_group), 0, 30, 3)
 
   for i=1, mezzTargetCount do
     local mezzSpawn = mq.TLO.NearestSpawn(i, spawnQueryFilter)
     local mezzName = mezzSpawn.Name()
     if immunities and immunities[mezzName] then
-      logger.Info("[%s] is immune to <%s>, skipping.", mezzName, mezzSpell.Name)
+      logger.Info("[%s] is immune to <%s>, skipping.", mezzName, mezz_spell.Name)
     elseif maTargetId ~= mezzSpawn.ID() and mqUtils.IsMaybeAggressive(mezzSpawn --[[@as spawn]]) then
-      if mqUtils.EnsureTarget(mezzSpawn.ID()) and mezzSpell:CanCastOnTarget(mq.TLO.Target --[[@as target]]) then
-        logger.Info("Attempting to mezz [%s] with <%s>.", mezzName, mezzSpell.Name)
-        local castResult = mezzSpell:Cast(checkInterrupt)
+      if mqUtils.EnsureTarget(mezzSpawn.ID()) and mezz_spell:CanCastOnTarget(mq.TLO.Target --[[@as target]]) and mezz_spell.MQSpell.Max(1)() >= mezzSpawn.Level() then
+        logger.Info("Attempting to mezz [%s] with <%s>.", mezzName, mezz_spell.Name)
+        local castResult = mezz_spell:Cast(checkInterrupt)
         if castResult == castReturnTypes.Immune then
           immunities[mezzName] = "immune"
         elseif castResult == castReturnTypes.Resisted then
-          logger.Info("[%s] resisted <%s> %d times, retrying next run.", mezzName, mezzSpell.Name, mezzSpell.MaxResists)
+          logger.Info("[%s] resisted <%s> %d times, retrying next run.", mezzName, mezz_spell.Name, mezz_spell.MaxResists)
         elseif castResult == castReturnTypes.Success then
-          logger.Info("[%s] mezzed with <%s>.", mezzName, mezzSpell.Name)
-          broadcast.Success("[%s] mezzed with <%s>.", mezzName, mezzSpell.Name)
-          repository.Insert(mezzSpawn.ID(), mezzSpell)
+          logger.Info("[%s] mezzed with <%s>.", mezzName, mezz_spell.Name)
+          broadcast.SuccessAll("[%s] mezzed with <%s>.", mezzName, mezz_spell.Name)
+          repository.Insert(mezzSpawn.ID(), mezz_spell)
         else
-          logger.Info("[%s] <%s> mezz failed with. [%s]", mezzName, mezzSpell.Name, castResult)
+          logger.Info("[%s] <%s> mezz failed with. [%s]", mezzName, mezz_spell.Name, castResult)
         end
       end
     end
@@ -109,29 +116,5 @@ local function doMezz()
     cleanTimer:Reset()
   end
 end
-
-local boolParam = {["1"] = true, ["true"] = true, ["on"] = true, ["0"] = false, ["false"] = false, ["off"] = false}
-
----@param toggle string
-local function doCrowdControl(toggle)
-  if not mezzSpell then
-    return
-  end
-
-  if boolParam[toggle:lower()] == nil then
-    return
-  end
-
-  config.DoCrowdControl = boolParam[toggle:lower()]
-  if not config.DoCrowdControl then
-    broadcast.Error({}, "%s is no longer doing crowd control", mq.TLO.Me.Name())
-  else
-    broadcast.Success({}, "%s is now doing crowd control", mq.TLO.Me.Name())
-  end
-end
-
-
-mq.unbind('/docc')
-mq.bind("/docc", doCrowdControl)
 
 return doMezz

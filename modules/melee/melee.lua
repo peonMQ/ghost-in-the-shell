@@ -1,11 +1,11 @@
 --- @type Mq
 local mq = require 'mq'
-local logger = require 'utils/logging'
+local logger = require("knightlinc/Write")
 local mqUtils = require 'utils/mqhelpers'
 local common = require 'lib/common/common'
-local commonConfig = require 'lib/common/config'
-local state = require 'modules/melee/state'
+local settings = require 'settings/settings'
 local events = require 'modules/melee/events'
+local assist_state = require 'application/assist_state'
 
 local function doEvents()
   for key, value in pairs(events) do
@@ -42,14 +42,22 @@ end
 
 ---@param meleeAbilityCallback? fun()
 local function doMeleeDps(meleeAbilityCallback)
+  if common.IsOrchestrator() then
+    if mq.TLO.Stick.Active() then
+      mq.cmd("/stick off")
+    end
+
+    return
+  end
+
   local me = mq.TLO.Me
 
-  if not ("Monk,Paladin,Ranger,Rogue,Shadowknight,Warrior"):find(me.Class()) and not commonConfig.DoMeleeAsNonMeleeClass then
+  if settings.assist.type ~= 'melee' then
     return
   end
 
   doEvents()
-  if state.enraged and me.Combat() then
+  if assist_state.enraged and me.Combat() then
     mq.cmd("/attack off")
     logger.Debug("Enraged, attack off")
     return
@@ -68,7 +76,8 @@ local function doMeleeDps(meleeAbilityCallback)
       if mq.TLO.Stick.Active() then
         mq.cmd("/stick off")
       end
-      state.enraged = false
+
+      assist_state.enraged = false
       return
     end
   end
@@ -78,10 +87,12 @@ local function doMeleeDps(meleeAbilityCallback)
     if me.Combat() then
       mq.cmd("/attack off")
     end
+
     if mq.TLO.Stick.Active() then
       mq.cmd("/stick off")
     end
-    state.enraged = false
+
+    assist_state.enraged = false
     logger.Debug("Mainassist not found")
     return
   end
@@ -95,11 +106,16 @@ local function doMeleeDps(meleeAbilityCallback)
   local isNPC = targetSpawn.Type() == "NPC"
   local isPet = targetSpawn.Type() == "Pet"
   local hasLineOfSight = targetSpawn.LineOfSight()
-  local targetHP = netbot.TargetHP()
+  local targetHP = netbot.TargetHP() or 0
+  local isPetOwnerNPC = true
+  if isPet then
+    isPetOwnerNPC = targetSpawn.Owner.Type() == "NPC"
+  end
 
-  if (not isNPC and not isPet)
-      or (targetHP > 0 and targetHP > commonConfig.AssistPct)
-      or not hasLineOfSight then
+  if not (isNPC or (isPet and not isPetOwnerNPC)) or
+     not hasLineOfSight or
+     targetHP > settings.assist.engage_at
+     then
     logger.Debug("Mainassist target is not valid")
     return
   end

@@ -1,18 +1,12 @@
---- @type Mq
 local mq = require 'mq'
 local packageMan = require 'mq/PackageMan'
-local configLoader = require 'utils/configloader'
-local debug = require 'utils/debug'
 
 local sqlite3 = packageMan.Require('lsqlite3')
-
-
 local configDir = (mq.configDir.."/"):gsub("\\", "/"):gsub("%s+", "%%20")
 local serverName = mq.TLO.MacroQuest.Server()
 local dbFileName = configDir..serverName.."/data/spawnDebuffs.db"
 local connectingString = string.format("file:///%s?cache=shared&mode=rwc&_journal_mode=WAL", dbFileName)
 local db = sqlite3.open(connectingString, sqlite3.OPEN_READWRITE + sqlite3.OPEN_CREATE + sqlite3.OPEN_URI)
-
 
 db:exec[[
   PRAGMA journal_mode=WAL;

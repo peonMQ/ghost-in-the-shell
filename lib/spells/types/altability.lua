@@ -1,7 +1,7 @@
 local mq = require 'mq'
 local cast = require 'lib/spells/types/cast'
 local castReturnTypes = require 'lib/spells/types/castreturn'
-local logger = require 'utils/logging'
+local logger = require("knightlinc/Write")
 local state = require 'lib/spells/state'
 
 ---@class AltAbility : Cast
@@ -14,7 +14,7 @@ local AltAbility = cast:base()
 ---@return AltAbility
 function AltAbility:new (name)
   self.__index = self
-  if not mq.TLO.Me.AltAbilityReady(name)() then
+  if not mq.TLO.Me.AltAbility(name)() then
     logger.Fatal("<%s> is not a valid alt ability.", name)
   end
 

@@ -1,6 +1,6 @@
 --- @type Mq
 local mq = require 'mq'
-local logger = require 'utils/logging'
+local logger = require("knightlinc/Write")
 ---@type Spell
 local spell = require 'lib/spells/types/spell'
 local repository = require 'modules/debuffer/types/debuffRepository'
@@ -26,7 +26,7 @@ end
 ---@field public DefaultGem integer
 ---@field public MinManaPercent integer
 ---@field public CategoryId integer
----@field public SubCategoryId integer  
+---@field public SubCategoryId integer
 ---@field public RefreshTimer integer
 local DeBuffSpell = spell:base()
 

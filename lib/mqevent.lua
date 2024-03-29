@@ -1,10 +1,10 @@
 local mq = require 'mq'
-local logger = require 'utils/logging'
+local logger = require("knightlinc/Write")
 
 ---@class MQEvent
 ---@field public Name string
 ---@field public Expression string
----@field public CallBack function
+---@field public Callback function
 local MQEvent = {Name = '',  Expression = '', Callback = function() end}
 
 ---@param name string

@@ -1,25 +1,22 @@
-require 'ImGui'
-
 local mq = require 'mq'
+local imgui = require 'ImGui'
 local icons = require 'mq/Icons'
-local logger = require 'utils/logging'
+local logger = require("knightlinc/Write")
+
+
+logger.prefix = string.format("\at%s\ax", "[GITS-BAR]")
+logger.postfix = function () return string.format(" %s", os.date("%X")) end
+
 local debugUtils = require 'utils/debug'
 local plugins = require 'utils/plugins'
 local luapaths = require 'utils/lua-paths'
 local filetutils = require 'utils/file'
-local broadCastInterfaceFactory = require 'broadcast/broadcastinterface'
+local bci = require('broadcast/broadcastinterface')()
 
 local zoneselector = require 'ui/zoneselector'
+local portalselector = require 'ui/portalselector'
 
----@type RunningDir
 local runningDir = luapaths.RunningDir:new()
-runningDir:AppendToPackagePath()
-
-local bci = broadCastInterfaceFactory()
-if not bci then
-  logger.Fatal("No networking interface found, please start eqbc or dannet")
-  return
-end
 
 -- local classes
 ---@class ActionButton
@@ -53,6 +50,7 @@ end
 ---@field public fooddrink ActionButton
 ---@field public killthis ActionButton
 ---@field public easyfind ActionButton
+---@field public portal ActionButton
 
 -- GUI Control variables
 local openGUI = true
@@ -61,13 +59,11 @@ local buttonSize = ImVec2(30, 30)
 local windowFlags = bit32.bor(ImGuiWindowFlags.NoDecoration, ImGuiWindowFlags.NoDocking, ImGuiWindowFlags.AlwaysAutoResize, ImGuiWindowFlags.NoFocusOnAppearing, ImGuiWindowFlags.NoNav)
 
 
-local followZone = nil
 local travelToZone = nil
-local looter = nil
 local doInvites = false
 
 local function create(h, s, v)
-  local r, g, b = ImGui.ColorConvertHSVtoRGB(h / 7.0, s, v)
+  local r, g, b = imgui.ColorConvertHSVtoRGB(h / 7.0, s, v)
   return ImVec4(r, g, b, 1)
 end
 
@@ -125,6 +121,7 @@ local function stopBots(state)
   logger.Info("stop bots.")
   local command = string.format('/lua stop %s', runningDir:GetRelativeToMQLuaPath("/bot"))
   bci.ExecuteAllCommand(command)
+  bci.ExecuteAllCommand("/stopsong")
   state.bots.active = false
   state.toggleCrowdControl.active = false
   logger.Info("Bots stopped.")
@@ -147,16 +144,14 @@ local advFollow = {
   active = false,
   icon = icons.MD_DIRECTIONS_RUN,
   tooltip = "Toggle AdvPath Follow 'Me'",
-  isDisabled = function (state) return not state.bots.active or not plugins.IsLoaded("MQ2AdvPath") end,
+  isDisabled = function (state) return not state.bots.active or not plugins.IsLoaded("mqactoradvpath") end,
   activate = function(state)
     state.advFollow.active = true
     state.navFollow.active = false
     bci.ExecuteZoneCommand(string.format('/stalk %i', mq.TLO.Me.ID()))
-    followZone = mq.TLO.Zone.ID()
   end,
   deactivate = function(state)
     state.advFollow.active = false
-    advFollowZone = nil
     bci.ExecuteZoneCommand("/stalk")
   end
 }
@@ -166,8 +161,8 @@ local navFollow = {
   active = false,
   icon = icons.MD_MY_LOCATION, -- MD_DIRECTIONS_RUN
   tooltip = "Toggle Nav to 'Me'",
-  isDisabled = function (state) return not state.bots.active or not plugins.IsLoaded("MQ2Nav") end,
-  activate = function(state) 
+  isDisabled = function (state) return not state.bots.active or not plugins.IsLoaded("mq2nav") end,
+  activate = function(state)
     state.navFollow.active = true
     state.advFollow.active = false
     bci.ExecuteZoneCommand(string.format('/navto %i', mq.TLO.Me.ID()))
@@ -182,11 +177,7 @@ local loot = {
   tooltip = "Do Loot",
   isDisabled = function (state) return not state.bots.active end,
   activate = function (state)
-    if not looter then
-      logger.Warn("No looter defined. use /setlooter 'looter' to define one.")
-    else
-      bci.ExecuteCommand('/doloot', {looter})
-    end
+    bci.ExecuteAllCommand('/doloot')
   end
 }
 
@@ -194,8 +185,9 @@ local groups = {
   Eredhrin = {"Hamfast", "Newt", "Bill", "Marillion", "Ithildin"},
   Renaissance = {"Inara", "Tedd", "Araushnee", "Freyja", "Milamber"},
   Soundgarden = {"Lolth", "Ronin", "Tyrion", "Sheperd", "Valsharess"},
-  Genesis = {"Vierna", "Osiris", "Eilistraee", "Regis", "Aredhel"},
-  Mizzfit = {"Komodo", "Izzy", "Lulz", "Tiamat", "Nozdormu"},
+  Genesis = {"Vierna", "Osiris", "Regis", "Tiamat", "Mordenkainen"},
+  Zeppelin = {"Mizzfit", "Eilistraee", "Komodo", "Nozdormu", "Vorion"},
+  Supertramp = {"Moradin", "Aredhel", "Izzy", "Lulz", "Gwydion"},
 }
 
 ---@type ActionButton
@@ -203,7 +195,7 @@ local group = {
   active = false,
   icon = icons.MD_GROUP,
   tooltip = "Create Groups",
-  isDisabled = function (state) return false end,
+  isDisabled = function (state) return doInvites == true end,
   activate = function (state)
     doInvites = true
   end
@@ -224,7 +216,7 @@ local magicNuke = {
   icon = icons.FA_MAGIC,
   tooltip = "Set 'Magic' nukes",
   isDisabled = function (state) return not state.bots.active end,
-  activate = function(state) bci.ExecuteAllCommand('/setlineup Magic') end,
+  activate = function(state) bci.ExecuteAllCommand('/activespellset Magic') end,
 }
 
 ---@type ActionButton
@@ -233,7 +225,7 @@ local fireNuke = {
   icon = icons.FA_FIRE,
   tooltip = "Set 'Fire' nukes",
   isDisabled = function (state) return not state.bots.active end,
-  activate = function(state) bci.ExecuteAllCommand('/setlineup Fire') end,
+  activate = function(state) bci.ExecuteAllCommand('/activespellset Fire') end,
 }
 
 ---@type ActionButton
@@ -242,7 +234,7 @@ local coldNuke = {
   icon = icons.FA_SNOWFLAKE_O,
   tooltip = "Set 'Cold' nukes",
   isDisabled = function (state) return not state.bots.active end,
-  activate = function(state) bci.ExecuteAllCommand('/setlineup Cold') end,
+  activate = function(state) bci.ExecuteAllCommand('/activespellset Cold') end,
 }
 
 ---@type ActionButton
@@ -251,10 +243,10 @@ local resetNuke = {
   icon = icons.FA_MAGIC,
   tooltip = "Reset nukes",
   isDisabled = function (state) return not state.bots.active end,
-  activate = function(state) bci.ExecuteAllCommand('/clearlineup') end,
+  activate = function(state) bci.ExecuteAllCommand('/resetactivespellset') end,
 }
 
-local bards = {"Marillion", "Renaissance", "Soundgarden", "Genesis"}
+local bards = {"Marillion", "Renaissance", "Soundgarden", "Genesis", "Supertramp", "Zeppelin"}
 ---@type ActionButton
 local bard = {
   active = false,
@@ -263,14 +255,12 @@ local bard = {
   isDisabled = function (state) return not plugins.IsLoaded("MQ2Twist") or not plugins.IsLoaded("MQ2BardSwap") end,
   activate = function(state)
     state.bard.active = true
-    for _, name in pairs(bards) do
-      bci.ExecuteCommand('/twist 1 2 3 4', {name})
-      bci.ExecuteCommand('/if (!${BardSwap}) /bardswap', {name})
-    end
+    bci.ExecuteCommand('/twist 1 2 3 4', bards)
+    bci.ExecuteCommand('/if (!${BardSwap}) /bardswap', bards)
   end,
   deactivate = function(state)
     state.bard.active = false
-    bci.ExecuteAllCommand('/twist stop')
+    bci.ExecuteCommand('/twist stop', bards)
   end
 }
 
@@ -291,7 +281,7 @@ local quit = {
   icon = icons.FA_POWER_OFF,
   tooltip = "Camp Desktop",
   isDisabled = function (state) return false end,
-  activate = function(state) 
+  activate = function(state)
     bci.ExecuteAllWithSelfCommand('/lua stop')
     bci.ExecuteAllWithSelfCommand('/twist off')
     bci.ExecuteAllWithSelfCommand('/camp desktop')
@@ -307,8 +297,8 @@ local door = {
   icon = icons.FA_KEY,
   tooltip = "Click Nearest Door",
   isDisabled = function (state) return false end,
-  activate = function(state) 
-    bci.ExecuteZoneCommand('/multiline ; /doortarget; /click left door')
+  activate = function(state)
+    bci.ExecuteZoneCommand('/clickdoor')
   end,
 }
 
@@ -319,7 +309,7 @@ local pacify = {
   tooltip = "Pacify Target",
   isDisabled = function (state) return false end,
   activate = function(state)
-    bci.ExecuteCommand('/multiline ; /target id '..mq.TLO.Target.ID()..'; /cast  "Wake of Tranquility" ', {"Ithildin"})
+    bci.ExecuteCommand('/pacify '..mq.TLO.Target.ID(), {"Ithildin"})
   end,
 }
 
@@ -330,11 +320,11 @@ local toggleCrowdControl = {
   tooltip = "Toggle Crowd Control",
   isDisabled = function (state) return not state.bots.active end,
   activate = function(state)
-    bci.ExecuteZoneCommand('/docc on')
+    bci.ExecuteZoneCommand('/crowdcontrol single_mez')
     state.toggleCrowdControl.active = true
   end,
   deactivate = function(state)
-    bci.ExecuteZoneCommand('/docc off')
+    bci.ExecuteZoneCommand('/crowdcontrol')
     state.toggleCrowdControl.active = false
   end,
 }
@@ -346,20 +336,18 @@ local instance = {
   tooltip = "Enter Instance",
   isDisabled = function (state) return false end,
   activate = function(state)
-    bci.ExecuteAllCommand('/target id '..mq.TLO.Target.ID())
-    bci.ExecuteAllWithSelfCommand('/say ready')
+    bci.ExecuteAllWithSelfCommand('/enterinstance')
   end,
 }
 
-local removeBuffsScriptExists = filetutils.Exists(mq.luaDir.."/mini-apps/removebuffs.lua")
 ---@type ActionButton
 local removeBuffs = {
   active = false,
   icon = icons.MD_AV_TIMER, --FA_EXCHANGE,
   tooltip = "Remove Low Duration Buffs",
-  isDisabled = function (state) return not removeBuffsScriptExists end,
+  isDisabled = function (state) return false end,
   activate = function(state)
-    bci.ExecuteAllWithSelfCommand("/lua run mini-apps/removebuffs 120")
+    bci.ExecuteAllWithSelfCommand("/cleanbuffs 120")
   end,
 }
 
@@ -414,6 +402,31 @@ local easyfind = {
   end,
 }
 
+---@type ActionButton
+local portal = {
+  active = false,
+  icon = icons.FA_SPACE_SHUTTLE,
+  tooltip = "Portal Too",
+  isDisabled = function (state) return not state.bots.active end,
+  activate = function(state)
+    state.portal.active = true
+  end,
+  deactivate = function(state)
+    state.portal.active = false
+  end,
+}
+
+---@type ActionButton
+local reload_settings = {
+  active = false,
+  icon = icons.FA_RECYCLE,
+  tooltip = "Reload settings",
+  isDisabled = function (state) return not state.bots.active end,
+  activate = function(state)
+    bci.ExecuteAllWithSelfCommand("/reloadsettings")
+  end
+}
+
 ---@type ActionButtons
 local uiState = {
   bots = bots,
@@ -438,6 +451,8 @@ local uiState = {
   killthis = killthis,
   clearconsole = clearconsole,
   easyfind = easyfind,
+  portal = portal,
+  reload_settings = reload_settings
 }
 
 ---@param zoneShortName Zone
@@ -455,13 +470,26 @@ local function travelToo(zoneShortName)
   selectTravelTo = false
 end
 
+---@param zoneShortName Zone
+local function portToo(zoneShortName)
+  if zoneShortName then
+    if not mq.TLO.Zone(zoneShortName.shortname).ID() then
+      logger.Error("Zone shortname does not exist <%s>", zoneShortName.shortname)
+    else
+      bci.ExecuteAllCommand(string.format("/port %s", zoneShortName.shortname))
+    end
+  end
+
+  uiState.portal.active = false
+end
+
 local function DrawTooltip(text)
-  if ImGui.IsItemHovered() and text and string.len(text) > 0 then
-      ImGui.BeginTooltip()
-      ImGui.PushTextWrapPos(ImGui.GetFontSize() * 35.0)
-      ImGui.Text(text)
-      ImGui.PopTextWrapPos()
-      ImGui.EndTooltip()
+  if imgui.IsItemHovered() and text and string.len(text) > 0 then
+      imgui.BeginTooltip()
+      imgui.PushTextWrapPos(imgui.GetFontSize() * 35.0)
+      imgui.Text(text)
+      imgui.PopTextWrapPos()
+      imgui.EndTooltip()
   end
 end
 
@@ -472,30 +500,30 @@ local function createStateButton(state)
   end
 
   if not state.active then
-    ImGui.PushStyleColor(ImGuiCol.Button, blueButton.default)
-    ImGui.PushStyleColor(ImGuiCol.ButtonHovered, greenButton.hovered)
-    ImGui.PushStyleColor(ImGuiCol.ButtonActive, greenButton.active)
+    imgui.PushStyleColor(ImGuiCol.Button, blueButton.default)
+    imgui.PushStyleColor(ImGuiCol.ButtonHovered, greenButton.hovered)
+    imgui.PushStyleColor(ImGuiCol.ButtonActive, greenButton.active)
     local isDisabled = state.isDisabled(uiState)
-    ImGui.BeginDisabled(isDisabled)
-    ImGui.Button(state.icon, buttonSize)
-    ImGui.EndDisabled()
+    imgui.BeginDisabled(isDisabled)
+    imgui.Button(state.icon, buttonSize)
+    imgui.EndDisabled()
   else
-    ImGui.PushStyleColor(ImGuiCol.Button, greenButton.default)
-    ImGui.PushStyleColor(ImGuiCol.ButtonHovered, redButton.hovered)
-    ImGui.PushStyleColor(ImGuiCol.ButtonActive, redButton.hovered)
+    imgui.PushStyleColor(ImGuiCol.Button, greenButton.default)
+    imgui.PushStyleColor(ImGuiCol.ButtonHovered, redButton.hovered)
+    imgui.PushStyleColor(ImGuiCol.ButtonActive, redButton.hovered)
     local isDisabled = state.isDisabled(uiState)
-    ImGui.BeginDisabled(isDisabled)
+    imgui.BeginDisabled(isDisabled)
     if not state.activeIcon then
-      ImGui.Button(state.icon, buttonSize)
+      imgui.Button(state.icon, buttonSize)
     else
-      ImGui.Button(state.activeIcon, buttonSize)
+      imgui.Button(state.activeIcon, buttonSize)
     end
-    ImGui.EndDisabled()
+    imgui.EndDisabled()
   end
 
   DrawTooltip(state.tooltip)
 
-  if ImGui.IsItemClicked(0) then
+  if imgui.IsItemClicked(0) then
     if not state.active then
       state.activate(uiState)
     else
@@ -503,80 +531,88 @@ local function createStateButton(state)
     end
   end
 
-  ImGui.PopStyleColor(3)
+  imgui.PopStyleColor(3)
 end
 
 ---@param state ActionButton
 ---@param buttonColor any
 local function createButton(state, buttonColor)
-  ImGui.PushStyleColor(ImGuiCol.Button, buttonColor.default)
-  ImGui.PushStyleColor(ImGuiCol.ButtonHovered, buttonColor.hovered)
-  ImGui.PushStyleColor(ImGuiCol.ButtonActive, buttonColor.active)
+  imgui.PushStyleColor(ImGuiCol.Button, buttonColor.default)
+  imgui.PushStyleColor(ImGuiCol.ButtonHovered, buttonColor.hovered)
+  imgui.PushStyleColor(ImGuiCol.ButtonActive, buttonColor.active)
 
   local isDisabled = state.isDisabled(uiState)
-  ImGui.BeginDisabled(isDisabled)
-  ImGui.Button(state.icon, buttonSize)
-  ImGui.EndDisabled()
+  imgui.BeginDisabled(isDisabled)
+  imgui.Button(state.icon, buttonSize)
+  imgui.EndDisabled()
   DrawTooltip(state.tooltip)
-  if not isDisabled and ImGui.IsItemClicked(0) then
+  if not isDisabled and imgui.IsItemClicked(0) then
     state.activate(uiState)
   end
 
-  ImGui.PopStyleColor(3)
+  imgui.PopStyleColor(3)
 end
 
 local function actionbarUI()
-  openGUI = ImGui.Begin('Actions', openGUI, windowFlags)
+  openGUI = imgui.Begin('Actions', openGUI, windowFlags)
 
   createStateButton(uiState.bots)
-  ImGui.SameLine()
-  createStateButton(uiState.bard)
-  ImGui.SameLine()
+  -- imgui.SameLine()
+  -- createStateButton(uiState.bard)
+  imgui.SameLine()
   createStateButton(uiState.toggleCrowdControl)
-  ImGui.SameLine()
+  imgui.SameLine()
   createStateButton(uiState.advFollow)
-  ImGui.SameLine()
-  createButton(uiState.navFollow, blueButton)
-  ImGui.SameLine()
+  imgui.SameLine()
+  createStateButton(uiState.navFollow)
+  imgui.SameLine()
   createStateButton(uiState.easyfind)
-  ImGui.SameLine()
+  imgui.SameLine()
+  createStateButton(uiState.portal)
+  imgui.SameLine()
   createButton(uiState.loot, blueButton)
-  ImGui.SameLine()
+  imgui.SameLine()
   createButton(uiState.group, blueButton)
-  ImGui.SameLine()
+  imgui.SameLine()
   createButton(uiState.pets, blueButton)
-  ImGui.SameLine()
+  imgui.SameLine()
   createButton(uiState.petWeapons, blueButton)
 
   -- next button line
   createButton(uiState.magicNuke, fuchsiaButton)
-  ImGui.SameLine()
+  imgui.SameLine()
   createButton(uiState.fireNuke, orangeButton)
-  ImGui.SameLine()
+  imgui.SameLine()
   createButton(uiState.coldNuke, darkBlueButton)
-  ImGui.SameLine()
+  imgui.SameLine()
   createButton(uiState.resetNuke, darkBlueButton)
-  ImGui.SameLine()
+  imgui.SameLine()
   createButton(uiState.pacify, yellowButton)
-  ImGui.SameLine()
+  imgui.SameLine()
   createButton(uiState.door, blueButton)
-  ImGui.SameLine()
+  imgui.SameLine()
   createButton(uiState.instance, blueButton)
-  ImGui.SameLine()
+  imgui.SameLine()
   createButton(uiState.fooddrink, blueButton)
-  ImGui.SameLine()
+  imgui.SameLine()
   createButton(uiState.removeBuffs, blueButton)
-  ImGui.SameLine()
+  imgui.SameLine()
   createButton(uiState.killthis, blueButton)
-  ImGui.SameLine()
+  imgui.SameLine()
   createButton(uiState.clearconsole, orangeButton)
-  ImGui.SameLine()
+  imgui.SameLine()
+  createButton(uiState.reload_settings, orangeButton)
+  imgui.SameLine()
   createButton(uiState.quit, redButton)
 
-  ImGui.End()
+  imgui.End()
 
   if selectTravelTo then
     zoneselector("Travel too", travelToo)
+  end
+
+  if uiState.portal.active then
+    portalselector("Port too", portToo)
   end
 
   if not openGUI then
@@ -585,16 +621,6 @@ local function actionbarUI()
 end
 
 mq.imgui.init('ActionBar', actionbarUI)
-
-local function setLooter(arg)
-  if not arg or string.len(arg) < 3 then
-    logger.Warn("<looter> param is not set.")
-    return
-  end
-
-  looter = arg
-  logger.Info("Looter set to <%s>", looter)
-end
 
 local function triggerInvites()
   for leader, members in pairs(groups) do
@@ -615,21 +641,9 @@ local function triggerInvites()
   doInvites = false
 end
 
-local function createAliases()
-  mq.unbind('/setlooter')
-  mq.bind("/setlooter", setLooter)
-end
-
-createAliases()
-
 while not terminate do
   if doInvites then
     triggerInvites()
-  end
-
-  if followZone and followZone ~= mq.TLO.Zone.ID() then
-    uiState.advFollow.active = false
-    followZone = nil
   end
 
   if travelToZone and travelToZone.shortname == mq.TLO.Zone.ShortName() then

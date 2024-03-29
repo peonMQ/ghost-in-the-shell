@@ -1,14 +1,14 @@
 --- @type Mq
 local mq = require 'mq'
-local logger = require 'utils/logging'
+local logger = require("knightlinc/Write")
+local common = require 'lib/common/common'
 local plugin = require 'utils/plugins'
 local mqUtils = require 'utils/mqhelpers'
 local common = require 'lib/common/common'
 local state = require 'lib/spells/state'
 local numberUtils = require 'lib/numberutils'
-local config = require 'modules/healer/config'
----@type Timer
 local timer = require 'lib/timer'
+local settings = require 'settings/settings'
 
 
 ---@type Timer[]
@@ -18,28 +18,33 @@ local function checkInterrupt(spellId)
   local target = mq.TLO.Target
   if not target() then
     state.interrupt()
+    return
   end
 
   if target.Type() == "Corpse" then
     state.interrupt()
+    return
   end
 
   local spell = mq.TLO.Spell(spellId)
   if numberUtils.IsLargerThan(target.Distance(), spell.Range()) then
     state.interrupt()
+    return
   end
 
-  local emergencyHeal = config.MainTankEmergencyHeal
-  if emergencyHeal and spell.ID == config.MainTankHeal.Id and config.MainTankHeal.Id ~= emergencyHeal.Id then
+  local _, emergencyHeal = next(settings.heal.mt_emergency_heal or {})
+  if emergencyHeal and spell.ID == emergencyHeal.Id and emergencyHeal.Id ~= emergencyHeal.Id then
     if emergencyHeal:CanCastOnTarget(target --[[@as target]]) and mq.TLO.Me.Gem(emergencyHeal.Name)() then
       state.interrupt()
       emergencyHeal:Cast(checkInterrupt)
+      return
     end
   end
 end
 
 local function checkHealMainTank()
-  if not config.MainTankHeal then
+  local _, main_tank_heal = next(settings.heal.mt_heal or {})
+  if not main_tank_heal then
     return
   end
 
@@ -48,14 +53,14 @@ local function checkHealMainTank()
     return
   end
 
-  if config.MainTankHeal:CanCastOnNetBot(mq.TLO.NetBots(mainTank) --[[@as netbot]]) and mqUtils.EnsureTarget(mq.TLO.NetBots(mainTank).ID())  then
+  if main_tank_heal:CanCastOnNetBot(mq.TLO.NetBots(mainTank) --[[@as netbot]]) and mqUtils.EnsureTarget(mq.TLO.NetBots(mainTank).ID())  then
     logger.Info("Healing maintank <%s>[%d]", mq.TLO.Target.Name(), mq.TLO.Target.PctHPs() or -100)
-    config.MainTankHeal:Cast(checkInterrupt)
+    main_tank_heal:Cast(checkInterrupt)
   end
 end
 
 local function checkHealGroup()
-  local spell = config.GroupHeal
+  local _, spell = next(settings.heal.default or {})
   if not spell then
     return
   end
@@ -93,7 +98,7 @@ local function checkHealNetBots()
     return
   end
 
-  local spell = config.NetbotsHeal
+  local _, spell = next(settings.heal.default or {})
   if not spell then
     logger.Debug("No NetbotsHeal.")
     return
@@ -112,7 +117,7 @@ local function checkHealNetBots()
   for i=1,mq.TLO.NetBots.Counts() do
     local name = mq.TLO.NetBots.Client(i)()
     local netbot = mq.TLO.NetBots(name) --[[@as netbot]]
-    if spell:CanCastOnNetBot(netbot) and (not netbotTimers[netbot.ID()] or netbotTimers[netbot.ID()]:IsComplete()) then
+    if spell:CanCastOnNetBot(netbot, 15) and (not netbotTimers[netbot.ID()] or netbotTimers[netbot.ID()]:IsComplete()) then
       if netbot.PctHPs() < lowestMember.percentHP then
         lowestMember.id = netbot.ID()
         lowestMember.percentHP = netbot.PctHPs()
@@ -130,19 +135,19 @@ local function checkHealNetBots()
 end
 
 local function checkAEGroupHeal()
-  if not config.AEGroupHeal then
-    return
-  end
-
   local minGroupHealCount = 3
   if mq.TLO.Group.Members() < minGroupHealCount then
     logger.Debug("No enough group members.")
     return
   end
 
-  local spell = config.AEGroupHeal
+  local _, spell = next(settings.heal.ae_group or {})
   if not spell then
-    logger.Debug("No AEGroupHeal.")
+    return
+  end
+
+  if not spell then
+    logger.Debug("No ae_group heal.")
     return
   end
 
@@ -151,7 +156,7 @@ local function checkAEGroupHeal()
     return
   end
 
-  
+
   local canHealCount = 0
   for i=1,mq.TLO.Group.Members() do
     local groupMember = mq.TLO.Group.Member(i) --[[@as groupmember]]
@@ -175,9 +180,9 @@ local function checkHotNetBots()
     return
   end
 
-  local spell = config.NetbotsHot
+  local _, spell = next(settings.heal.hot or {})
   if not spell then
-    logger.Debug("No NetbotsHot.")
+    logger.Debug("No hot heal.")
     return
   end
 
@@ -212,6 +217,10 @@ local function checkHotNetBots()
 end
 
 local function doHealing()
+  if common.IsOrchestrator() then
+    return
+  end
+
   checkHealMainTank()
   checkAEGroupHeal()
   checkHealGroup()
@@ -220,3 +229,15 @@ local function doHealing()
 end
 
 return doHealing
+
+
+-- https://stackoverflow.com/questions/9168058/how-to-dump-a-table-to-console
+-- https://gist.github.com/paulmoore/1429475
+-- https://stackoverflow.com/questions/65961478/how-to-mimic-simple-inheritance-with-base-and-child-class-constructors-in-lua-t
+-- https://www.tutorialspoint.com/lua/lua_object_oriented.htm
+
+-- /lua parse mq.TLO.Spawn(mq.TLO.Me.ID()).FindBuff("id 647")
+
+-- /lua parse mq.TLO.Me.FindBuff("id 647")
+
+-- /lua parse mq.TLO.Spawn(mq.TLO.Me.ID()).FindBuff('spa charisma')

@@ -2,7 +2,7 @@
 local mq = require 'mq'
 ---@type Spell
 local spell = require 'lib/spells/types/spell'
-local logger = require 'utils/logging'
+local logger = require("knightlinc/Write")
 local luaUtils = require 'utils/lua-table'
 
 ---@class CureSpell : Spell
@@ -52,9 +52,7 @@ function CureSpell:CanCastOnNetBot(netbot)
 
   if (tonumber(netbot.Poisoned()) or 0) > 0 and self.CounterType == "Poison" then
     return self:CanCastOnSpawn(spawn --[[@as spawn]])
-  end
-
-  if (tonumber(netbot.Diseased()) or 0) > 0 and self.CounterType == "Disease" then
+  elseif (tonumber(netbot.Diseased()) or 0) > 0 and self.CounterType == "Disease" then
     return self:CanCastOnSpawn(spawn --[[@as spawn]])
   end
 

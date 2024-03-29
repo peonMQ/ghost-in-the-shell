@@ -20,9 +20,12 @@ function Timer:TimeRemaining()
   return self.Duration - (mq.gettime() - self.StartTime);
 end
 
----@return Timer
-function Timer:Reset()
-  return Timer:new(self.Duration)
+---@param newDuration number|nil
+function Timer:Reset(newDuration)
+  if(newDuration) then
+    self.Duration = newDuration
+  end
+  self.StartTime = mq.gettime()
 end
 
 ---@return boolean

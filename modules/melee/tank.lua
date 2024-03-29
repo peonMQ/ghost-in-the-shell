@@ -1,11 +1,11 @@
 --- @type Mq
 local mq = require 'mq'
-local logger = require 'utils/logging'
+local logger = require("knightlinc/Write")
 local mqUtils = require 'utils/mqhelpers'
 local common = require 'lib/common/common'
 local doMeleeDps = require 'modules/melee/melee'
 
-local function canTargetOfftankAdd() 
+local function canTargetOfftankAdd()
   local mainAssist = common.GetMainAssist()
   if not mainAssist then
     return false
@@ -32,7 +32,7 @@ local function canTargetOfftankAdd()
   return mqUtils.EnsureTarget(otTargetId)
 end
 
-local function offtankNearest() 
+local function offtankNearest()
   if not common.AmIOfftank() then
     return
   end

@@ -5,6 +5,7 @@
         "broadcast/": true,
         "utils/": true,
         "wait4rez/": true,
+        "knightlinc/": true
     },
     "workbench.colorCustomizations": {
         "editorBracketHighlight.foreground1": "#5caeef",
@@ -18,13 +19,14 @@
     "editor.detectIndentation": true,
     "editor.insertSpaces": true,
     "editor.tabSize": 2,
-    "Lua.runtime.version": "Lua 5.1",
+    "Lua.runtime.version": "LuaJIT",
     "Lua.workspace.library": [
         "./definitions/mq",
         "./definitions/imgui",
-        "./definitions/imgui-icons",
         "./broadcast",
         "./utils",
         "./wait4rez",
-    ],
+        "./knightlinc",
+        "C:/Games/Macroquest/lua/mq"
+    ]
 }

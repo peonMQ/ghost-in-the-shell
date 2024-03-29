@@ -2,7 +2,7 @@ local mq = require 'mq'
 local events = require 'lib/spells/events'
 local castReturnTypes = require 'lib/spells/types/castreturn'
 local state = require 'lib/spells/state'
-local logger = require 'utils/logging'
+local logger = require("knightlinc/Write")
 
 ---@class Cast
 ---@field public Id integer
@@ -31,21 +31,21 @@ function Cast:new (id, name)
 end
 
 function Cast:DoCastEvents()
-  -- for key, value in pairs(events) do
-  --   value:DoEvent()
-  -- end
-  for i=1, #events do
-    events[i]:DoEvent()
+  for _, value in ipairs(events) do
+    value:DoEvent()
   end
+  -- for i=1, #events do
+  --   events[i]:DoEvent()
+  -- end
 end
 
 function Cast:FlushCastEvents()
-  -- for key, value in pairs(events) do
-  --   value:Flush()
-  -- end
-  for i=1, #events do
-    events[i]:Flush()
+  for _, value in ipairs(events) do
+    value:Flush()
   end
+  -- for i=1, #events do
+  --   events[i]:Flush()
+  -- end
 end
 
 ---@param cancelCallback? fun(spelLId:integer)
@@ -58,10 +58,8 @@ function Cast:WhileCasting(cancelCallback)
     logger.Debug("Whilecasting <%s> [%s]", self.Name, state.castReturn.Name)
     if(cancelCallback) then
       cancelCallback(self.Id)
-    end
-
-    if(currentTargetId and mq.TLO.Spawn(currentTargetId).Type() ~= currentTargetType) then
-      logger.Info("Cancelling spell <%d>, current target <%s> is no longer available", self.Id, currentTarget())
+    elseif(currentTargetId and mq.TLO.Spawn(currentTargetId).Type() ~= currentTargetType) then
+      logger.Info("Cancelling spell <%d>, current target <%s> is no longer available", self.Id, currentTargetId)
       state.interrupt()
     end
 
@@ -81,6 +79,11 @@ function Cast:CanCast()
   local me = mq.TLO.Me
   if me.Stunned() then
     logger.Debug("Unable to cast <%s>, I am stunned.", self.Name)
+    return false
+  end
+
+  if me.Casting() then
+    logger.Debug("Unable to cast <%s>, I am already casting <%s>.", self.Name, me.Casting.Name())
     return false
   end
 

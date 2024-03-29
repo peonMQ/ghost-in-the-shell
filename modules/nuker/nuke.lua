@@ -1,56 +1,48 @@
---- @type Mq
 local mq = require 'mq'
-local logger = require 'utils/logging'
+local logger = require("knightlinc/Write")
 local mqUtils = require 'utils/mqhelpers'
-local luautils = require 'utils/lua-table'
-local debugUtils = require 'utils/debug'
-local enum = require 'utils/stringenum'
 local common = require 'lib/common/common'
-local commonConfig = require 'lib/common/config'
+local settings = require 'settings/settings'
+local assist_state = require 'application/assist_state'
 local state = require 'lib/spells/state'
-local config = require 'modules/nuker/config'
----@type Timer
-local timer = require 'lib/timer'
 
 local next = next
-
-local validResistTypes = enum({
-  -- "Chromatic",
-  -- "Corruption",
-  "Cold",
-  "Disease",
-  "Fire",
-  "Magic",
-  "Poison",
-  -- "Unresistable",
-  -- "Prismatic"
-})
 
 local function checkInterrupt(spellId)
   local target = mq.TLO.Target
   if not target() then
     state.interrupt()
+    return
   end
 
   if target.Type() == "Corpse" then
     state.interrupt()
+    return
   end
-  
+
   local spell = mq.TLO.Spell(spellId)
   if not target.Distance() or target.Distance() > spell.Range() then
     state.interrupt()
+    return
   end
 end
 
 local function doNuking()
-  if not next(config.CurrentLineup) then
+  if common.IsOrchestrator() then
+    return
+  end
+
+  local nukes = settings.assist.nukes[assist_state.spell_set]
+  if not next(nukes or {}) then
+    logger.Debug("No nuke for <%s>", assist_state.spell_set)
     return
   end
 
   -- might want to fetch nuke based on target type for 'Undead' and 'Summoned'
   local nukeSpell = nil
-  for _, nuke in ipairs(config.CurrentLineup) do
+  for _, nuke in pairs(nukes) do
     if nuke:MemSpell() and mq.TLO.Me.SpellReady(nuke.Name)() then
+      logger.Debug("Nuke chosen <%s>", nuke.Name)
       nukeSpell = nuke
       break
     end
@@ -68,7 +60,7 @@ local function doNuking()
 
   local netbot = mq.TLO.NetBots(mainAssist)
   local targetId = netbot.TargetID()
-  if targetId == "NULL" then
+  if not targetId or targetId == "NULL" then
     return
   end
 
@@ -79,7 +71,7 @@ local function doNuking()
   local targetHP = netbot.TargetHP()
 
   if (not isNPC and not isPet)
-     or (targetHP > 0 and targetHP > commonConfig.AssistPct)
+     or (targetHP > 0 and targetHP > settings.assist.engage_at)
      or not hasLineOfSight
      or not nukeSpell:CanCastOnspawn(targetSpawn) then
       return
@@ -89,49 +81,5 @@ local function doNuking()
     nukeSpell:Cast(checkInterrupt)
   end
 end
-
-local function setNukeLineup(resistType)
-  logger.Info("Setting nuke lineup [%s]", resistType)
-  if not validResistTypes[resistType] then
-    logger.Warn("Lineup <%s> does not a valid resist type. Valid keys are: [%s]", resistType, luautils.GetKeysSorted(validResistTypes))
-    return
-  end
-
-  if not next(config.Nukes) then
-    logger.Warn("No nukes defined in config.")
-    return
-  end
-
-  local newLineUp = {}
-  for i=1, #config.Nukes do
-    local nuke = config.Nukes[i]
-    local spell = mq.TLO.Spell(nuke.Id)
-    if validResistTypes[spell.ResistType()] and spell.ResistType() == resistType then
-      table.insert(newLineUp, nuke)
-      logger.Debug("Added [%s] to new linup.", spell.Name())
-    end
-  end
-
-  if not next(newLineUp) then
-    logger.Warn("Unable to find any nukes in config matching resist type <%s>.", resistType)
-    return
-  end
-
-  config.CurrentLineup = newLineUp
-end
-
-
-local function clearNukeLineup()
-  config.CurrentLineup = config.Nukes
-end
-
-local function createAliases()
-  mq.unbind('/setlineup')
-  mq.unbind('/clearlineup')
-  mq.bind("/setlineup", setNukeLineup)
-  mq.bind("/clearlineup", clearNukeLineup)
-end
-
-createAliases()
 
 return doNuking

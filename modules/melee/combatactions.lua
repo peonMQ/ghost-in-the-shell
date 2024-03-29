@@ -1,6 +1,6 @@
 --- @type Mq
 local mq = require 'mq'
-local logger = require 'utils/logging'
+local logger = require("knightlinc/Write")
 
 --[[
   Kick - Regular attack, cannot damage magical mobs unless you are wearing magic boots.
@@ -11,7 +11,7 @@ local logger = require 'utils/logging'
   Flying Kick - Magical attack. More damage, slightly longer reuse time as well if i remember correctly, but definitely your highest dps of the kicks.
 
   Keep tiger punch, tail rake / eagle strike, and flying kick at max skiill as you never know when you'll
-  need them for the procs 
+  need them for the procs
 
   https://www.eqprogression.com/monk-class-basics-101/
 
