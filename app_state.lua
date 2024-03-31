@@ -1,4 +1,6 @@
 local mq = require 'mq'
+local logger = require("knightlinc/Write")
+local commandQueue  = require("application/command_queue")
 
 ---@enum BotState
 local BotState = {
@@ -7,7 +9,7 @@ local BotState = {
 }
 
 local ApplicationState =  {
-  RunningState = BotState.PAUSED
+  RunningState = BotState.ACTIVE
 }
 
 function ApplicationState.IsActive()
@@ -21,5 +23,18 @@ end
 function ApplicationState.Pause()
   ApplicationState.RunningState = BotState.PAUSED
 end
+
+local function toggle(state)
+  if tonumber(state) == BotState.PAUSED then
+    ApplicationState.Pause()
+    mq.cmd("/stopsong")
+    mq.cmd("/stopcast")
+    commandQueue.Clear()
+  elseif tonumber(state) == BotState.ACTIVE then
+    ApplicationState.Activate()
+  end
+end
+
+mq.bind("/gitstoggle", toggle)
 
 return ApplicationState

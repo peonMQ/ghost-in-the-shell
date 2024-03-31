@@ -30,13 +30,15 @@ end
 ---@param loaded T
 ---@param default T
 ---@return T
-local function leftJoin(loaded, default)
+local function leftJoin(loaded, default, notMergeTableKeys)
   local config = clone(default)
   for key, value in pairs(loaded) do
     local defaultValue = default[key]
     if defaultValue and type(defaultValue) == "table" and type(value) == "table" then
-      if not tonumber(key) and next(defaultValue) then
-        config[key] = leftJoin(value, defaultValue)
+      if notMergeTableKeys[key] then
+        config[key] = value
+      elseif not tonumber(key) and next(defaultValue) then
+        config[key] = leftJoin(value, defaultValue, notMergeTableKeys)
       else
         config[key] = value
       end
@@ -66,6 +68,7 @@ end
 ---@param bot_settings_filename string
 ---@return T
 local function loadSettings(default_settings, server_settings_filename, class_settings_filename, bot_settings_filename)
+  local notMergeTableKeys = { mt_heal = 1, mt_emergency_heal = 1, default = 1, ae_group = 1}
   local settings = clone(default_settings)
   local server_settings = loadFile(server_settings_filename) or {}
   logger.Debug("server_settings\n %s", lua_utils.ToString(server_settings))
@@ -76,7 +79,7 @@ local function loadSettings(default_settings, server_settings_filename, class_se
   local bot_settings = loadFile(bot_settings_filename) or {}
   logger.Debug("bot_settings\n %s", lua_utils.ToString(bot_settings))
 
-  local new_settings = leftJoin(bot_settings, leftJoin(class_settings, leftJoin(server_settings, settings)))
+  local new_settings = leftJoin(bot_settings, leftJoin(class_settings, leftJoin(server_settings, settings, notMergeTableKeys), notMergeTableKeys), notMergeTableKeys)
   return new_settings
 end
 

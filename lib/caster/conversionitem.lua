@@ -41,4 +41,10 @@ function ConversionItem:CanCast()
   return false
 end
 
+---@param cancelCallback? fun(spellId:integer)
+---@return CastReturn
+function ConversionItem:Cast(cancelCallback)
+  return item.Cast(self, cancelCallback)
+end
+
 return ConversionItem

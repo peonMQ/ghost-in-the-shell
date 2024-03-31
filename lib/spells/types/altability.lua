@@ -5,8 +5,6 @@ local logger = require("knightlinc/Write")
 local state = require 'lib/spells/state'
 
 ---@class AltAbility : Cast
----@field public Id integer
----@field public Name string
 ---@field public MaxResists integer
 local AltAbility = cast:base()
 

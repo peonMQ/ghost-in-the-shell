@@ -7,7 +7,7 @@ local follow_state = require 'application/follow_state'
 local function createPostCommand()
   return coroutine.create(function ()
     while follow_state.spawn_id ~= nil do
-      if not mq.TLO.Navigation.Active() then
+      if not mq.TLO.Navigation.Active() and not mq.TLO.Me.Combat() then
         local stickSpawn = mq.getFilteredSpawns(function(spawn) return spawn.ID() == tonumber(follow_state.spawn_id) and spawn.Type() == "PC" end)
         if stickSpawn[1] and stickSpawn[1].Distance() > 20 and mq.TLO.Navigation.PathExists("id "..stickSpawn[1].ID()) then
           mq.cmdf("/nav id %d", stickSpawn[1].ID())
@@ -30,7 +30,7 @@ local function execute(targetId)
     return
   end
 
-  if plugins.IsLoaded("mqactoradvpath") and mq.TLO.ActorAdvPath.IsFollowing() then
+  if plugins.IsLoaded("mqactoradvpath") and mq.TLO.ActorFollow.IsFollowing() then
     mq.cmd("/actfollow off")
   end
 

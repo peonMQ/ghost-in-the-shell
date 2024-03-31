@@ -8,8 +8,6 @@ local logger = require("knightlinc/Write")
 local state = require 'lib/spells/state'
 
 ---@class Spell : Cast
----@field public Id integer
----@field public Name string
 ---@field public DefaultGem integer
 ---@field public MinManaPercent integer
 ---@field public GiveUpTimer integer
@@ -109,7 +107,7 @@ function Spell:CanCast()
   return true
 end
 
----@param cancelCallback? fun(spelLId:integer)
+---@param cancelCallback? fun(spellId:integer)
 ---@return CastReturn
 function Spell:Cast(cancelCallback)
   self:FlushCastEvents()

@@ -36,12 +36,10 @@ local function toFarAwayEvent()
   end
 end
 
-tooFarAWay.CallBack = toFarAwayEvent
-
 local events = {
   mqEvents:new("enrageOn", "#1# has become ENRAGED.", enragedOnEvent),
   mqEvents:new("enrageOff", "#1# is no longer enraged.", enragedOnOff),
-  tooFarAWay
+  mqEvents:new("toFarAway", "Your target is too far away, get closer!", toFarAwayEvent)
 }
 
 for key, value in pairs(events) do

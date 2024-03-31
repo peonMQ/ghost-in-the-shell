@@ -5,26 +5,13 @@ local logger = require("knightlinc/Write")
 
 local debugUtils = require 'utils/debug'
 local plugins = require 'utils/plugins'
-local luapaths = require 'utils/lua-paths'
 local filetutils = require 'utils/file'
 local bci = require('broadcast/broadcastinterface')()
 local app_state = require 'app_state'
 
+local buttons = require 'ui.buttons'
 local zoneselector = require 'ui/zoneselector'
 local portalselector = require 'ui/portalselector'
-
-local runningDir = luapaths.RunningDir:new()
-
--- local classes
----@class ActionButton
----@field public active boolean
----@field public icon string
----@field public activeIcon? string
----@field public tooltip string
----@field public isDisabled fun(state:ActionButtons):boolean
----@field public activate fun(state:ActionButtons)
----@field public deactivate? fun(state:ActionButtons)
-
 
 ---@class ActionButtons
 ---@field public bots ActionButton
@@ -54,71 +41,10 @@ local openGUI = true
 local shouldDrawGUI = true
 local terminate = false
 local buttonSize = ImVec2(30, 30)
-local windowFlags = bit32.bor(ImGuiWindowFlags.NoDecoration, ImGuiWindowFlags.NoDocking, ImGuiWindowFlags.AlwaysAutoResize, ImGuiWindowFlags.NoFocusOnAppearing, ImGuiWindowFlags.NoNav)
-
+local windowFlags = bit32.bor(ImGuiWindowFlags.NoDecoration, ImGuiWindowFlags.NoDocking, ImGuiWindowFlags.AlwaysAutoResize, ImGuiWindowFlags.NoFocusOnAppearing, ImGuiWindowFlags.NoNav) --[[@as ImGuiWindowFlags]]
 
 local travelToZone = nil
 local doInvites = false
-
-local function create(h, s, v)
-  local r, g, b = imgui.ColorConvertHSVtoRGB(h / 7.0, s, v)
-  return ImVec4(r, g, b, 1)
-end
-
-local blueButton = {
-  default = create(4, 0.6, 0.6),
-  hovered = create(4, 0.7, 0.7),
-  active = create(4, 0.8, 0.8),
-}
-
-local darkBlueButton = {
-  default = create(4.8, 0.6, 0.6),
-  hovered = create(4.8, 0.7, 0.7),
-  active = create(4.8, 0.8, 0.8),
-}
-
-local greenButton = {
-  default = create(2, 0.6, 0.6),
-  hovered = create(2, 0.7, 0.7),
-  active = create(2, 0.8, 0.8),
-}
-
-local redButton = {
-  default = create(0, 0.6, 0.6),
-  hovered = create(0, 0.7, 0.7),
-  active = create(0, 0.8, 0.8),
-}
-
-local orangeButton = {
-  default = create(0.55, 0.6, 0.6),
-  hovered = create(0.55, 0.7, 0.7),
-  active = create(0.55, 0.8, 0.8),
-}
-
-local yellowButton = {
-  default = create(1, 0.6, 0.6),
-  hovered = create(1, 0.7, 0.7),
-  active = create(1, 0.8, 0.8),
-}
-
-local fuchsiaButton = {
-  default = create(6.4, 0.6, 0.6),
-  hovered = create(6.4, 0.7, 0.7),
-  active = create(6.4, 0.8, 0.8),
-}
-
-local function startBots(state)
-  app_state.Activate()
-
-  state.bots.active = app_state.IsActive()
-end
-
-local function stopBots(state)
-  app_state.Pause()
-  bci.ExecuteAllWithSelfCommand("/stopsong")
-  bci.ExecuteAllWithSelfCommand("/stopcast")
-  state.bots.active = app_state.IsActive()
-end
 
 ---@type ActionButton
 local bots = {
@@ -127,16 +53,20 @@ local bots = {
   activeIcon = icons.MD_PLAY_ARROW,
   tooltip = "Toogle Bots",
   isDisabled = function (state) return false end,
-  activate = function(state) startBots(state) end,
-  deactivate = function(state) stopBots(state) end
+  activate = function(state)
+    bci.ExecuteAllWithSelfCommand("/gitstoggle 0")
+  end,
+  deactivate = function(state)
+    bci.ExecuteAllWithSelfCommand("/gitstoggle 1")
+  end
 }
 
 ---@type ActionButton
 local advFollow = {
   active = false,
   icon = icons.MD_DIRECTIONS_RUN,
-  tooltip = "Toggle AdvPath Follow 'Me'",
-  isDisabled = function (state) return not state.bots.active or not plugins.IsLoaded("mqactoradvpath") end,
+  tooltip = "Toggle Actor Follow 'Me'",
+  isDisabled = function (state) return not state.bots.active or not plugins.IsLoaded("mqactorfollow") end,
   activate = function(state)
     state.advFollow.active = true
     state.navFollow.active = false
@@ -266,7 +196,6 @@ local petWeapons = {
 }
 
 
-local exportInventoryScriptExists = filetutils.Exists(mq.luaDir.."/inventory/export.lua")
 ---@type ActionButton
 local quit = {
   active = false,
@@ -274,12 +203,7 @@ local quit = {
   tooltip = "Camp Desktop",
   isDisabled = function (state) return false end,
   activate = function(state)
-    bci.ExecuteAllWithSelfCommand('/lua stop')
-    bci.ExecuteAllWithSelfCommand('/twist off')
-    bci.ExecuteAllWithSelfCommand('/camp desktop')
-    if exportInventoryScriptExists then
-      bci.ExecuteAllWithSelfCommand('/lua run inventory/export')
-    end
+    bci.ExecuteAllWithSelfCommand('/qtd')
   end,
 }
 
@@ -475,129 +399,59 @@ local function portToo(zoneShortName)
   uiState.portal.active = false
 end
 
-local function DrawTooltip(text)
-  if imgui.IsItemHovered() and text and string.len(text) > 0 then
-      imgui.BeginTooltip()
-      imgui.PushTextWrapPos(imgui.GetFontSize() * 35.0)
-      imgui.Text(text)
-      imgui.PopTextWrapPos()
-      imgui.EndTooltip()
-  end
-end
-
----@param state ActionButton
-local function createStateButton(state)
-  if not state then
-    return
-  end
-
-  if not state.active then
-    imgui.PushStyleColor(ImGuiCol.Button, blueButton.default)
-    imgui.PushStyleColor(ImGuiCol.ButtonHovered, greenButton.hovered)
-    imgui.PushStyleColor(ImGuiCol.ButtonActive, greenButton.active)
-    local isDisabled = state.isDisabled(uiState)
-    imgui.BeginDisabled(isDisabled)
-    imgui.Button(state.icon, buttonSize)
-    imgui.EndDisabled()
-  else
-    imgui.PushStyleColor(ImGuiCol.Button, greenButton.default)
-    imgui.PushStyleColor(ImGuiCol.ButtonHovered, redButton.hovered)
-    imgui.PushStyleColor(ImGuiCol.ButtonActive, redButton.hovered)
-    local isDisabled = state.isDisabled(uiState)
-    imgui.BeginDisabled(isDisabled)
-    if not state.activeIcon then
-      imgui.Button(state.icon, buttonSize)
-    else
-      imgui.Button(state.activeIcon, buttonSize)
-    end
-    imgui.EndDisabled()
-  end
-
-  DrawTooltip(state.tooltip)
-
-  if imgui.IsItemClicked(0) then
-    if not state.active then
-      state.activate(uiState)
-    else
-      state.deactivate(uiState)
-    end
-  end
-
-  imgui.PopStyleColor(3)
-end
-
----@param state ActionButton
----@param buttonColor any
-local function createButton(state, buttonColor)
-  imgui.PushStyleColor(ImGuiCol.Button, buttonColor.default)
-  imgui.PushStyleColor(ImGuiCol.ButtonHovered, buttonColor.hovered)
-  imgui.PushStyleColor(ImGuiCol.ButtonActive, buttonColor.active)
-
-  local isDisabled = state.isDisabled(uiState)
-  imgui.BeginDisabled(isDisabled)
-  imgui.Button(state.icon, buttonSize)
-  imgui.EndDisabled()
-  DrawTooltip(state.tooltip)
-  if not isDisabled and imgui.IsItemClicked(0) then
-    state.activate(uiState)
-  end
-
-  imgui.PopStyleColor(3)
-end
-
 local function actionbarUI()
   if not openGUI then return end
 
   openGUI, shouldDrawGUI = imgui.Begin('Actions', openGUI, windowFlags)
   if shouldDrawGUI then
-    createStateButton(uiState.bots)
+    buttons.CreateStateButton(uiState.bots, buttonSize, uiState)
     imgui.SameLine()
-    -- createStateButton(uiState.bard)
+    -- buttons.CreateStateButton(uiState.bard)
     -- imgui.SameLine()
-    createStateButton(uiState.toggleCrowdControl)
+    buttons.CreateStateButton(uiState.toggleCrowdControl, buttonSize, uiState)
     imgui.SameLine()
-    createStateButton(uiState.advFollow)
+    buttons.CreateStateButton(uiState.advFollow, buttonSize, uiState)
     imgui.SameLine()
-    createStateButton(uiState.navFollow)
+    buttons.CreateStateButton(uiState.navFollow, buttonSize, uiState)
     imgui.SameLine()
-    createStateButton(uiState.easyfind)
+    buttons.CreateStateButton(uiState.easyfind, buttonSize, uiState)
     imgui.SameLine()
-    createStateButton(uiState.portal)
+    buttons.CreateStateButton(uiState.portal, buttonSize, uiState)
     imgui.SameLine()
-    createButton(uiState.loot, blueButton)
+    buttons.CreateButton(uiState.loot, buttons.BlueButton, buttonSize, uiState)
     imgui.SameLine()
-    createButton(uiState.group, blueButton)
+    buttons.CreateButton(uiState.group, buttons.BlueButton, buttonSize, uiState)
     imgui.SameLine()
-    createButton(uiState.pets, blueButton)
+    buttons.CreateButton(uiState.pets, buttons.BlueButton, buttonSize, uiState)
     imgui.SameLine()
-    createButton(uiState.petWeapons, blueButton)
+    buttons.CreateButton(uiState.petWeapons, buttons.BlueButton, buttonSize, uiState)
 
     -- next button line
-    createButton(uiState.magicNuke, fuchsiaButton)
+    buttons.CreateButton(uiState.magicNuke, buttons.FuchsiaButton, buttonSize, uiState)
     imgui.SameLine()
-    createButton(uiState.fireNuke, orangeButton)
+    buttons.CreateButton(uiState.fireNuke, buttons.OrangeButton, buttonSize, uiState)
     imgui.SameLine()
-    createButton(uiState.coldNuke, darkBlueButton)
+    buttons.CreateButton(uiState.coldNuke, buttons.DarkBlueButton, buttonSize, uiState)
     imgui.SameLine()
-    createButton(uiState.resetNuke, darkBlueButton)
+    buttons.CreateButton(uiState.resetNuke, buttons.DarkBlueButton, buttonSize, uiState)
     imgui.SameLine()
-    createButton(uiState.pacify, yellowButton)
+    buttons.CreateButton(uiState.pacify, buttons.YellowButton, buttonSize, uiState)
     imgui.SameLine()
-    createButton(uiState.door, blueButton)
+    buttons.CreateButton(uiState.door, buttons.BlueButton, buttonSize, uiState)
     imgui.SameLine()
-    createButton(uiState.instance, blueButton)
+    buttons.CreateButton(uiState.instance, buttons.BlueButton, buttonSize, uiState)
     imgui.SameLine()
-    createButton(uiState.fooddrink, blueButton)
+    buttons.CreateButton(uiState.fooddrink, buttons.BlueButton, buttonSize, uiState)
     imgui.SameLine()
-    createButton(uiState.removeBuffs, blueButton)
+    buttons.CreateButton(uiState.removeBuffs, buttons.BlueButton, buttonSize, uiState)
     imgui.SameLine()
-    createButton(uiState.killthis, blueButton)
+    buttons.CreateButton(uiState.killthis, buttons.BlueButton, buttonSize, uiState)
     imgui.SameLine()
-    createButton(uiState.clearconsole, orangeButton)
+    buttons.CreateButton(uiState.clearconsole, buttons.OrangeButton, buttonSize, uiState)
     imgui.SameLine()
-    createButton(uiState.reload_settings, orangeButton)
+    buttons.CreateButton(uiState.reload_settings, buttons.OrangeButton, buttonSize, uiState)
     imgui.SameLine()
-    createButton(uiState.quit, redButton)
+    buttons.CreateButton(uiState.quit, buttons.RedButton, buttonSize, uiState)
 
     imgui.End()
 
@@ -641,6 +495,8 @@ end
 ---@param is_orchestrator boolean
 local function process(is_orchestrator)
   openGUI = is_orchestrator
+
+  uiState.bots.active = app_state.IsActive()
   if doInvites then
     triggerInvites()
   end

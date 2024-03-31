@@ -31,6 +31,7 @@ end
 -- Clears the command queue
 local function clear()
     queue = {}
+    postCommandQueue = {}
 end
 
 local function postProcess()

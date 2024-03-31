@@ -44,7 +44,7 @@ local function isFollowing()
     return true
   end
 
-  if plugins.IsLoaded("mqactoradvpath") and mq.TLO.ActorAdvPath.IsFollowing() then
+  if plugins.IsLoaded("mqactoradvpath") and mq.TLO.ActorFollow.IsFollowing() then
     return true
   end
 
@@ -70,12 +70,15 @@ if mq.TLO.Me.Class.ShortName() == "BRD" then
 end
 
 local function process()
+  mq.doevents()
   if not app_state.IsActive() then
     return
   end
 
-  mq.doevents()
   commandQueue.Process()
+  if not app_state.IsActive() then
+    return
+  end
 
   if not isFollowing() then
     for _,action in ipairs(botActions) do
@@ -85,11 +88,6 @@ local function process()
     doMedley()
   end
 end
-
--- while true do
---   process()
---   mq.delay(1)
--- end
 
 return {
   Process = process

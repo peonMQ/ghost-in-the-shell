@@ -21,13 +21,17 @@ local function checkInterrupt(spellId)
   end
 end
 
----@param buffSpell BuffSpell
+---@param buffSpell BuffSpell|BuffItem
 ---@param targetId  integer
 local function castBuff(buffSpell, targetId)
   local spawn = mq.TLO.Spawn(targetId)
   if spawn() then
-    if buffSpell:CanCastOnspawn(spawn --[[@as spawn]]) and mqUtils.EnsureTarget(targetId)then
-      logger.Info("Casting [%s] on <%s>", buffSpell.Name, mq.TLO.Target.Name())
+    if buffSpell:CanCastOnSpawn(spawn --[[@as spawn]]) then
+      if not buffSpell.MQSpell.TargetType() ~= "Self" then
+        spawn.DoTarget()
+      end
+
+      logger.Info("Casting [%s] on <%s>", buffSpell.Name, spawn.Name())
       buffSpell:Cast(checkInterrupt)
       return true
     end

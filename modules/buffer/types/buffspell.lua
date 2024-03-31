@@ -114,10 +114,12 @@ end
 
 ---@param spawn spawn
 ---@return boolean
-function BuffSpell:CanCastOnspawn(spawn)
-  local buffSpell = mq.TLO.Spell(self.Name)
+function BuffSpell:CanCastOnSpawn(spawn)
+  if spawn.ID() == mq.TLO.Me.ID() and self.MQSpell.TargetType() == "Self" then
+    return true
+  end
 
-  if (spawn.Distance() or 9999) > (buffSpell.Range() or 0) then
+  if (spawn.Distance() or 9999) > (self.MQSpell.Range() or 0) then
     return false
   end
 
@@ -141,7 +143,7 @@ function BuffSpell:WillStack(netbot)
       return false
     end
 
-    local buffSpell = mq.TLO.Spell(buffId)
+    local buffSpell = mq.TLO.Spell(buffId) --[[@as spell]]
     if buffSpell() and not willStack(self.MQSpell, buffSpell) then
       return false
     end

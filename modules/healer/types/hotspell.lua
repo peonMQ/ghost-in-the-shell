@@ -103,7 +103,7 @@ function HotSpell:WillStack(netbot)
     end
   end
 
-  if #netbotBuffs == 15 then
+  if #netbotBuffs == mq.TLO.Me.MaxBuffSlots() then
     return false
   end
 

@@ -43,4 +43,10 @@ function ConversionSpell:CanCast()
   return false
 end
 
+---@param cancelCallback? fun(spellId:integer)
+---@return CastReturn
+function ConversionSpell:Cast(cancelCallback)
+  return spell.Cast(self, cancelCallback)
+end
+
 return ConversionSpell

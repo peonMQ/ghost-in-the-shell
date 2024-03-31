@@ -65,7 +65,7 @@ local bot_settings_filename = string.format("%s/bots/%s_settings.lua", settings_
 ---@class PeerSettingsPet
 ---@field public type MagePetTypes|nil
 ---@field public engage_at integer engage at this HP %
----@field public buffs table<string, BuffSpell> spell group of pet buffs
+---@field public buffs table<string, BuffSpell|BuffItem> spell group of pet buffs
 ---@field public taunt boolean pet should taunt
 
 ---@class PeerSettingsMana

@@ -48,6 +48,9 @@ function Cast:FlushCastEvents()
   -- end
 end
 
+function Cast:Cast()
+end
+
 ---@param cancelCallback? fun(spelLId:integer)
 function Cast:WhileCasting(cancelCallback)
   local currentTarget = mq.TLO.Target

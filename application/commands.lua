@@ -9,3 +9,4 @@ require("application/commands/settings/commands")
 require("application/commands/wait4rez/commands")
 
 require("application/commands/memorize_command")
+require("application/commands/quit_command")

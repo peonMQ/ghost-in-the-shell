@@ -6,7 +6,7 @@ local commandQueue  = require("application/command_queue")
 local sellItems = require 'modules/looter/sell'
 
 local function execute()
-  local isBardSwapping = plugins.IsLoaded("MQ2BardSwap") and mq.TLO.BardSwap()
+  local isBardSwapping = plugins.IsLoaded("MQ2BardSwap") and mq.TLO.BardSwap.Swapping()
   if isBardSwapping then
     mq.cmd("/bardswap")
   end
