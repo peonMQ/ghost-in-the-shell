@@ -11,7 +11,7 @@ local function find_spell(spell_name)
     return nil
   end
 
-  local spellSlot = mq.TLO.Me.Book(spell.RankName())
+  local spellSlot = mq.TLO.Me.Book(spell.RankName.Name())
   if spellSlot() then
     return mq.TLO.Me.Book(spellSlot()) --[[@as spell]]
   else

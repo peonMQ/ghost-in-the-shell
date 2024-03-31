@@ -26,7 +26,7 @@ local function execute()
         if spell and spell() then
           logger.Info("Memorizing \ag%s\ax in gem %d", spell.RankName(), gem)
           mq.cmdf('/memspell  %d "%s"', gem, spell.RankName())
-          mq.delay("10s", function() return mq.TLO.Me.Gem(spell.RankName())() ~= nil end)
+          mq.delay("10s", function() return mq.TLO.Me.Gem(spell.RankName.Name())() ~= nil end)
           mq.delay(500)
           local waitForReady = spell.RecoveryTime()
           mq.delay(waitForReady)
