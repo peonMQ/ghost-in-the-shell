@@ -137,11 +137,11 @@ function settings:GetDefaultGem(spell_group_or_name)
   return self.gems.default or default_settings.gems.default
 end
 
----@generic T
----@param spelldata table<string, T>
----@param mapSpellFunc fun(groupname: string, name: string, data: T):T
----@param mapItemFunc? fun(name: string, data: T):T
----@return table<string, T>
+---@generic T1, T2
+---@param spelldata table<string, T1|T2>
+---@param mapSpellFunc fun(groupname: string, name: string, data: T1):T1
+---@param mapItemFunc? fun(name: string, data: T2):T2
+---@return table<string, T1|T2>
 local function mapSpellOrItem(spelldata, mapSpellFunc, mapItemFunc)
   local availableSpells = {}
   for name, value in pairs(spelldata) do
@@ -163,11 +163,11 @@ local function mapSpellOrItem(spelldata, mapSpellFunc, mapItemFunc)
   return availableSpells
 end
 
----@generic T
----@param spelldata table<string, T>
----@param mapSpellFunc fun(groupname: string, name: string, data: T):T
----@param mapItemFunc? fun(name: string, data: T):T
----@return table<string, T>|nil
+---@generic T1, T2
+---@param spelldata table<string, T1|T2>
+---@param mapSpellFunc fun(groupname: string, name: string, data: T1):T1
+---@param mapItemFunc? fun(name: string, data: T2):T2
+---@return table<string, T1|T2>|nil
 local function mapOptionalSpellOrItem(spelldata, mapSpellFunc, mapItemFunc)
   if not spelldata then
     return nil
