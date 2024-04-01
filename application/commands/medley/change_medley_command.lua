@@ -39,7 +39,7 @@ local function execute(set_name)
 
   for gem, song in pairs(songgem) do
     if mq.TLO.Me.Gem(gem)() ~= song.Name then
-      local rankName = song.MQSpell.RankName() --[[@as string]]
+      local rankName = song.MQSpell.RankName.Name()
       logger.Info("Memorizing \ag%s\ax in gem %d", rankName, gem)
       mq.cmdf('/memspell  %d "%s"', gem, rankName)
       mq.delay("10s", function() return mq.TLO.Me.Gem(rankName)() ~= nil end)

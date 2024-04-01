@@ -15,7 +15,7 @@ local function find_spell(spell_name)
   if spellSlot() then
     return mq.TLO.Me.Book(spellSlot()) --[[@as spell]]
   else
-      logger.Debug("Spell not in book: %s", spell.RankName())
+      logger.Debug("Spell not in book: %s", spell.RankName.Name())
   end
 
   return nil

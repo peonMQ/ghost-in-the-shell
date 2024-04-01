@@ -147,7 +147,7 @@ local function getPetSummonSpell(type)
 
   local petspell = nil
   for _, spellName in ipairs(petTypeSpell.Spells(type)) do
-      local spellSlot = mq.TLO.Me.Book(mq.TLO.Spell(spellName).RankName())
+      local spellSlot = mq.TLO.Me.Book(mq.TLO.Spell(spellName).RankName.Name())
       if spellSlot() then
         local spell = mq.TLO.Me.Book((spellSlot()))
         if spell() ~= nil and (not petspell or spell.Level() > petspell.Level()) then
