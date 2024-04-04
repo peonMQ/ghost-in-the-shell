@@ -215,6 +215,13 @@ local function onTick()
     return
   end
 
+  if medleyState == MedleyStates.CASTING and not mq.TLO.Window("CastingWindow").Open() then
+    medleyState = MedleyStates.IDLE
+    if mq.TLO.Me.Casting() then
+      mq.cmd("/stopcast")
+    end
+  end
+
   local medley = settings.medleys[assist_state.medley]
   if not medley then
     logger.Info("No medley found for [%s]", assist_state.medley)
@@ -222,7 +229,7 @@ local function onTick()
   end
 
   if not canPlayMelody() or medleyState ~= MedleyStates.IDLE then
-    logger.Debug("Cannot play medley")
+    logger.Warn("Cannot play medley %s", medleyState)
     return
   end
 
