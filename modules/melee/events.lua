@@ -1,5 +1,6 @@
 local mq = require 'mq'
 local logger = require("knightlinc/Write")
+local common = require 'lib/common/common'
 local assist_state = require 'application/assist_state'
 local mqEvents = require 'lib/mqevent'
 
@@ -26,6 +27,10 @@ end
 local function toFarAwayEvent()
   if mq.TLO.Me.Combat() then
     tooFarAWay:Flush()
+    if common.IsOrchestrator() then
+      return
+    end
+
     mq.cmd("/squelch /face fast")
     local stickDistance = math.floor(mq.TLO.Stick.Distance()*0.75)
     if mq.TLO.Stick.MoveBehind() then
