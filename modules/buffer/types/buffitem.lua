@@ -1,4 +1,5 @@
 local mq = require 'mq'
+local logger = require("knightlinc/Write")
 local luaUtils = require 'utils/lua-table'
 local item = require 'lib/spells/types/item'
 
@@ -154,6 +155,13 @@ function BuffItem:WillStackOnMe()
       local currentBuff = mq.TLO.Me.Song(i) --[[@as buff]]
       if currentBuff() and not willStack(self.MQSpell, currentBuff) then
         return false
+      end
+
+      for i=1,mq.TLO.Me.MaxBuffSlots() do
+        local currentBuff = mq.TLO.Me.Buff(i) --[[@as buff]]
+        if currentBuff() and not willStack(self.MQSpell, currentBuff) then
+          return false
+        end
       end
     end
   end
