@@ -27,7 +27,7 @@ local function castBuff(buffSpell, targetId)
   local spawn = mq.TLO.Spawn(targetId)
   if spawn() then
     if buffSpell:CanCastOnSpawn(spawn --[[@as spawn]]) then
-      if not buffSpell.MQSpell.TargetType() ~= "Self" then
+      if buffSpell.MQSpell.TargetType() ~= "Self" then
         spawn.DoTarget()
       end
 
