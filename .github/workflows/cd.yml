@@ -21,7 +21,7 @@ jobs:
     - name: Create Bundle  
       shell: pwsh
       run: |
-        $excludeDirs = @('.github','.vscode','definitions','utils','broadcast',,'util', 'knightlinc')
+        $excludeDirs = @('.github','.vscode','definitions','utils','broadcast', 'util', 'knightlinc')
         $releaseDir = $env:PROJECT + "\"
         $Directories = Get-ChildItem -Directory "." -Exclude $excludeDirs 
 
