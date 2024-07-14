@@ -33,10 +33,11 @@ function state.Reset(giveUpTimer)
   state.retryTimer = timer:new()
 end
 
+---@param spellId integer
 ---@return CastReturn
-function state.interrupt()
-  broadcast.InfoAll("Cancelled casting <%s>",  mq.TLO.Me.Casting())
-  logger.Debug("Interrupt casting <%s>.", mq.TLO.Me.Casting())
+function state.interrupt(spellId)
+  broadcast.InfoAll("Cancelled casting <%s-%s>", spellId,  mq.TLO.Me.Casting())
+  logger.Debug("Interrupt casting <%s-%s>.", spellId,  mq.TLO.Me.Casting())
   mq.cmd("/stopcast")
   state.castReturn = castReturnTypes.Cancelled
   state.giveUpTimer = timer:new(0)

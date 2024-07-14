@@ -27,7 +27,7 @@ local function execute(zoneShortName)
   end
 
   if mq.TLO.Me.Casting() then
-    state.interrupt()
+    state.interrupt(mq.TLO.Me.Casting.ID())
   end
 
   evacSpell:Cast()

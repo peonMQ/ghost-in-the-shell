@@ -16,12 +16,12 @@ local immunities = {}
 local function checkInterrupt(spellId)
   local target = mq.TLO.Target
   if not target() then
-    state.interrupt()
+    state.interrupt(spellId)
     return
   end
 
   if target.Type() == "Corpse" then
-    state.interrupt()
+    state.interrupt(spellId)
     return
   end
 end

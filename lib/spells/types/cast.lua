@@ -51,7 +51,7 @@ end
 function Cast:Cast()
 end
 
----@param cancelCallback? fun(spelLId:integer)
+---@param cancelCallback? fun(spellId:integer)
 function Cast:WhileCasting(cancelCallback)
   local currentTarget = mq.TLO.Target
   local currentTargetId = currentTarget.ID()
@@ -63,7 +63,7 @@ function Cast:WhileCasting(cancelCallback)
       cancelCallback(self.Id)
     elseif(currentTargetId and mq.TLO.Spawn(currentTargetId).Type() ~= currentTargetType) then
       logger.Info("Cancelling spell <%d>, current target <%s> is no longer available", self.Id, currentTargetId)
-      state.interrupt()
+      state.interrupt(self.Id)
     end
 
     self:DoCastEvents()
@@ -72,7 +72,7 @@ end
 
 ---@return CastReturn
 function Cast:Interrupt()
-  state.interrupt()
+  state.interrupt(self.Id)
   return state.castReturn
 end
 

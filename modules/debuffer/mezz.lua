@@ -27,12 +27,12 @@ local immunities = {}
 local function checkInterrupt(spellId)
   local target = mq.TLO.Target
   if not target() then
-    state.interrupt()
+    state.interrupt(spellId)
     return
   end
 
   if target.Type() == "Corpse" then
-    state.interrupt()
+    state.interrupt(spellId)
     return
   end
 
@@ -43,7 +43,7 @@ local function checkInterrupt(spellId)
 
   local targetId = mq.TLO.NetBots(mainAssist).TargetID()
   if targetId == target.ID() then
-    state.interrupt()
+    state.interrupt(spellId)
     return
   end
 end

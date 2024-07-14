@@ -12,18 +12,18 @@ local settings = require 'settings/settings'
 local function checkInterrupt(spellId)
   local target = mq.TLO.Target
   if not target() then
-    state.interrupt()
+    state.interrupt(spellId)
     return
   end
 
   if target.Type() == "Corpse" then
-    state.interrupt()
+    state.interrupt(spellId)
     return
   end
 
   local spell = mq.TLO.Spell(spellId)
   if numberUtils.IsLargerThan(target.Distance(), spell.Range()) then
-    state.interrupt()
+    state.interrupt(spellId)
     return
   end
 end

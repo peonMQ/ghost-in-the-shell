@@ -9,14 +9,19 @@ local settings = require 'settings/settings'
 
 ---@param spellId integer
 local function checkInterrupt(spellId)
+  local eqSpell = mq.TLO.Spell(spellId)
+  if eqSpell.TargetType() == "Self" then
+    return
+  end
+
   local target = mq.TLO.Target
   if not target() then
-    state.interrupt()
+    state.interrupt(spellId)
     return
   end
 
   if target.Type() == "Corpse" then
-    state.interrupt()
+    state.interrupt(spellId)
     return
   end
 end

@@ -17,25 +17,25 @@ local netbotTimers = {}
 local function checkInterrupt(spellId)
   local target = mq.TLO.Target
   if not target() then
-    state.interrupt()
+    state.interrupt(spellId)
     return
   end
 
   if target.Type() == "Corpse" then
-    state.interrupt()
+    state.interrupt(spellId)
     return
   end
 
   local spell = mq.TLO.Spell(spellId)
   if numberUtils.IsLargerThan(target.Distance(), spell.Range()) then
-    state.interrupt()
+    state.interrupt(spellId)
     return
   end
 
   local _, emergencyHeal = next(settings.heal.mt_emergency_heal or {})
   if emergencyHeal and spell.ID == emergencyHeal.Id and emergencyHeal.Id ~= emergencyHeal.Id then
     if emergencyHeal:CanCastOnTarget(target --[[@as target]]) and mq.TLO.Me.Gem(emergencyHeal.Name)() then
-      state.interrupt()
+      state.interrupt(spellId)
       emergencyHeal:Cast(checkInterrupt)
       return
     end
