@@ -52,12 +52,12 @@ jobs:
         CopyLib("broadcast")
         CopyLib("knightlinc")
 
-        7z a -tzip $env:BUNDLE_FILE_NAME -r ($env:PROJECT + "/*.lua")
+        7z a -tzip $env:BUNDLE_FILE_NAME_${{ github.ref_name }} -r ($env:PROJECT + "/*.lua")
 
     - name: Publish
       uses: softprops/action-gh-release@v1
       with:
-        files: Ghost_in_the_Shell.zip
+        files: Ghost_in_the_Shell_${{ github.ref_name }}.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
