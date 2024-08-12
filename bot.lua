@@ -44,7 +44,7 @@ local function isFollowing()
     return true
   end
 
-  if plugins.IsLoaded("mqactoradvpath") and mq.TLO.ActorFollow.IsFollowing() then
+  if plugins.IsLoaded("mqactorfollow") and mq.TLO.ActorFollow.IsFollowing() then
     return true
   end
 
