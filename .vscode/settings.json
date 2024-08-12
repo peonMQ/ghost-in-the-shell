@@ -25,10 +25,12 @@
     "./wait4rez",
     "./knightlinc",
     "C:/Games/Macroquest/lua/mq",
-    "c:\\Users\\asp\\AppData\\Roaming\\Code\\User\\globalStorage\\zenithcodeforge.mq-defs\\file-downloader-downloads\\macroquest\\mq-definitions-master"
+    "c:\\Users\\asp\\AppData\\Roaming\\Code\\User\\globalStorage\\zenithcodeforge.mq-defs\\file-downloader-downloads\\macroquest\\mq-definitions-master",
+    "c:\\Users\\asp\\AppData\\Roaming\\Code\\User\\globalStorage\\zenithcodeforge.mq-defs\\file-downloader-downloads\\macroquest-plugins\\mq-plugin-definitions-main"
   ],
-  "mq-defs.etag": "W/\"267578af0228540a14ee5b2c038e3b3150c85f2af439feda347c67c870c3c259\"",
+  "mq-defs.etag": "W/\"84544c5652386665b2e53f0b19459992843f4f45316093d0f9a4ea9ab1bfa7e8\"",
   "Lua.diagnostics.groupFileStatus": {
     "type-check": "Any"
-  }
+  },
+  "mq-defs.plugins.etag": "W/\"b1c6913cbbe81aa74cf2504de18ae4592b2aac5f252bb52105b6d6c3f8980e46\""
 }
