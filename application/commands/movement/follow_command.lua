@@ -1,14 +1,15 @@
 local mq = require("mq")
 local logger = require("knightlinc/Write")
+local broadcast = require 'broadcast/broadcast'
 local plugins = require 'utils/plugins'
 local commandQueue  = require("application/command_queue")
 
 local function execute(targetId)
-  if not plugins.IsLoaded("mqactoradvpath") then
+  if not plugins.IsLoaded("mqactorfollow") then
     return
   end
 
-  if plugins.IsLoaded("mqactoradvpath") and mq.TLO.ActorFollow.IsFollowing() then
+  if plugins.IsLoaded("mqactorfollow") and mq.TLO.ActorFollow.IsFollowing() then
     mq.cmd("/actfollow off")
   end
 
@@ -26,6 +27,12 @@ local function execute(targetId)
     mq.cmdf("/actfollow %s", stickSpawn[1].Name())
   else
     logger.Warn("Could not find spawn with id %s", targetId)
+  end
+
+  mq.delay(500)
+
+  if plugins.IsLoaded("mqactorfollow") and not mq.TLO.ActorFollow.IsFollowing() then
+    broadcast.Error("Unable to follow %s", stickSpawn[1].Name())
   end
 end
 

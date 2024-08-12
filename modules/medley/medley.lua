@@ -72,31 +72,31 @@ local function tablelength(T)
   return count
 end
 
----@return boolean
+---@return boolean, string?
 local function canPlayMelody()
   local me = mq.TLO.Me
   if me.Stunned() then
-    return false
+    return false, "Stunned"
   elseif me.Silenced() then
-    return false
+    return false, "Silenced"
   elseif me.Invulnerable() then
-    return false
+    return false, "Error"
   -- elseif mq.TLO.Window("CastingWindow").Open() then
   --   return false;
   elseif me.Casting() then
   -- elseif me.CastTimeLeft() > 0 and me.CastTimeLeft() < 100000 then -- Attempt to check if we are currently casting a spell (active spell cast bar)
-    return false
+    return false, "Casting"
   end
 
   local stand_state = me.StandState()
   if stand_state == "SIT" then
-    return false
+    return false, "Sitting"
   elseif stand_state == "FEIGN" then
     mq.cmd("/stand")
-    return false
+    return false, "Feigned"
   elseif stand_state == "DEAD" then
     mq.cmd("/stand")
-    return false
+    return false, "Dead"
   end
 
   return true
@@ -161,8 +161,6 @@ local function scheduleNextSong()
   return stalest_song
 end
 
-
-
 local SPA_INVISIBILITY = 12
 local function currentSongHasInvisEffect()
   return currentSong and currentSong.MQSpell.HasSPA(SPA_INVISIBILITY)()
@@ -220,6 +218,8 @@ local function onTick()
     if mq.TLO.Me.Casting() then
       mq.cmd("/stopcast")
     end
+
+    mq.delay(1)
   end
 
   local medley = settings.medleys[assist_state.medley]
@@ -228,8 +228,12 @@ local function onTick()
     return
   end
 
-  if not canPlayMelody() or medleyState ~= MedleyStates.IDLE then
-    logger.Warn("Cannot play medley %s", medleyState)
+  local canPlay, errorMessage = canPlayMelody()
+  if not canPlay or medleyState ~= MedleyStates.IDLE then
+    logger.Warn("Cannot play medley - State: <%s> Reason: <%s>", medleyState, errorMessage)
+    if mq.TLO.Me.Casting() then
+      mq.cmd(mq.TLO.Me.Casting())
+    end
     return
   end
 

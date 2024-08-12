@@ -16,12 +16,12 @@ local Song = cast:base()
 function Song:new (name, defaultGem)
   self.__index = self
   if not mq.TLO.Spell(name)() then
-    logger.Fatal("<%s> is not a valid song.", name)
+    logger.Error("<%s> is not a valid song.", name)
   end
 
   local spellBookPosition = mq.TLO.Me.Book(name)()
   if not spellBookPosition then
-    logger.Fatal("<%s> is not availbable in spellbook.", name)
+    logger.Error("<%s> is not availbable in spellbook.", name)
   end
 
   local mqspell = mq.TLO.Spell(name)--[[@as spell]]

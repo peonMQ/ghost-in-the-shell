@@ -1,4 +1,5 @@
 local mq = require 'mq'
+local logger = require("knightlinc/Write")
 local mqutil = require 'utils/mqhelpers'
 local item = require 'lib/spells/types/item'
 
@@ -32,6 +33,19 @@ function ConversionItem:CanCast()
      or mq.TLO.Stick.Active()
      or mq.TLO.Navigation.Active() then
         return false
+  end
+
+   -- validate this wont kill us. https://discord.com/channels/511690098136580097/866047684242309140/1271477971575767111
+   if self.MQSpell.HasSPA(0)() then
+    for i = 1, self.MQSpell.NumEffects() + 1 do
+        if self.MQSpell.Attrib(i)() == 0 then
+            if mq.TLO.Me.CurrentHPs() + self.MQSpell.Base(i)() <= 0 then
+              logger.Debug("\awUseItem(\ag%s\aw): \arTried to use item - but it would kill me!: %s! HPs: %d SpaHP: %d", self.Name, self.MQSpell.Name(),
+              mq.TLO.Me.CurrentHPs(), self.MQSpell.Base(i)())
+              return false
+            end
+        end
+    end
   end
 
   if me.PctMana() < self.StartManaPct and item.CanCast(self) then
