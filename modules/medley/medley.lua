@@ -230,10 +230,13 @@ local function onTick()
 
   local canPlay, errorMessage = canPlayMelody()
   if not canPlay or medleyState ~= MedleyStates.IDLE then
-    logger.Warn("Cannot play medley - State: <%s> Reason: <%s>", medleyState, errorMessage)
-    if mq.TLO.Me.Casting() then
-      mq.cmd(mq.TLO.Me.Casting())
+    if medleyState == MedleyStates.IDLE then
+      logger.Warn("Cannot play medley - State: <%s> Reason: <%s>", medleyState, errorMessage)
+      if mq.TLO.Me.Casting() then
+        print(mq.TLO.Me.Casting())
+      end
     end
+
     return
   end
 
