@@ -10,8 +10,6 @@ env:
 jobs:
   release:
     runs-on: windows-latest
-    env:
-      BUNDLE_FILE_NAME: "Ghost_in_the_Shell.zip"
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -52,7 +50,7 @@ jobs:
         CopyLib("broadcast")
         CopyLib("knightlinc")
 
-        7z a -tzip $env:BUNDLE_FILE_NAME_${{ github.ref_name }} -r ($env:PROJECT + "/*.lua")
+        7z a -tzip Ghost_in_the_Shell_${{ github.ref_name }}.zip -r ($env:PROJECT + "/*.lua")
 
     - name: Publish
       uses: softprops/action-gh-release@v1
