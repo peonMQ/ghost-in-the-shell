@@ -6,19 +6,21 @@ local timer = require 'lib/timer'
 local settings = require 'settings/settings'
 local assist_state = require 'application/assist_state'
 local commandQueue  = require("application/command_queue")
+local changeMedleyCommand = require("application/commands/medley/change_medley_command")
 
 local next = next
 
 ---@enum MedleyStates
 local MedleyStates = {
-  IDLE = 0,
-  CASTING = 1,
-  PAUSED = 2
+  UNINITALIZED = 0,
+  IDLE = 1,
+  CASTING = 2,
+  PAUSED = 3
 }
 
 local wasInterrupted = false
 local castCompleteDue = timer:new(0)
-local medleyState = MedleyStates.IDLE
+local medleyState = MedleyStates.UNINITALIZED
 ---@type Song|nil
 local currentSong
 
@@ -211,6 +213,11 @@ end
 local function onTick()
   if common.IsOrchestrator() then
     return
+  end
+
+  if medleyState == MedleyStates.UNINITALIZED then
+    changeMedleyCommand(assist_state.medley)
+    medleyState = MedleyStates.IDLE
   end
 
   if medleyState == MedleyStates.CASTING and not mq.TLO.Window("CastingWindow").Open() then
