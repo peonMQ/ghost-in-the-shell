@@ -267,15 +267,14 @@ local removeBuffs = {
   end,
 }
 
-local summonFoodScriptExists = filetutils.Exists(mq.luaDir.."/mini-apps/turkey.lua")
 ---@type ActionButton
 local fooddrink = {
   active = false,
   icon = icons.MD_RESTAURANT,
   tooltip = "Summon Food/Drink",
-  isDisabled = function (state) return not summonFoodScriptExists end,
+  isDisabled = function (state) return false end,
   activate = function(state)
-    bci.ExecuteAllWithSelfCommand("/lua run mini-apps/turkey")
+    bci.ExecuteAllWithSelfCommand("/food")
   end,
 }
 
