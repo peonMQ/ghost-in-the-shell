@@ -70,8 +70,12 @@ local function canLootItem(item)
     return false
   end
 
+  if canDestroyItem(item.ID(), item.Name()) then
+    return true
+  end
+
   if  mq.TLO.Me.FreeInventory() < 1 then
-    if item.Stackable() and item.FreeStack() > 0 or canDestroyItem(item.ID(), item.Name()) then
+    if item.Stackable() and item.FreeStack() > 0 then
       return true
     end
 
