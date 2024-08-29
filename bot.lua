@@ -76,15 +76,13 @@ local function process()
   end
 
   commandQueue.Process()
-  if not app_state.IsActive() then
-    return
-  end
-
-  if not isFollowing() then
+  if app_state.IsActive() and not isFollowing() then
     for _,action in ipairs(botActions) do
       action()
     end
-  elseif mq.TLO.Me.Class.ShortName() == "BRD" then
+  end
+
+  if mq.TLO.Me.Class.ShortName() == "BRD" then
     doMedley()
   end
 end
