@@ -10,7 +10,7 @@ cures.disease = {
     "Radiant Cure/Group",
     "Blood of Nadox/Group",                             -- SHM/52: -9 poison x2, -9 disease x2 (group)
     --"Difinecting Aura",                                 -- SHM/52: -10 poison x2, -10 disease x2
-    "Abolish Disease",                                  -- SHM/48, BST/63: -36 disease
+    "Abolish Disease",                                  -- SHM/49, BST/63: -36 disease
     "Crusader's Purity",                                -- PAL/67: -32 disease, -32 poison, -16 curse
     "Crusader's Touch",                                 -- PAL/62: -20 disease, -20 poison, -5 curse
     "Counteract Disease",                               -- SHM/22, DRU/28, CLR/28, BST/45, PAL/56, RNG/61, NEC/36: -8 disease
@@ -27,7 +27,7 @@ cures.poison = {
     "Blood of Nadox/Group",                             -- SHM/52: -9 poison x2, -9 disease x2 (group)
     --"Difinecting Aura",                                 -- SHM/52: -10 poison x2, -10 disease x2
     "Pure Blood",                                       -- CLR/51, DRU/52: -9 poison x4
-    "Abolish Poison",                                   -- CLR/48: -36 posion
+    "Abolish Poison",                                   -- CLR/49: -36 posion
     "Crusader's Purity",                                -- PAL/67: -32 disease, -32 poison, -16 curse
     "Crusader's Touch",                                 -- PAL/62: -20 disease, -20 poison, -5 curse
     "Counteract Poison",                                -- CLR/22, SHM/26, DRU/28, PAL/34, BST/61, RNG/61: -8 posion
