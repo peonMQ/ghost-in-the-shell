@@ -20,11 +20,15 @@ actionbar.Init()
 local ui_refresh_timer = timer:new(0.5)
 
 while not actionbar.Terminate do
-  if ui_refresh_timer:IsComplete() then
-    actionbar.Process(common.IsOrchestrator())
-    ui_refresh_timer:Reset()
+  local inGame = mq.TLO.EverQuest.GameState()
+  if inGame == 'INGAME' then
+    if ui_refresh_timer:IsComplete() then
+      actionbar.Process(common.IsOrchestrator())
+      ui_refresh_timer:Reset()
+    end
+
+    bot.Process()
   end
 
-  bot.Process()
   mq.delay(1)
 end
