@@ -23,11 +23,14 @@ local function execute(set_name)
   for _, song in ipairs(settings.medleys[assist_state.medley] or {}) do
     local currentGem = mq.TLO.Me.Gem(song.Name)()
     if currentGem then
+      logger.Info("Mapped %s to gem %d", song.Name, currentGem)
       songgem[currentGem] = song
-    elseif not songgem[song.DefaultGem] and not mq.TLO.Me.Gem(song.DefaultGem)() then
-      songgem[song.DefaultGem] = song
-    elseif not songgem[settings.gems.default] and not mq.TLO.Me.Gem(settings.gems.default)() then
+    elseif not songgem[settings.gems.default] then
       songgem[settings.gems.default] = song
+    elseif not songgem[song.DefaultGem] then
+      songgem[song.DefaultGem] = song
+    else
+      logger.Error("Failed to map song [%s] to gem %d", song.Name, song.DefaultGem)
     end
   end
 
