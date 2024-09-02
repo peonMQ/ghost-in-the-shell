@@ -10,7 +10,7 @@
 
 local original = {
   -- apprentice="Designer Apprentice",
-  -- arttest="Art Testing Domain",
+  -- arttest="Art Testing core",
   -- aviak="Aviak Village",
   -- barter="The Barter Hall",
   -- bazaar="The Bazaar",

@@ -1,4 +1,4 @@
-local spellGroups = require 'data/spell_groups'
+local spellGroups = require('data/spell_groups')
 
 ---@param spellGroups table<ClassShortNames, string[]>
 ---@return table<string, ClassShortNames>

@@ -1,7 +1,8 @@
-local mq = require("mq")
-local logger = require("knightlinc/Write")
-local broadcast = require 'broadcast/broadcast'
-local commandQueue  = require("application/command_queue")
+local mq = require('mq')
+local logger = require('knightlinc/Write')
+local broadcast = require('broadcast/broadcast')
+local commandQueue  = require('application/command_queue')
+local binder = require('application/binder')
 
 local function execute(remainingDuration)
   local remainingTimer = remainingDuration or 10
@@ -19,6 +20,6 @@ local function createCommand(remainingDuration)
     commandQueue.Enqueue(function() execute(remainingDuration) end)
 end
 
-mq.bind("/cleanbuffs", createCommand)
+binder.Bind("/cleanbuffs", createCommand, "Removes buss on toon with remainig duration less than 'duration' in seconds", 'duration')
 
 return execute

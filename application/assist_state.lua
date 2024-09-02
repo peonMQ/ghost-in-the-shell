@@ -1,7 +1,8 @@
-local loader = require 'settings/loader'
+local loader = require('settings/loader')
 
 ---@alias AssistMode 'normal'|'powerlevel'
 ---@alias CrowdControlMode 'single_mez'|'ae_mez'|'unresistable_mez'|nil
+---@alias Properties 'current_target_id'|'current_pet_target_id'|'spell_set'
 
 ---@class AssistStateData
 ---@field mode AssistMode what kind of assist mode are we in
@@ -13,7 +14,7 @@ local loader = require 'settings/loader'
 ---@field enraged boolean
 
 ---@class AssistState : AssistStateData
----@field Reset fun(self: AssistState, property?: string) reset state to default state
+---@field Reset fun(self: AssistState, property?: Properties) reset state to default state
 
 ---@class AssistStateData
 local defaultState = {
@@ -22,17 +23,21 @@ local defaultState = {
   medley = "general",
   pbaoe_active = false,
   mezz_mode = nil,
+  current_target_id = 0,
   current_pet_target_id = 0,
   enraged = false
 }
 
 local state = loader.Clone(defaultState) --[[@as AssistState]]
+
 function state:Reset(property)
   for key, value in pairs(defaultState) do
     if not property or key == property then
       self[key] = value
     end
   end
+
+  self.mezz_mode = nil
 end
 
 return state

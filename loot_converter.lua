@@ -1,11 +1,11 @@
-local mq = require 'mq'
-local logger = require 'utils/logging'
+local mq = require('mq')
+local logger = require('utils/logging')
 local luaLoader = require 'utils/loaders/lua-table'
-local jsonUtil = require 'utils/loaders/json'
-local debugUtils = require 'utils/debug'
-local item = require 'modules/looter/types/lootitem'
+local jsonUtil = require('utils/loaders/json')
+local debugUtils = require('utils/debug')
+local item = require('core/lootitem')
 
-local repository = require 'modules/looter/repository'
+local repository = require('application/looting/repository')
 
 local configDir = mq.configDir.."/"
 local serverName = mq.TLO.MacroQuest.Server()

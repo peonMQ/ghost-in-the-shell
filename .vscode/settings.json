@@ -3,8 +3,7 @@
   "files.exclude": {
       "broadcast/": true,
       "utils/": true,
-      "wait4rez/": true,
-      "knightlinc/": true
+      "plugins/": true
   },
   "workbench.colorCustomizations": {
       "editorBracketHighlight.foreground1": "#5caeef",
@@ -22,13 +21,12 @@
   "Lua.workspace.library": [
     "./broadcast",
     "./utils",
-    "./wait4rez",
-    "./knightlinc",
-    "C:/Games/Macroquest/lua/mq",
+    "./plugins",
+    "C:/Games/MacroQuest_v0.0.36-emu/lua/mq",
     "c:\\Users\\asp\\AppData\\Roaming\\Code\\User\\globalStorage\\zenithcodeforge.mq-defs\\file-downloader-downloads\\macroquest\\mq-definitions-master",
     "c:\\Users\\asp\\AppData\\Roaming\\Code\\User\\globalStorage\\zenithcodeforge.mq-defs\\file-downloader-downloads\\macroquest-plugins\\mq-plugin-definitions-main"
   ],
-  "mq-defs.etag": "W/\"84544c5652386665b2e53f0b19459992843f4f45316093d0f9a4ea9ab1bfa7e8\"",
+  "mq-defs.etag": "W/\"bdb0b0df2f885c265c1dec6eed58eb3c8c6101336f9705772f5fd9250ab4a622\"",
   "Lua.diagnostics.groupFileStatus": {
     "type-check": "Any"
   },

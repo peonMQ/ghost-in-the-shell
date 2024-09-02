@@ -1,7 +1,8 @@
-local mq = require("mq")
-local logger = require("knightlinc/Write")
-local plugins = require 'utils/plugins'
-local commandQueue  = require("application/command_queue")
+local mq = require('mq')
+local logger = require('knightlinc/Write')
+local plugins = require('utils/plugins')
+local commandQueue  = require('application/command_queue')
+local binder = require('application/binder')
 
 local function execute()
   mq.cmdf("/doortarget")
@@ -13,4 +14,5 @@ local function createCommand()
     commandQueue.Enqueue(function() execute() end)
 end
 
-mq.bind("/clickdoor", createCommand)
+binder.Bind("/clickdoor", createCommand, 'Tells the bot to click the nearest door if its within range of it.')
+

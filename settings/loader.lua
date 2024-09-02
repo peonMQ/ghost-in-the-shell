@@ -1,7 +1,7 @@
-local mq = require 'mq'
+local mq = require('mq')
 local mq_utils = require('mq/Utils')
-local lua_utils = require 'utils/debug'
-local logger = require("knightlinc/Write")
+local lua_utils = require('utils/debug')
+local logger = require('knightlinc/Write')
 
 local next = next
 
