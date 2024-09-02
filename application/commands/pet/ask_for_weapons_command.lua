@@ -1,8 +1,9 @@
-local mq = require("mq")
-local logger = require("knightlinc/Write")
-local broadcast = require 'broadcast/broadcast'
-local plugins = require 'utils/plugins'
-local commandQueue  = require("application/command_queue")
+local mq = require('mq')
+local logger = require('knightlinc/Write')
+local broadcast = require('broadcast/broadcast')
+local plugins = require('utils/plugins')
+local commandQueue  = require('application/command_queue')
+local binder = require('application/binder')
 
 local function execute(characterName)
   if not mq.TLO.Me.Pet.ID() then
@@ -25,6 +26,6 @@ local function createCommand(characterName)
     commandQueue.Enqueue(function() execute(characterName) end)
 end
 
-mq.bind("/askforpetweapons", createCommand)
+binder.Bind("/askforpetweapons", createCommand, "Tells bot to ask 'character_name' to weaponize his/her pet", 'character_name')
 
 return execute

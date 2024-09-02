@@ -206,4 +206,10 @@ return {
       "Ritualchanter's Tunic of the Ancestors",   -- oow t2 bp: reduce resist rate by 40% for 0.7 min, 5 min recast
       "Spiritkin Tunic",                          -- oow t1 bp: reduce resist rate by 40% for 0.5 min, 5 min recast
   },
+  shm_cannibalize = {
+      "Cannibalize IV",                           -- L54: -148 HP +81-82 Mana, Warrens
+      "Cannibalize III",                          -- L54: -74 HP +36-38 Mana, Kunark
+      "Cannibalize II",                           -- L39: -67 HP +30-36 Mana, Kunark
+      "Cannibalize",                              -- L24: -50 HP +20-28 Mana, Original
+  },
 }

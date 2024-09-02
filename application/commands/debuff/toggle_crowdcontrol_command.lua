@@ -1,10 +1,11 @@
-local mq = require("mq")
-local logger = require("knightlinc/Write")
-local broadcast = require 'broadcast/broadcast'
-local spell_finder = require 'lib/spells/spell_finder'
-local spells_mesmerize = require 'data/spells_mesmerize'
-local assist_state = require 'application/assist_state'
-local commandQueue  = require("application/command_queue")
+local mq = require('mq')
+local logger = require('knightlinc/Write')
+local broadcast = require('broadcast/broadcast')
+local spell_finder = require('application/casting/spell_finder')
+local spells_mesmerize = require('data/spells_mesmerize')
+local assist_state = require('application/assist_state')
+local commandQueue  = require('application/command_queue')
+local binder = require('application/binder')
 
 local function execute(crowdControlMode)
   if not crowdControlMode then
@@ -29,7 +30,7 @@ local function execute(crowdControlMode)
   end
 
   if not assist_state.crowd_control_mode then
-    broadcast.WarnAll("%s is no longer doing crowd control", mq.TLO.Me.Name())
+    broadcast.WarnAll("%s is no longer doing crowd control", broadcast.ColorWrap(mq.TLO.Me.Name(), 'Maroon'))
   else
     broadcast.SuccessAll("%s is now doing crowd control", mq.TLO.Me.Name())
   end
@@ -39,6 +40,6 @@ local function createCommand(crowdControlMode)
     commandQueue.Enqueue(function() execute(crowdControlMode) end)
 end
 
-mq.bind("/crowdcontrol", createCommand)
+binder.Bind("/crowdcontrol", createCommand, "Sets automatic crowd control mode (mezz) for enchanters", 'single_mez|ae_mez|unresistable_mez|nil')
 
 return execute

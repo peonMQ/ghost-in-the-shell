@@ -1,7 +1,7 @@
-local mq = require 'mq'
+local mq = require('mq')
 local mq_utils = require('mq/Utils')
-local lua_utils = require 'utils/debug'
-local logger = require("knightlinc/Write")
+local lua_utils = require('utils/debug')
+local logger = require('knightlinc/Write')
 
 local next = next
 
@@ -14,7 +14,11 @@ local function clone(original)
     local copy = {}
     for orig_key, orig_value in pairs(original) do
       if type(orig_value) == "table" then
-        copy[orig_key] = clone(orig_value)
+        if getmetatable(orig_value) == nil then
+          copy[orig_key] = clone(orig_value)
+        else
+          copy[orig_key] = orig_value
+        end
       else
         copy[orig_key] = orig_value
       end

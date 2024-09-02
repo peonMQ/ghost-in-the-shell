@@ -195,5 +195,9 @@ return {
   enc_oow_bp = {
       "Mindreaver's Vest of Coercion",            -- oow t2 bp: Bedazzling Aura, 42 sec, -1% spell resist rate, 5 min reuse
       "Charmweaver's Robe",                       -- oow t1 bp: Bedazzling Eyes, 30 sec, -1% spell resist rate, 5 min reuse
+  },
+  enc_pacify = {
+      "Wake of Tranquility",                      -- L51: max level 60, 7 min, 10 targets, aerange 35, recast 18s
+      "Pacify"                                    -- L39: max level 55, 7 min, recast 6s
   }
 }

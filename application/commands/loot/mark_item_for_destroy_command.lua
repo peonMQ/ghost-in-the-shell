@@ -1,9 +1,10 @@
-local mq = require("mq")
-local logger = require("knightlinc/Write")
-local broadcast = require 'broadcast/broadcast'
-local commandQueue  = require("application/command_queue")
-local repository = require 'modules/looter/repository'
-local item = require 'modules/looter/types/lootitem'
+local mq = require('mq')
+local logger = require('knightlinc/Write')
+local broadcast = require('broadcast/broadcast')
+local commandQueue  = require('application/command_queue')
+local repository = require('application/looting/repository')
+local item = require('core/lootitem')
+local binder = require('application/binder')
 
 local function execute(force)
   local cursor = mq.TLO.Cursor
@@ -40,4 +41,4 @@ local function createCommand(force)
     commandQueue.Enqueue(function() execute(force) end)
 end
 
-mq.bind("/setdestroyitem", createCommand)
+binder.Bind("/setdestroyitem", createCommand, "Marks item on cursors as 'destroyable'")

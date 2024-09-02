@@ -18,8 +18,8 @@ portals.DRU = {
 
 portals.WIZ  = {
   -- Wizard Ports
-  pohate = "Alter Plane: Hate",
-  posky = "Alter Plane: Sky",
+  hateplane = "Alter Plane: Hate",
+  airplane = "Alter Plane: Sky",
 
   cazicthule = "Cazic Portal",
   commons = "Common Portal",
@@ -30,6 +30,7 @@ portals.WIZ  = {
   nektulos = "Nek Portal",
   nro = "Ro Portal",
   skyfire = "Tishan's Relocation",
+  qey2hh1 = "West Portal",
   tox = "Tox Portal",
 }
 

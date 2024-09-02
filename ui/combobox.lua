@@ -1,6 +1,6 @@
 --- @type ImGui
-local imgui = require 'ImGui'
-local debugUtils = require 'utils/debug'
+local imgui = require('ImGui')
+local debugUtils = require('utils/debug')
 
 local function renderHelpMarker(desc)
     imgui.TextDisabled('(?)')
@@ -13,7 +13,7 @@ local function renderHelpMarker(desc)
     end
 end
 
----@generic T 
+---@generic T
 ---@param label string
 ---@param selectedValue T
 ---@param options T[]

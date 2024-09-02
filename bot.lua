@@ -1,72 +1,54 @@
-local mq = require 'mq'
-local logger = require("knightlinc/Write")
-local broadcast = require 'broadcast/broadcast'
-local plugins = require 'utils/plugins'
-local debugutils = require 'utils/debug'
-local doMeditate = require 'lib/caster/meditate'
-local doManaConversion = require 'lib/caster/manaconversion'
-local doBuffs = require 'modules/buffer/buffer'
-local doDeBuffs = require 'modules/debuffer/debuffer'
-local doMezz = require 'modules/debuffer/mezz'
-local doHealing = require 'modules/healer/healing'
-local doCuring = require 'modules/curer/curer'
-local combatActions = require 'modules/melee/combatactions'
-local doMeleeDps = require 'modules/melee/melee'
-local doMedley = require 'modules/medley/medley'
-local doNuking = require 'modules/nuker/nuke'
-local doPet = require 'modules/pet/pet'
-local commandQueue  = require("application/command_queue")
-require("application/commands")
-local app_state = require 'app_state'
+local mq = require('mq')
+local logger = require('knightlinc/Write')
+local broadcast = require('broadcast/broadcast')
+local plugins = require('utils/plugins')
+local debugutils = require('utils/debug')
+local movement = require('core/movement')
+local manaregen = require('application/casting/mana_regen')
+local doBuffs = require('application/buffer')
+local doDeBuffs = require('application/debuffing/debuffer')
+local doMezz = require('application/debuffing/mezz')
+local doHealing = require('application/healing')
+local doCuring = require('application/curer')
+local melee = require('core/melee_abilities')
+local doMeleeDps = require('application/meleeing/melee')
+local doMedley = require('application/medley/medley')
+local doNuking = require('application/nuke')
+local doPet = require('application/pet')
+local assistTick = require('application/assist')
+local app_state = require('app_state')
+local commandQueue  = require('application/command_queue')
+local follow_state  = require('application/follow_state')
+local camp  = require('application/camp')
+require('application/commands')
 
 ---@alias eqclass 'bard'|'cleric'|'druid'|'enchanter'|'magician'|'monk'|'necromancer'|'paladin'|'ranger'|'rogue'|'shadowknight'|'shaman'|'warrior'|'wizard'
 
 ---@type table<eqclass, fun()[]>
 local classActions = {
-  bard = {doBuffs, doMeleeDps, doMedley},
-  cleric = {doBuffs, doHealing, doNuking, doMeleeDps, doMeditate, doCuring, doManaConversion},
-  druid = {doBuffs, doDeBuffs, doHealing, doNuking, doMeleeDps, doMeditate, doManaConversion},
-  enchanter = {doMezz, doBuffs, doDeBuffs, doMeleeDps, doNuking, doMeditate, doManaConversion},
-  magician = {doBuffs, doDeBuffs, doPet, doNuking, doMeleeDps, doMeditate, doManaConversion},
-  monk = {doBuffs, function() doMeleeDps(combatActions.DoPunchesAndKicks) end},
-  necromancer = {doBuffs, doDeBuffs, doPet, doNuking, doMeleeDps, doMeditate, doManaConversion},
-  paladin = {doBuffs, doHealing, doNuking, doMeleeDps, doMeditate},
-  ranger = {doBuffs, doHealing, doNuking, doMeleeDps, doMeditate},
-  rogue = {doBuffs, function() doMeleeDps(combatActions.DoBackStab) end},
-  shadowknight = {doBuffs, doPet, doNuking, doMeleeDps, doMeditate},
-  shaman = {doBuffs, doDeBuffs, doHealing, doPet, doNuking, doMeleeDps, doManaConversion, doMeditate, doCuring},
+  bard = {doBuffs, doMeleeDps, doMedley.OnTick},
+  cleric = {doBuffs, doHealing, doCuring, doNuking, doMeleeDps, manaregen.DoMeditate, manaregen.DoManaConversion},
+  druid = {doBuffs, doDeBuffs, doHealing, doNuking, doMeleeDps, manaregen.DoMeditate, manaregen.DoManaConversion},
+  enchanter = {doMezz, doBuffs, doDeBuffs, doMeleeDps, doNuking, manaregen.DoMeditate, manaregen.DoManaConversion},
+  magician = {doBuffs, doDeBuffs, doPet, doNuking, doMeleeDps, manaregen.DoMeditate, manaregen.DoManaConversion},
+  monk = {doBuffs, function() doMeleeDps(melee.DoPunchesAndKicks) end},
+  necromancer = {doBuffs, doDeBuffs, doPet, doNuking, doMeleeDps, manaregen.DoMeditate, manaregen.DoManaConversion},
+  paladin = {doBuffs, doHealing, doNuking, doMeleeDps, manaregen.DoMeditate},
+  ranger = {doBuffs, doHealing, doNuking, doMeleeDps, manaregen.DoMeditate},
+  rogue = {doBuffs, function() doMeleeDps(melee.DoBackStab) end},
+  ["shadow knight"] = {doBuffs, doPet, doNuking, doMeleeDps, manaregen.DoMeditate},
+  shaman = {doBuffs, doDeBuffs, doHealing, doCuring, doPet, doNuking, doMeleeDps, manaregen.DoManaConversion, manaregen.DoMeditate},
   warrior = {doBuffs, doMeleeDps},
-  wizard = {doBuffs, doNuking, doMeleeDps, doManaConversion, doMeditate}
+  wizard = {doBuffs, doNuking, doMeleeDps, manaregen.DoManaConversion, manaregen.DoMeditate}
 }
 
-local function isFollowing()
-  if plugins.IsLoaded("mq2nav") and mq.TLO.Navigation.Active() then
-    return true
-  end
-
-  if plugins.IsLoaded("mqactorfollow") and mq.TLO.ActorFollow.IsFollowing() then
-    return true
-  end
-
-  if plugins.IsLoaded("mq2moveutils") and mq.TLO.Stick.Active() then
-    local stickSpawn = mq.getFilteredSpawns(function(spawn) return spawn.ID() == mq.TLO.Stick.StickTarget() and  spawn.Type() =="PC" end)
-    if next(stickSpawn) then
-      return true
-    end
-  end
-
-  return false
-end
-
-if mq.TLO.Me.GM() then
-  logger.Error("Cannot run GM character as BOT...")
-  return
-end
-
-broadcast.SuccessAll("Bot starting up <%s>...", mq.TLO.Me.CleanName())
-local botActions = classActions[mq.TLO.Me.Class():lower()] or {}
-if mq.TLO.Me.Class.ShortName() == "BRD" then
+broadcast.SuccessAll("Bot starting up %s", broadcast.ColorWrap(mq.TLO.Me.CleanName(), 'Maroon'))
+local currentClass = mq.TLO.Me.Class
+local botActions = classActions[currentClass():lower()] or {}
+if currentClass.ShortName() == "BRD" then
+  plugins.EnsureIsLoaded("mq2bardswap")
   mq.cmd('/if (!${BardSwap}) /bardswap')
+  mq.cmd('/stopsong')
 end
 
 local function process()
@@ -76,14 +58,15 @@ local function process()
   end
 
   commandQueue.Process()
-  if app_state.IsActive() and not isFollowing() then
+  if app_state.IsActive() and not movement.IsFollowing() and not follow_state:IsActive() then
     for _,action in ipairs(botActions) do
+      assistTick()
       action()
     end
-  end
 
-  if mq.TLO.Me.Class.ShortName() == "BRD" then
-    doMedley()
+    camp.Process()
+  elseif (movement.IsFollowing() or follow_state:IsActive()) and currentClass.ShortName() == "BRD" then
+    doMedley.OnTick()
   end
 end
 

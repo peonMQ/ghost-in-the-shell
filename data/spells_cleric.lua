@@ -81,6 +81,7 @@ return {
       "Ward of the Dauntless",                    -- L71 Ward of the Dauntless (slot 4: 86 ac)
       "Ward of Valiance",                         -- L66 Ward of Valiance (slot 4: 72 ac)
       "Ward of Gallantry",                        -- L61 Ward of Gallantry (slot 4: 54 ac)
+      "Bulwark of Faith",                         -- L57 Bulwark of Faith (slot 4: 37 ac) Kunark
       "Shield of Words",                          -- L49 Shield of Words (slot 4: 31 ac)
       "Armor of Faith",                           -- L39 Armor of Faith (slot 4: 24-25 ac)
       "Guard",                                    -- L29 Guard (slot 4: 18-19 ac)

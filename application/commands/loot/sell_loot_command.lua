@@ -1,9 +1,10 @@
-local mq = require("mq")
-local logger = require("knightlinc/Write")
-local broadcast = require 'broadcast/broadcast'
-local plugins = require 'utils/plugins'
-local commandQueue  = require("application/command_queue")
-local sellItems = require 'modules/looter/sell'
+local mq = require('mq')
+local logger = require('knightlinc/Write')
+local broadcast = require('broadcast/broadcast')
+local plugins = require('utils/plugins')
+local commandQueue  = require('application/command_queue')
+local binder = require('application/binder')
+local sellItems = require('application/looting/sell')
 
 local function execute()
   local isBardSwapping = plugins.IsLoaded("MQ2BardSwap") and mq.TLO.BardSwap.Swapping()
@@ -25,4 +26,4 @@ local function createCommand()
   commandQueue.Enqueue(function() execute() end)
 end
 
-mq.bind("/sellitems", createCommand)
+binder.Bind("/sellitems", createCommand, "Sends toon to nearest merchant within a given radius to sell items marked as 'sellable'")
