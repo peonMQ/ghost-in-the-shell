@@ -1,9 +1,9 @@
-local mq = require("mq")
-local logger = require("knightlinc/Write")
-local broadcast = require 'broadcast/broadcast'
-local commandQueue  = require("application/command_queue")
-local memorize_command  = require("application/commands/memorize_command")
-local loot_corpse_command  = require("application/commands/wait4rez/loot_corpse_command")
+local mq = require('mq')
+local logger = require('knightlinc/Write')
+local broadcast = require('broadcast/broadcast')
+local commandQueue  = require('application/command_queue')
+local memorize_command  = require('application/commands/memorize_command')
+local loot_corpse_command  = require('application/commands/wait4rez/loot_corpse_command')
 
 local function waitToZone()
 	logger.Debug("Waiting to zone.")

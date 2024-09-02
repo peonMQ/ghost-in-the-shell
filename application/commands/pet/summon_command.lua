@@ -1,11 +1,12 @@
-local mq = require("mq")
-local logger = require("knightlinc/Write")
-local mqUtils = require 'utils/mqhelpers'
-local plugin = require 'utils/plugins'
-local commandQueue  = require("application/command_queue")
-local spells_pet = require 'data/spells_pet'
-local settings = require 'settings/settings'
-local pet_spell = require 'modules/pet/types/petspell'
+local mq = require('mq')
+local logger = require('knightlinc/Write')
+local mqUtils = require('utils/mqhelpers')
+local plugin = require('utils/plugins')
+local commandQueue  = require('application/command_queue')
+local spells_pet = require('data/spells_pet')
+local settings = require('settings/settings')
+local pet_spell = require('core/casting/pets/petspell')
+local binder = require('application/binder')
 
 
 local function equipSummonFocusItem(petSummonFocusItem)
@@ -93,6 +94,6 @@ local function createCommand()
     commandQueue.Enqueue(function() execute() end)
 end
 
-mq.bind("/summonpet", createCommand)
+binder.Bind("/summonpet", createCommand, "Tells the bot to summon his/her pet if its a pet class.")
 
 return execute

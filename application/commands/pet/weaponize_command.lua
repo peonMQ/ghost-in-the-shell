@@ -1,13 +1,14 @@
-local mq = require("mq")
-local logger = require("knightlinc/Write")
-local broadcast = require 'broadcast/broadcast'
-local mqUtils = require 'utils/mqhelpers'
-local moveUtils = require 'lib/moveutils'
-local spell = require 'lib/spells/types/spell'
-local spell_finder = require 'lib/spells/spell_finder'
-local timer = require 'lib/timer'
-local commandQueue  = require("application/command_queue")
-local settings = require 'settings/settings'
+local mq = require('mq')
+local logger = require('knightlinc/Write')
+local broadcast = require('broadcast/broadcast')
+local mqUtils = require('utils/mqhelpers')
+local movement = require('core/movement')
+local spell = require('core/casting/spell')
+local spell_finder = require('application/casting/spell_finder')
+local timer = require('core/timer')
+local commandQueue  = require('application/command_queue')
+local settings = require('settings/settings')
+local binder = require('application/binder')
 
 local function execute(petId)
   if not petId or not mq.TLO.Spawn("pcpet id "..petId).ID() then
@@ -57,7 +58,7 @@ local function execute(petId)
       return
     end
 
-    moveUtils.MoveToLoc(target.X(), target.Y(), target.Z(), 20, 12)
+    movement.MoveToLoc(target.X(), target.Y(), target.Z(), 20, 12)
 
     local retryTimer = timer:new(2000)
     while not mq.TLO.Window("GiveWnd").Open() and retryTimer:IsRunning() do
@@ -78,7 +79,7 @@ local function execute(petId)
 
   end
 
-  moveUtils.MoveToLoc(startX, startY, startZ, 20, 12)
+  movement.MoveToLoc(startX, startY, startZ, 20, 12)
   logger.Debug("Command <weaponize_command> completed.")
 end
 
@@ -86,6 +87,6 @@ local function createCommand(petId)
     commandQueue.Enqueue(function() execute(petId or mq.TLO.Me.Pet.ID()) end)
 end
 
-mq.bind("/weaponizepet", createCommand)
+binder.Bind("/weaponizepet", createCommand, "Tells bot to weaponize the 'pet_id'", 'pet_id')
 
 return execute

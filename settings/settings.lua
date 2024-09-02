@@ -1,25 +1,25 @@
-local mq = require 'mq'
-local logger = require("knightlinc/Write")
-local lua_utils = require 'utils/debug'
-local luapaths = require 'utils/lua-paths'
-local spell_finder = require 'lib/spells/spell_finder'
-local conversionSpell = require 'lib/caster/conversionspell'
-local conversionItem = require 'lib/caster/conversionitem'
-local curespell = require 'modules/curer/types/curespell'
-local buffspell = require 'modules/buffer/types/buffspell'
-local buffitem = require 'modules/buffer/types/buffitem'
-local debuffSpell = require 'modules/debuffer/types/debuffspell'
-local nukepell = require 'modules/nuker/types/nukespell'
-local healSpell = require 'modules/healer/types/healspell'
-local hotSpell = require 'modules/healer/types/hotspell'
-local song = require 'lib/spells/types/song'
+local mq = require('mq')
+local logger = require('knightlinc/Write')
+local lua_utils = require('utils/debug')
+local luapaths = require('utils/lua-paths')
+local spell_finder = require('application/casting/spell_finder')
+local conversionSpell = require('core/casting/conversionspell')
+local conversionItem = require('core/casting/conversionitem')
+local curespell = require('core/casting/cures/curespell')
+local buffspell = require('core/casting/buffs/buffspell')
+local buffitem = require('core/casting/buffs/buffitem')
+local debuffSpell = require('core/casting/debuffs/debuffspell')
+local nukespell = require('core/casting/nukes/nukespell')
+local healSpell = require('core/casting/heals/healspell')
+local hotSpell = require('core/casting/heals/hotspell')
+local song = require('core/casting/song')
 
 
 -- logger.callstringlevel = logger.loglevels.trace.level
 
-local loader = require 'settings/loader'
-local class_buffs = require 'data/class_buffs'
-local spells_pet = require 'data/spells_pet'
+local loader = require('settings/loader')
+local class_buffs = require('data/class_buffs')
+local spells_pet = require('data/spells_pet')
 
 local runningDir = luapaths.RunningDir:new()
 local currentScript = runningDir:Parent():GetRelativeToMQLuaPath("")
@@ -53,8 +53,10 @@ local bot_settings_filename = string.format("%s/bots/%s_settings.lua", settings_
 ---@field public tanks string[] ordered list of tanks
 ---@field public main_assist string[] ordered list of main assists
 ---@field public nukes table<string, table<string, NukeSpell>> spell group of nukes
+---@field public pbaoe NukeSpell[] list of pbaoe nukes
 ---@field public dots table<string, DeBuffSpell> spell group of dots
 ---@field public debuffs table<string, DeBuffSpell> spell group of debuffs
+---@field public aoe_stuns Spell[] list of available aoe stuns
 
 ---@class PeerSettingsBuff
 ---@field public self table<string, BuffSpell|BuffItem> BuffSpell spell group of self buffs
@@ -71,7 +73,7 @@ local bot_settings_filename = string.format("%s/bots/%s_settings.lua", settings_
 ---@class PeerSettingsMana
 ---@field public meditate number
 ---@field public meditate_with_mob_in_camp boolean
----@field public conversions table<string, ConversionItem|ConversionSpell>
+---@field public conversions table<string, Cast>
 
 ---@class PeerSettingsHealing
 ---@field public default table<string, HealSpell>|nil
@@ -103,8 +105,10 @@ local default_settings = {
     tanks = {},
     main_assist = {},
     nukes = {},
+    pbaoe ={},
     dots = {},
-    debuffs = {}
+    debuffs = {},
+    aoe_stuns ={},
   },
   buffs = {
     self = {},
@@ -198,8 +202,6 @@ local function mapSong(songlist, mapSongFunc)
 end
 
 function settings:ReloadSettings()
-  logger.loglevel = settings.loglevel
-
   local new_settings = loader.LoadSettings(default_settings, server_settings_filename, class_settings_filename, bot_settings_filename)
   for key, _ in pairs(default_settings) do
     if new_settings[key] then
@@ -207,8 +209,10 @@ function settings:ReloadSettings()
     end
   end
 
+  logger.loglevel = settings.loglevel
+
   logger.Debug("Checking pet settings")
-  if not spells_pet(settings.pet.type) then
+  if not spells_pet(self.pet.type) then
     self.pet = nil
   else
     self.pet.buffs = mapSpellOrItem(self.pet.buffs,
@@ -236,13 +240,31 @@ function settings:ReloadSettings()
   local availableNukes = {}
   for key, spells in pairs(self.assist.nukes) do
     ---@type NukeSpell[]
-    local availableSpells = mapSpellOrItem(spells, function (groupname, name, data) return nukepell:new(name, self:GetDefaultGem(groupname), data.MinManaPercent, data.GiveUpTimer) end)
+    local availableSpells = mapSpellOrItem(spells, function (groupname, name, data) return nukespell:new(name, self:GetDefaultGem(groupname), data.MinManaPercent, data.GiveUpTimer) end)
 
     if next(availableSpells) then
       availableNukes[key] = availableSpells
     end
   end
   self.assist.nukes = availableNukes
+
+  logger.Debug("Loading pbaoe settings")
+  local pbaoe_group_name = string.format("%s_pbae_nuke", mq.TLO.Me.Class.ShortName():lower())
+  local availablePBAoEs = {}
+  for _, spellName in ipairs(spell_finder.FindGroupSpells(pbaoe_group_name)) do
+    local pbaoe_spell = nukespell:new(spellName, self:GetDefaultGem(pbaoe_group_name), 0, 0)
+    table.insert(availablePBAoEs, pbaoe_spell)
+  end
+  self.assist.pbaoe = availablePBAoEs
+
+  logger.Debug("Loading pbaoestun settings")
+  local pbaoestun_group_name = string.format("%s_ae_stun", mq.TLO.Me.Class.ShortName():lower())
+  local availablePBAoEStuns = {}
+  for _, spellName in ipairs(spell_finder.FindGroupSpells(pbaoestun_group_name)) do
+    local pbaoestun_spell = nukespell:new(spellName, self:GetDefaultGem(pbaoestun_group_name), 0, 0)
+    table.insert(availablePBAoEStuns, pbaoestun_spell)
+  end
+  self.assist.aoe_stuns = availablePBAoEStuns
 
   logger.Debug("Loading self buff settings")
   self.buffs.self = mapSpellOrItem(self.buffs.self,
@@ -288,9 +310,9 @@ function settings:ReloadSettings()
                                           )
 
   logger.Debug("Loading medley settings")
-  if self.medleys then
+  if new_settings.medleys then
     local availableMedleys = {}
-    for key, medley in pairs(self.medleys) do
+    for key, medley in pairs(new_settings.medleys) do
       local availableSongs = mapSong(medley, function (name, defaultgem) return song:new(name, defaultgem) end)
       if next(availableSongs) then
         availableMedleys[key] = availableSongs

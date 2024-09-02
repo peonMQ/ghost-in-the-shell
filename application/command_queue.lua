@@ -1,4 +1,4 @@
-local logger = require("knightlinc/Write")
+local logger = require('knightlinc/Write')
 
 ---@class CommandHandler
 ---@field Execute fun():nil|thread

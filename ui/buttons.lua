@@ -1,5 +1,5 @@
-local imgui = require 'ImGui'
-local logger = require("knightlinc/Write")
+local imgui = require('ImGui')
+local logger = require('knightlinc/Write')
 
 -- local classes
 ---@class ActionButton
@@ -7,9 +7,10 @@ local logger = require("knightlinc/Write")
 ---@field public icon string
 ---@field public activeIcon? string
 ---@field public tooltip string
----@field public isDisabled fun(state:ActionButtons):boolean
----@field public activate fun(state:ActionButtons)
----@field public deactivate? fun(state:ActionButtons)
+---@field public isDisabled fun():boolean
+---@field public activate fun()
+---@field public deactivate? fun()
+---@field public click_action? fun()
 
 
 ---@param h number
@@ -87,8 +88,7 @@ end
 
 ---@param state ActionButton
 ---@param buttonSize ImVec2
----@param uiState ActionButtons
-local function createStateButton(state, buttonSize, uiState)
+local function createStateButton(state, buttonSize)
   if not state then
     return
   end
@@ -97,7 +97,7 @@ local function createStateButton(state, buttonSize, uiState)
     imgui.PushStyleColor(ImGuiCol.Button, blueButton.default)
     imgui.PushStyleColor(ImGuiCol.ButtonHovered, greenButton.hovered)
     imgui.PushStyleColor(ImGuiCol.ButtonActive, greenButton.active)
-    local isDisabled = state.isDisabled(uiState)
+    local isDisabled = state.isDisabled()
     imgui.BeginDisabled(isDisabled)
     imgui.Button(state.icon, buttonSize)
     imgui.EndDisabled()
@@ -105,7 +105,7 @@ local function createStateButton(state, buttonSize, uiState)
     imgui.PushStyleColor(ImGuiCol.Button, greenButton.default)
     imgui.PushStyleColor(ImGuiCol.ButtonHovered, redButton.hovered)
     imgui.PushStyleColor(ImGuiCol.ButtonActive, redButton.hovered)
-    local isDisabled = state.isDisabled(uiState)
+    local isDisabled = state.isDisabled()
     imgui.BeginDisabled(isDisabled)
     if not state.activeIcon then
       imgui.Button(state.icon, buttonSize)
@@ -119,9 +119,9 @@ local function createStateButton(state, buttonSize, uiState)
 
   if imgui.IsItemClicked(0) then
     if not state.active then
-      state.activate(uiState)
+      state.activate()
     else
-      state.deactivate(uiState)
+      state.deactivate()
     end
   end
 
@@ -131,19 +131,18 @@ end
 ---@param state ActionButton
 ---@param buttonColor ButtonColors
 ---@param buttonSize ImVec2
----@param uiState ActionButtons
-local function createButton(state, buttonColor, buttonSize, uiState)
+local function createButton(state, buttonColor, buttonSize)
   imgui.PushStyleColor(ImGuiCol.Button, buttonColor.default)
   imgui.PushStyleColor(ImGuiCol.ButtonHovered, buttonColor.hovered)
   imgui.PushStyleColor(ImGuiCol.ButtonActive, buttonColor.active)
 
-  local isDisabled = state.isDisabled(uiState)
+  local isDisabled = state.isDisabled()
   imgui.BeginDisabled(isDisabled)
   imgui.Button(state.icon, buttonSize)
   imgui.EndDisabled()
   DrawTooltip(state.tooltip)
   if not isDisabled and imgui.IsItemClicked(0) then
-    state.activate(uiState)
+    state.activate()
   end
 
   imgui.PopStyleColor(3)

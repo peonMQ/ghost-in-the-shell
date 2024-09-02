@@ -1,6 +1,6 @@
-local imgui = require 'ImGui'
-local worldZones = require 'data/zones'
-local renderCombobox = require 'ui/combobox'
+local imgui = require('ImGui')
+local worldZones = require('data/zones')
+local combobox = require('ui/combobox')
 
 ---@type Continent[]
 local continents = {}
@@ -60,10 +60,19 @@ local function renderZoneSelector(okText, selectedZoneAction)
   if imgui.BeginPopupModal("Select Zone", nil, ImGuiWindowFlags.AlwaysAutoResize) then
     imgui.Text("Select a continent and zone to go to:")
 
-    selectedContinent = renderCombobox("Continent", selectedContinent, continents, convertContient)
+    imgui.BeginGroup()
+    imgui.Text("Continent")
     if selectedContinent and selectedContinent.zones then
-      selectedZone = renderCombobox("Zone", selectedZone, selectedContinent.zones, convertZone)
+      imgui.Text("Zone")
     end
+    imgui.EndGroup()
+    imgui.SameLine()
+    imgui.BeginGroup()
+    selectedContinent = combobox.Render("Continent", selectedContinent, continents, convertContient)
+    if selectedContinent and selectedContinent.zones then
+      selectedZone = combobox.Render("Zone", selectedZone, selectedContinent.zones, convertZone)
+    end
+    imgui.EndGroup()
 
     ImGui.BeginDisabled(not selectedZone)
     if imgui.Button(okText) and selectedZone then

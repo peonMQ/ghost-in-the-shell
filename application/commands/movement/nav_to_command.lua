@@ -1,8 +1,9 @@
-local mq = require("mq")
-local logger = require("knightlinc/Write")
-local plugins = require 'utils/plugins'
-local commandQueue  = require("application/command_queue")
-local follow_state = require 'application/follow_state'
+local mq = require('mq')
+local logger = require('knightlinc/Write')
+local plugins = require('utils/plugins')
+local commandQueue  = require('application/command_queue')
+local follow_state = require('application/follow_state')
+local binder = require('application/binder')
 
 local function createPostCommand()
   return coroutine.create(function ()
@@ -24,24 +25,19 @@ local function execute(targetId)
     return
   end
 
-  if mq.TLO.Navigation.Active() or follow_state.spawn_id then
-    mq.cmd("/nav stop")
-    follow_state.spawn_id = nil
-    return
-  end
-
-  if plugins.IsLoaded("mqactoradvpath") and mq.TLO.ActorFollow.IsFollowing() then
-    mq.cmd("/actfollow off")
-  end
-
+  follow_state.Stop()
   if not targetId then
-    logger.Warn("Missing <targetId> to navigate to.")
+    follow_state:Reset()
     return
+  end
+
+  if mq.TLO.Me.Casting.ID() and mq.TLO.Me.Class.ShortName() ~= "BRD" then
+    mq.cmd("/stopcast")
   end
 
   local stickSpawn = mq.getFilteredSpawns(function(spawn) return spawn.ID() == tonumber(targetId) and spawn.Type() == "PC" end)
   if stickSpawn[1] and mq.TLO.Navigation.PathExists("id "..stickSpawn[1].ID()) then
-    follow_state.spawn_id = stickSpawn[1].ID()
+    follow_state:Activate('nav', stickSpawn[1].ID())
     mq.cmdf("/nav id %d", follow_state.spawn_id)
   end
 end
@@ -50,4 +46,6 @@ local function createCommand(targetId)
   commandQueue.Enqueue(function() execute(targetId); return createPostCommand() end)
 end
 
-mq.bind("/navto", createCommand)
+if plugins.IsLoaded("mq2nav") then
+  binder.Bind("/navto", createCommand, "Tells the bot to follow the 'target_id' using 'mq2nav'", 'target_id')
+end

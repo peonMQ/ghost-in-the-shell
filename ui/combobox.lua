@@ -1,6 +1,6 @@
 --- @type ImGui
-local imgui = require 'ImGui'
-local debugUtils = require 'utils/debug'
+local imgui = require('ImGui')
+local debugUtils = require('utils/debug')
 
 local function renderHelpMarker(desc)
     imgui.TextDisabled('(?)')
@@ -13,18 +13,16 @@ local function renderHelpMarker(desc)
     end
 end
 
----@generic T 
----@param label string
+---@generic T
+---@param name string
 ---@param selectedValue T
 ---@param options T[]
 ---@param displayText fun(value: T): string
 ---@param helpText string?
 ---@return T
-local function renderComboBox(label, selectedValue, options, displayText, helpText)
-    imgui.Text(label)
-    imgui.SameLine()
+local function render(name, selectedValue, options, displayText, helpText)
     local selectedText = displayText(selectedValue)
-    if imgui.BeginCombo("##"..label, selectedText, 0) then
+    if imgui.BeginCombo("##"..name, selectedText, 0) then
         for _,j in ipairs(options) do
             local valueText = displayText(j)
             if imgui.Selectable(valueText, valueText == selectedText) then
@@ -41,4 +39,21 @@ local function renderComboBox(label, selectedValue, options, displayText, helpTe
     return selectedValue
 end
 
-return renderComboBox
+---@generic T
+---@param label string
+---@param selectedValue T
+---@param options T[]
+---@param displayText fun(value: T): string
+---@param helpText string?
+---@return T
+local function renderWithLabel(label, selectedValue, options, displayText, helpText)
+    imgui.Text(label)
+    imgui.SameLine()
+    selectedValue = render(label, selectedValue, options, displayText, helpText)
+    return selectedValue
+end
+
+return {
+  Render = render,
+  RenderWithLabel = renderWithLabel
+}

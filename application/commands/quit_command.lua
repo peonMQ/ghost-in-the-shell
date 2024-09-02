@@ -1,15 +1,14 @@
-local mq = require("mq")
-local logger = require("knightlinc/Write")
-local commandQueue  = require("application/command_queue")
-local filetutils = require 'utils/file'
-local app_state = require 'app_state'
+local mq = require('mq')
+local logger = require('knightlinc/Write')
+local commandQueue  = require('application/command_queue')
+local filetutils = require('utils/file')
+local app_state = require('app_state')
+local binder = require('application/binder')
 
 local exportInventoryScriptExists = filetutils.Exists(mq.luaDir.."/inventory/export.lua")
 
 local function execute()
   app_state.Pause()
-  mq.cmd("/stopsong")
-  mq.cmd("/stopcast")
   if exportInventoryScriptExists then
     mq.cmd('/lua run inventory/export')
   end
@@ -17,9 +16,14 @@ local function execute()
 end
 
 local function createCommand()
-  commandQueue.Enqueue(function() execute() end)
+  if app_state.IsActive() then
+    commandQueue.Enqueue(function() execute() end)
+  else
+    app_state.Activate()
+    mq.cmd("/stand")
+  end
 end
 
-mq.bind("/qtd", createCommand)
+binder.Bind("/qtd", createCommand, "Tells bot to pause bot and quit to desktop")
 
 return execute

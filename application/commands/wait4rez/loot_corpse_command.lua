@@ -1,8 +1,10 @@
-local mq = require("mq")
-local logger = require("knightlinc/Write")
-local broadcast = require 'broadcast/broadcast'
-local mqutil = require 'utils/mqhelpers'
-local commandQueue  = require("application/command_queue")
+local mq = require('mq')
+local logger = require('knightlinc/Write')
+local broadcast = require('broadcast/broadcast')
+local mqutil = require('utils/mqhelpers')
+local commandQueue  = require('application/command_queue')
+local binder = require('application/binder')
+
 
 local function execute()
   local me = mq.TLO.Me.Name()
@@ -37,6 +39,6 @@ local function createCommand()
     commandQueue.Enqueue(function() execute() end)
 end
 
-mq.bind("/lootCorpse", createCommand)
+binder.Bind("/lootcorpse", createCommand, "Tells bot to loot his/her corpse")
 
 return execute

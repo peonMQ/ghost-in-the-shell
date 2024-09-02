@@ -59,6 +59,13 @@ return {
       "Lesser Shielding",                         -- L05: 17-30 hp, 5-9 ac, 6-10 mr
       "Minor Shielding",                          -- L01: 6-10 hp, 3-4 ac
   },
+  -- NOTE: does not stack with druid resists
+  nec_self_resist = {
+      "Elemental Barrier",                        -- L61 Elemental Barrier (60 cr, 60 fr)
+      "Elemental Cloak",                          -- L54 Elemental Cloak (45 cr, 45 fr)
+      "Elemental Armor",                          -- L41 Elemental Armor (30 cr, 30 fr)
+      "Elemental Shield",                         -- L19 Elemental Shield (14-15 cr, 14-15 fr)
+  },
   nec_snare_dot = {
       "Desecrating Darkness",                     -- L68 Desecrating Darkness (resist adj -20, 96 hp/tick, 75% snare, 2.0 min, cost 248 mana)
       "Embracing Darkness",                       -- L63 Embracing Darkness (resist adj -20, 68-70 hp/tick, 75% snare, 2.0 min, cost 200 mana)

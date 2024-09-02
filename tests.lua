@@ -1,2 +1,2 @@
-local mq = require 'mq'
-require 'tests/settings'
+local mq = require('mq')
+require('tests/settings')

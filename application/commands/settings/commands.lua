@@ -1,1 +1,1 @@
-require("application/commands/settings/reload_command")
+require('application/commands/settings/reload_command')
