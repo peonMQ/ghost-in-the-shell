@@ -1,10 +1,10 @@
-local mq = require("mq")
-local logger = require("knightlinc/Write")
-local broadcast = require 'broadcast/broadcast'
-local commandQueue  = require("application/command_queue")
-local spell_finder = require 'lib/spells/spell_finder'
-local settings = require 'settings/settings'
-local broadCastInterfaceFactory = require('broadcast/broadcastinterface')()
+local mq = require('mq')
+local logger = require('knightlinc/Write')
+local broadcast = require('broadcast/broadcast')
+local commandQueue  = require('application/command_queue')
+local spell_finder = require('application/casting/spell_finder')
+local settings = require('settings/settings')
+local binder = require('application/binder')
 
 local function execute()
   if settings.gems == nil then
@@ -25,7 +25,7 @@ local function execute()
         local spell = spell_finder.FindGroupSpell(spell_group)
         if spell and spell() then
           logger.Info("Memorizing \ag%s\ax in gem %d", spell.RankName.Name(), gem)
-          mq.cmdf('/memspell  %d "%s"', gem, spell.RankName.Name())
+          mq.cmdf('/memspell %d "%s"', gem, spell.RankName.Name())
           mq.delay("10s", function() return mq.TLO.Me.Gem(spell.RankName.Name())() ~= nil end)
           mq.delay(500)
           local waitForReady = spell.RecoveryTime()
@@ -41,7 +41,7 @@ local function createCommand()
   commandQueue.Enqueue(function() execute() end)
 end
 
-mq.bind("/memspells", createCommand)
+binder.Bind("/memspells", createCommand, "Tells bot to memorize spells according to the default 'gem' setting")
 
 return execute
 -- /notify CastSpellWnd CSPW_Spell0 rightmousedown

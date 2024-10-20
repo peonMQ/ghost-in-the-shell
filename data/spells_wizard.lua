@@ -74,6 +74,8 @@ return {
     "Draught of Thunder",                         -- L63 Draught of Thunder (980 hp, stun 1s/65, resist adj -50, cost 255 mana)
     "Lure of Thunder",                            -- L61 Lure of Thunder (1090 hp, resist adj -300, cost 365 mana)
     "Elnerick's Electrical Rending",              -- L60 Elnerick's Electrical Rending (1796 hp, cost 421 mana)
+    "Rend",                                       -- L349 Render (774-784 hp, cost 280 mana)
+    "Lightning Shock",                            -- L39 Lightning Shock (381-405 hp, cost 180 mana)
     "Shock of Lightning",                         -- L10 Shock of Lightning (74-83 hp, cost 50 mana)
   },
   wiz_target_ae = {

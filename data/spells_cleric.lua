@@ -3,7 +3,7 @@ return {
   clr_group_heal = {
       "Word of Vivification",                     -- CLR/69: 3417-3427 hp, -21 dr, -21 pr, -14 curse, cost 1357 mana
       "Word of Replenishment",                    -- CLR/64: 2500 hp, -14 dr, -14 pr, -7 curse, cost 1100 mana
-      "Word of Redemption",                       -- CLR/60: 7500 hp, cost 1100 mana
+      -- "Word of Redemption",                       -- CLR/60: 7500 hp, cost 1100 mana
       "Word of Restoration",                      -- CLR/57: 1788-1818 hp, cost 898 mana
       "Word of Health",                           -- CLR/30: 380-485 hp, cost 302 mana
   },
@@ -81,6 +81,7 @@ return {
       "Ward of the Dauntless",                    -- L71 Ward of the Dauntless (slot 4: 86 ac)
       "Ward of Valiance",                         -- L66 Ward of Valiance (slot 4: 72 ac)
       "Ward of Gallantry",                        -- L61 Ward of Gallantry (slot 4: 54 ac)
+      "Bulwark of Faith",                         -- L57 Bulwark of Faith (slot 4: 37 ac) Kunark
       "Shield of Words",                          -- L49 Shield of Words (slot 4: 31 ac)
       "Armor of Faith",                           -- L39 Armor of Faith (slot 4: 24-25 ac)
       "Guard",                                    -- L29 Guard (slot 4: 18-19 ac)

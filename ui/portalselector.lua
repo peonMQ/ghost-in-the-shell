@@ -1,10 +1,10 @@
-local imgui = require 'ImGui'
-local mq = require("mq")
-local logger = require("knightlinc/Write")
-local broadcast = require 'broadcast/broadcast'
+local imgui = require('ImGui')
+local mq = require('mq')
+local logger = require('knightlinc/Write')
+local broadcast = require('broadcast/broadcast')
 local port_spells = require "data/spells_ports"
-local worldZones = require 'data/zones'
-local renderCombobox = require 'ui/combobox'
+local worldZones = require('data/zones')
+local combobox = require('ui/combobox')
 
 ---@return Zone[]
 local function getZones()
@@ -54,7 +54,7 @@ local function renderZoneSelector(okText, selectedZoneAction)
   if imgui.BeginPopupModal("Select Zone", nil, ImGuiWindowFlags.AlwaysAutoResize) then
     imgui.Text("Select a zone to teleport to:")
 
-    selectedZone = renderCombobox("Zone", selectedZone, getZones(), convertZone)
+    selectedZone = combobox.RenderWithLabel("Zone", selectedZone, getZones(), convertZone)
 
     ImGui.BeginDisabled(not selectedZone)
     if imgui.Button(okText) and selectedZone then

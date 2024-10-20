@@ -1,18 +1,31 @@
-local mq = require("mq")
-local logger = require("knightlinc/Write")
-local plugins = require 'utils/plugins'
-local mqUtils = require 'utils/mqhelpers'
-local moveUtils = require 'lib/moveutils'
-local commandQueue  = require("application/command_queue")
+local mq = require('mq')
+local logger = require('knightlinc/Write')
+local mqUtils = require('utils/mqhelpers')
+local commandQueue  = require('application/command_queue')
+local spell_finder = require('application/casting/spell_finder')
+local settings = require('settings/settings')
+local debuff = require('core/casting/debuffs/debuffspell')
+local binder = require('application/binder')
 
 local function execute(targetId)
-  if mqUtils.EnsureTarget(targetId) then
-    mq.cmd('/cast  "Wake of Tranquility"')
+  local pacifySpell = spell_finder.FindGroupSpell("enc_pacify")
+  if not pacifySpell then
+    logger.Info("No pacify spell found.")
+    return
+  end
+
+  local spell = debuff:new(pacifySpell.Name(), settings:GetDefaultGem("enc_pacify"), 10, 3, 3)
+  if mqUtils.EnsureTarget(targetId) and spell:CanCastOnTarget(mq.TLO.Target --[[@as target]]) then
+    spell:Cast()
   end
 end
 
 local function createCommand(targetId)
-    commandQueue.Enqueue(function() execute(targetId) end)
+  if mq.TLO.Me.Class.ShortName() ~= "ENC" then
+    return
+  end
+
+  commandQueue.Enqueue(function() execute(targetId) end)
 end
 
-mq.bind("/pacify", createCommand)
+binder.Bind("/pacify", createCommand, "Tells the enchanter to passify the given target", 'target_id')

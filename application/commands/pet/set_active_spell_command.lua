@@ -1,8 +1,9 @@
-local mq = require("mq")
-local logger = require("knightlinc/Write")
-local commandQueue  = require("application/command_queue")
-local spells_pet = require 'data/spells_pet'
-local settings = require 'settings/settings'
+local mq = require('mq')
+local logger = require('knightlinc/Write')
+local commandQueue  = require('application/command_queue')
+local spells_pet = require('data/spells_pet')
+local settings = require('settings/settings')
+local binder = require('application/binder')
 
 local function GetSentenceCase(str)
   local firstLetter = str:sub(1, 1):upper()
@@ -24,6 +25,6 @@ local function createCommand(petType)
     commandQueue.Enqueue(function() execute(GetSentenceCase(petType)) end)
 end
 
-mq.bind("/setpettype", createCommand)
+binder.Bind("/setpettype", createCommand, "Tells bot to set her/his active summon pet spell to 'type'", 'type')
 
 return execute

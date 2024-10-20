@@ -1,6 +1,6 @@
 --- @type Mq
 local mq = require('mq')
-local logger = require("knightlinc/Write")
+local logger = require('knightlinc/Write')
 
 -- https://www.eqprogression.com/magician-pet-stats/
 
@@ -58,6 +58,21 @@ local function necromancerPetSpells(type)
   }
 end
 
+local function shadowknightPetSpells(type)
+  return {
+    "Leering Corpse", -- L07
+    "Bone Walk",      -- L14
+    "Convoke Shadow", -- L22
+    "Restless Bones", -- L30
+    "Animate Dead",   -- L38
+    "Summon Dead",    -- L46
+    "Malignant Dead", -- L52
+    "Cackling Bones", -- L58
+    "Invoke Death",   -- L64
+    "Son of Decay",   -- L68 (pet WAR/60)
+  }
+end
+
 local function shamanSpells(type)
   return {
     "Companion Spirit",     -- L32
@@ -67,6 +82,25 @@ local function shamanSpells(type)
     "Spirit of the Howler", -- L55
     "True Spirit",          -- L61 (pet WAR/58)
     "Farrel's Companion",   -- L67 (pet WAR/63)
+  }
+end
+
+local function beastlordSpells(type)
+  return {
+    "Spirit of Sharik",    -- L08
+    "Spirit of Khaliz",    -- L15
+    "Spirit of Keshuval",  -- L21
+    "Spirit of Herikol",   -- L30
+    "Spirit of Yekan",     -- L39
+    "Spirit of Kashek",    -- L46
+    "Spirit of Omakin",    -- L54
+    "Spirit of Zehkes",    -- L56
+    "Spirit of Khurenz",   -- L58
+    "Spirit of Khati Sha", -- L60 (pet XXX/XXX)
+    "Spirit of Arag",      -- L62 (pet WAR/60)
+    "Spirit of Sorsha",    -- L64 (pet WAR/60)
+    "Spirit of Alladnu",   -- L68 (pet WAR/63)
+    "Spirit of Rashara",   -- L70 (pet WAR/65)
   }
 end
 
@@ -130,9 +164,17 @@ local petSpells = {
     FocusItem=getNecromancerPetFocusItem,
     Spells = necromancerPetSpells
   },
+  SHD = {
+    FocusItem=function(string, spell) return nil end,
+    Spells = shadowknightPetSpells
+  },
   SHM = {
     FocusItem=function(string, spell) return nil end,
     Spells = shamanSpells
+  },
+  BST = {
+    FocusItem=function(string, spell) return nil end,
+    Spells = beastlordSpells
   }
 }
 

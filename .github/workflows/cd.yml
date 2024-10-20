@@ -19,7 +19,7 @@ jobs:
     - name: Create Bundle  
       shell: pwsh
       run: |
-        $excludeDirs = @('.github','.vscode','definitions','utils','broadcast', 'util', 'knightlinc')
+        $excludeDirs = @('.github','.vscode','definitions','utils','broadcast')
         $releaseDir = $env:PROJECT + "\"
         $Directories = Get-ChildItem -Directory "." -Exclude $excludeDirs 
 
@@ -48,7 +48,6 @@ jobs:
         CopyLib("utils")
         CopyLib("utils/loaders")
         CopyLib("broadcast")
-        CopyLib("knightlinc")
 
         7z a -tzip Ghost_in_the_Shell_${{ github.ref_name }}.zip -r ($env:PROJECT + "/*.lua")
 

@@ -1,9 +1,10 @@
-local mq = require("mq")
-local logger = require("knightlinc/Write")
-local broadcast = require 'broadcast/broadcast'
-local commandQueue  = require("application/command_queue")
-local repository = require 'modules/looter/repository'
-local item = require 'modules/looter/types/lootitem'
+local mq = require('mq')
+local logger = require('knightlinc/Write')
+local broadcast = require('broadcast/broadcast')
+local commandQueue  = require('application/command_queue')
+local repository = require('application/looting/repository')
+local item = require('core/lootitem')
+local binder = require('application/binder')
 
 local function execute()
   local cursor = mq.TLO.Cursor
@@ -34,4 +35,4 @@ local function createCommand()
     commandQueue.Enqueue(function() execute() end)
 end
 
-mq.bind("/setsellitem", createCommand)
+binder.Bind("/setsellitem", createCommand, "Marks item on cursors as 'sellable'")
