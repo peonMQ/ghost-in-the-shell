@@ -27,8 +27,8 @@ require('application/commands')
 ---@type table<eqclass, fun()[]>
 local classActions = {
   bard = {doBuffs, doMeleeDps, doMedley.OnTick},
-  cleric = {doBuffs, doHealing, doCuring, doNuking, doMeleeDps, manaregen.DoMeditate, manaregen.DoManaConversion},
-  druid = {doBuffs, doDeBuffs, doHealing, doNuking, doMeleeDps, manaregen.DoMeditate, manaregen.DoManaConversion},
+  cleric = {doHealing, doCuring, doBuffs, doNuking, doMeleeDps, manaregen.DoMeditate, manaregen.DoManaConversion},
+  druid = {doHealing, doBuffs, doDeBuffs, doNuking, doMeleeDps, manaregen.DoMeditate, manaregen.DoManaConversion},
   enchanter = {doMezz, doBuffs, doDeBuffs, doMeleeDps, doNuking, manaregen.DoMeditate, manaregen.DoManaConversion},
   magician = {doBuffs, doDeBuffs, doPet, doNuking, doMeleeDps, manaregen.DoMeditate, manaregen.DoManaConversion},
   monk = {doBuffs, function() doMeleeDps(melee.DoPunchesAndKicks) end},
@@ -37,7 +37,7 @@ local classActions = {
   ranger = {doBuffs, doHealing, doNuking, doMeleeDps, manaregen.DoMeditate},
   rogue = {doBuffs, function() doMeleeDps(melee.DoBackStab) end},
   ["shadow knight"] = {doBuffs, doPet, doNuking, doMeleeDps, manaregen.DoMeditate},
-  shaman = {doBuffs, doDeBuffs, doHealing, doCuring, doPet, doNuking, doMeleeDps, manaregen.DoManaConversion, manaregen.DoMeditate},
+  shaman = {doHealing, doCuring, doBuffs, doDeBuffs, doPet, doNuking, doMeleeDps, manaregen.DoManaConversion, manaregen.DoMeditate},
   warrior = {doBuffs, doMeleeDps},
   wizard = {doBuffs, doNuking, doMeleeDps, manaregen.DoManaConversion, manaregen.DoMeditate}
 }
