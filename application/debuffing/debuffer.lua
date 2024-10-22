@@ -41,6 +41,10 @@ local function doDebuffs()
     return
   end
 
+  if not assist_state.debuffs_active then
+    return
+  end
+
   local targetSpawn = mq.TLO.Spawn(assist_state.current_target_id)
   if not targetSpawn() then
     return

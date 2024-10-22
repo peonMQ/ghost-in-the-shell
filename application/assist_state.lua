@@ -22,6 +22,7 @@ local defaultState = {
   spell_set = 'main',
   medley = "general",
   pbaoe_active = false,
+  debuffs_active = false,
   mezz_mode = nil,
   current_target_id = 0,
   current_pet_target_id = 0,
