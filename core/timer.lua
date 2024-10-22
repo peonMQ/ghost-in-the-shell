@@ -5,7 +5,7 @@ local mq = require('mq')
 ---@field public StartTime integer
 local Timer = {Duration = 0, StartTime = mq.gettime()}
 
----@param duration? integer
+---@param duration? integer Duration in seconds
 ---@return Timer
 function Timer:new (duration)
   self.__index = self
