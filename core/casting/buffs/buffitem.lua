@@ -2,6 +2,7 @@ local mq = require('mq')
 local logger = require('knightlinc/Write')
 local luaUtils = require 'utils/lua-table'
 local item = require('core/casting/item')
+local zone = require('core/zone')
 
 local SPA_MOVEMENT_RATE = 3
 ---@param buffSpell spell
@@ -24,16 +25,6 @@ local function willStack(buffSpell, currentBuff)
   end
 
   return true
-end
-
-local function currentZoneIsNoLevitate()
-  local currentZone = mq.TLO.Zone.ShortName()
-  return currentZone == "airplane"
-end
-
-local function currentZoneIsIndoors()
-  local currentZone = mq.TLO.Zone.ShortName()
-  return string.find("befallen blackburrow gukbottom guktop neriaka neriakb neriakc paw permafrost qcat runnyeye soldunga soldungb soltemple akanon kaladima kaladimb kedge kurn kaesora sebilis", currentZone) ~= nil
 end
 
 ---@class BuffItem : Item
@@ -75,11 +66,11 @@ function BuffItem:CanCast()
   -- ${FindItem[${spellName}].EffectType.Find[worn]}
   -- /varset slotName ${FindItem[${spellName}].WornSlot[1].Name}
 
-  if self:DoesIncreaseRunSpeed() and currentZoneIsIndoors() then
+  if self:DoesIncreaseRunSpeed() and zone.Current.IsIndoors() then
     return false
   end
 
-  if self:DoesLevitate() and currentZoneIsNoLevitate() then
+  if self:DoesLevitate() and zone.Current.IsNoLevitate() then
     return false
   end
 
