@@ -43,7 +43,7 @@ function Item:CanCast()
     return false
   end
 
-  local refreshTimer = item.TimerReady()
+  local refreshTimer = item.TimerReady() or 1
   local me = mq.TLO.Me
   if me.Casting() or refreshTimer > 0 then
     return false
