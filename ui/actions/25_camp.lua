@@ -15,7 +15,7 @@ local bots = {
   active = app_state.CampLoc ~= nil,
   icon = icons.MD_HOME,
   tooltip = "Toogle Camp",
-  isDisabled = function () return false end,
+  isDisabled = function () return not app_state:Activate() end,
   activate = function() end,
   deactivate = function() end
 }
