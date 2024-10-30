@@ -4,6 +4,7 @@ local broadcast = require('broadcast/broadcast')
 local commandQueue  = require('application/command_queue')
 local memorize_command  = require('application/commands/memorize_command')
 local loot_corpse_command  = require('application/commands/wait4rez/loot_corpse_command')
+local binder = require('application/binder')
 
 local function waitToZone()
 	logger.Debug("Waiting to zone.")
@@ -41,3 +42,4 @@ end
 
 mq.event("slain", "You have been slain by #*#", createCommand)
 mq.event("died", "You died.", createCommand)
+binder.Bind("/youdied", createCommand, "Tells bot it died and needs to wait for rezz")
