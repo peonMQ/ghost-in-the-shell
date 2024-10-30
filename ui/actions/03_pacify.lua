@@ -15,7 +15,7 @@ local pacify = {
   active = false,
   icon = icons.MD_REMOVE_RED_EYE,
   tooltip = "Pacify Target",
-  isDisabled = function () return  not app_state.IsActive() end,
+  isDisabled = function () return not app_state.IsActive() end,
   activate = function()
     bci.ExecuteCommand('/pacify '..mq.TLO.Target.ID(), {"Ithildin"})
   end,
