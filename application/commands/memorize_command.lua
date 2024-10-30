@@ -28,8 +28,6 @@ local function execute()
           mq.cmdf('/memspell %d "%s"', gem, spell.RankName.Name())
           mq.delay("10s", function() return mq.TLO.Me.Gem(spell.RankName.Name())() ~= nil end)
           mq.delay(500)
-          local waitForReady = spell.RecoveryTime()
-          mq.delay(waitForReady)
         end
       end
   end
