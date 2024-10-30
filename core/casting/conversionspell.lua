@@ -40,7 +40,7 @@ function ConversionSpell:CanCast()
    for i = 1, self.MQSpell.NumEffects() + 1 do
        if self.MQSpell.Attrib(i)() == 0 then
            if mq.TLO.Me.CurrentHPs() + self.MQSpell.Base(i)() <= 0 then
-             logger.Debug("\awUseItem(\ag%s\aw): \arTried to use item - but it would kill me!: %s! HPs: %d SpaHP: %d", self.Name, self.MQSpell.Name(),
+             logger.Debug("\awCast(\ag%s\aw): \arTried to use cast - but it would kill me!: %s! HPs: %d SpaHP: %d", self.Name, self.MQSpell.Name(),
              mq.TLO.Me.CurrentHPs(), self.MQSpell.Base(i)())
              return false
            end
