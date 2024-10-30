@@ -73,7 +73,7 @@ local bot_settings_filename = string.format("%s/bots/%s_settings.lua", settings_
 ---@class PeerSettingsMana
 ---@field public meditate number
 ---@field public meditate_with_mob_in_camp boolean
----@field public conversions table<string, Cast>
+---@field public conversions table<string, ConversionSpell|ConversionItem>
 
 ---@class PeerSettingsHealing
 ---@field public default table<string, HealSpell>|nil
