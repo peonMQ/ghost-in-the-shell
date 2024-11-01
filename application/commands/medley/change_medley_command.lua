@@ -41,6 +41,8 @@ local function execute(set_name)
     return
   end
 
+  mq.cmd("/makemevisible")
+  mq.cmd("/stopsong")
   for gem, song in pairs(songgem) do
     if mq.TLO.Me.Gem(gem)() ~= song.Name then
       local rankName = song.MQSpell.RankName.Name()
@@ -51,7 +53,6 @@ local function execute(set_name)
     end
   end
 
-  mq.cmd("/makemevisible")
   logger.Info("Active medley set is now '%s'", set_name)
   broadcast.SuccessAll("Active medley set is now %s", broadcast.ColorWrap(set_name, 'Blue'))
   assist_state.medley = set_name
