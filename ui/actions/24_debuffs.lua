@@ -12,7 +12,7 @@ local bots = {
   active = assist_state.debuffs_active,
   icon = icons.FA_CHAIN_BROKEN,
   tooltip = "Toogle Debuffs",
-  isDisabled = function () return not app_state:Activate() end,
+  isDisabled = function () return not app_state:IsActive() end,
   activate = function() end,
   deactivate = function() end
 }
