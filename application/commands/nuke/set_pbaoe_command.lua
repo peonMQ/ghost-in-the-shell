@@ -5,32 +5,7 @@ local commandQueue  = require('application/command_queue')
 local settings = require('settings/settings')
 local assist_state = require('application/assist_state')
 local binder = require('application/binder')
-
-local function arg_to_bool(string_arg)
-  if string_arg == nil then
-      return false
-  end
-
-  if string.lower(string_arg) == 'true' then
-    return true
-  end
-
-  if string.lower(string_arg) == 'false' then
-    return true
-  end
-
-  local number_arg = tonumber(string_arg)
-  if number_arg then
-    return number_arg == 1
-  end
-
-  if string.lower(string_arg) == "on" then
-    return true
-  end
-
-  return false
-end
-
+local strings = require('core/strings')
 
 ---@param enable boolean
 local function execute(enable)
@@ -39,7 +14,7 @@ local function execute(enable)
 end
 
 local function createCommand(enable)
-    commandQueue.Enqueue(function() execute(arg_to_bool(enable)) end)
+    commandQueue.Enqueue(function() execute(strings.ConvertToBoolean(enable)) end)
 end
 
 binder.Bind("/pbaoe", createCommand, "Toggles pb aoe combat with flags", 'on|off')
