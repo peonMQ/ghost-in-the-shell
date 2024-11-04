@@ -7,6 +7,8 @@ local assist_state = require('application/assist_state')
 local commandQueue  = require('application/command_queue')
 local binder = require('application/binder')
 
+---comment
+---@param crowdControlMode CrowdControlMode|nil
 local function execute(crowdControlMode)
   if not crowdControlMode then
     assist_state.crowd_control_mode = nil
@@ -16,12 +18,13 @@ local function execute(crowdControlMode)
     return
   end
 
+  local class_spell
   local mezz_spell_group = spells_mesmerize[mq.TLO.Me.Class.ShortName()] and spells_mesmerize[mq.TLO.Me.Class.ShortName()][crowdControlMode]
   if not mezz_spell_group then
     logger.Info("%s has no crowd controll spell.", mq.TLO.Me.Class.ShortName())
     assist_state.crowd_control_mode = nil
   else
-    local class_spell = spell_finder.FindGroupSpell(mezz_spell_group)
+    class_spell = spell_finder.FindGroupSpell(mezz_spell_group)
     if not class_spell then
       assist_state.crowd_control_mode = nil
     else
@@ -31,8 +34,8 @@ local function execute(crowdControlMode)
 
   if not assist_state.crowd_control_mode then
     broadcast.WarnAll("%s is no longer doing crowd control", broadcast.ColorWrap(mq.TLO.Me.Name(), 'Maroon'))
-  else
-    broadcast.SuccessAll("%s is now doing crowd control", mq.TLO.Me.Name())
+  elseif class_spell then
+    broadcast.SuccessAll("%s is now doing crowd control: %s - %s", mq.TLO.Me.Name(), crowdControlMode, class_spell.Name)
   end
 end
 
