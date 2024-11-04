@@ -35,8 +35,16 @@ end
 
 local function doManaConversion()
   for _, conversion in pairs(settings.mana.conversions) do
-    if conversion:CanCast() then
-      conversion:Cast()
+    if conversion.MQSpell.MyCastTime() == 0 then
+      local numberOfCasts = 0
+      while numberOfCasts < 3 and conversion:CanCast() do
+        conversion:CanCast()
+        numberOfCasts = numberOfCasts + 1
+      end
+    else
+      if conversion:CanCast() then
+        conversion:Cast()
+      end
     end
   end
 end
