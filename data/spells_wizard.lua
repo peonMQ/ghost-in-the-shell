@@ -24,6 +24,15 @@ return {
       "Elemental Armor",                          -- L41 Elemental Armor (30 cr, 30 fr)
       "Elemental Shield",                         -- L19 Elemental Shield (14-15 cr, 14-15 fr)
   },
+  wiz_cold_low_res_nuke = {
+    "Lure of Ice"                                 -- L60 Lure of Ice (825 hp, resist adj -300, cost 320 mana, 4.5s cast, 2.57 dpm)
+  },
+  wiz_fire_low_res_nuke = {
+    "Lure of Flame",                              -- L55 Lure of Flame (640 hp, resist adj -300, cost 320 mana, 4.5s cast, 2.0 dpm)
+  },
+  wiz_magic_low_res_nuke = {
+    "Lure of Lightning"                           -- L60 Lure of Ice (680 hp, resist adj -300, cost 320 mana, 4.5s cast, 2.13 dpm)
+  },
   wiz_fire_nuke = {
       "Ancient: Core Fire",                       -- L70 Ancient: Core Fire (4070 hp, resist adj -10, cost 850 mana, 8s cast)
       "Corona Flare",                             -- L70 Corona Flare (3770 hp, resist adj -10, cost 800 mana, 8s cast)
