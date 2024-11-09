@@ -27,7 +27,7 @@ function GetDistanceSquared(x1, y1, x2, y2)
   return ((x2 or 0) - (x1 or 0)) ^ 2 + ((y2 or 0) - (y1 or 0)) ^ 2
 end
 
-local MIN_CAMP_DISTANCE = 10
+local MIN_CAMP_DISTANCE = 20
 
 local function onTick()
   if assist.IsOrchestrator() then
