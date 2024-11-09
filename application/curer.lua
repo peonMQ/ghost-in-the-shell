@@ -27,6 +27,7 @@ end
 
 ---@param netbot netbot
 ---@param counterType CounterTypes
+---@return boolean
 local function checkCure(netbot, counterType)
   local spell = settings.cures[counterType]
   if not spell then
@@ -46,26 +47,28 @@ local function checkCure(netbot, counterType)
   return false
 end
 
+---@return boolean
 local function doCuring()
   if assist.IsOrchestrator() then
-    return
+    return false
   end
 
   if mq.TLO.NetBots.Counts() < 1 then
     logger.Debug("No Nebots clients.")
-    return
+    return false
   end
 
   for i=1,mq.TLO.NetBots.Counts() do
     local name = mq.TLO.NetBots.Client(i)()
     local netbot = mq.TLO.NetBots(name) --[[@as netbot]]
     if (tonumber(netbot.Poisoned()) or 0) > 0 and checkCure(netbot, 'poison') then
-      return
+      return true
     elseif (tonumber(netbot.Diseased()) or 0) > 0 and checkCure(netbot, 'disease') then
-      return
+      return true
     end
   end
 
+  return false
 end
 
 return doCuring

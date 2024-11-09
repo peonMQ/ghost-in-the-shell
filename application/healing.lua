@@ -41,32 +41,37 @@ local function checkInterrupt(spellId)
   end
 end
 
+---@return boolean
 local function checkHealMainTank()
   local _, main_tank_heal = next(settings.heal.mt_heal or {})
   if not main_tank_heal then
-    return
+    return false
   end
 
   local mainTank = assist.GetMainTank()
   if not mainTank then
-    return
+    return false
   end
 
   if main_tank_heal:CanCastOnNetBot(mq.TLO.NetBots(mainTank) --[[@as netbot]]) and mqUtils.EnsureTarget(mq.TLO.NetBots(mainTank).ID())  then
     logger.Info("Healing maintank <%s>[%d]", mq.TLO.Target.Name(), mq.TLO.Target.PctHPs() or -100)
     main_tank_heal:Cast(checkInterrupt)
+    return true
   end
+
+  return false
 end
 
+---@return boolean
 local function checkHealGroup()
   local _, spell = next(settings.heal.default or {})
   if not spell then
-    return
+    return false
   end
 
   if mq.TLO.Group.Members() == 0 then
     logger.Debug("No group members.")
-    return
+    return false
   end
 
   local lowestMember = {
@@ -87,25 +92,29 @@ local function checkHealGroup()
   if lowestMember.id > 0 then
     if mqUtils.EnsureTarget(lowestMember.id) then
       spell:Cast(checkInterrupt)
+      return true
     end
   end
+
+  return false
 end
 
+---@return boolean
 local function checkHealNetBots()
   if plugin.IsLoaded("mq2netbots") == false then
     logger.Debug("mq2netbots is not loaded")
-    return
+    return false
   end
 
   local _, spell = next(settings.heal.default or {})
   if not spell then
     logger.Debug("No NetbotsHeal.")
-    return
+    return false
   end
 
   if mq.TLO.NetBots.Counts() < 2 then
     logger.Debug("No Nebots clients.")
-    return
+    return false
   end
 
   local lowestMember = {
@@ -129,33 +138,37 @@ local function checkHealNetBots()
     if mqUtils.EnsureTarget(lowestMember.id) then
       logger.Info("Healing netbot <%s>[%d]", mq.TLO.Target.Name(), mq.TLO.Target.PctHPs())
       spell:Cast(checkInterrupt)
+      return true
     end
   end
+
+  return false
 end
 
+---@return boolean
 local function checkAEGroupHeal()
   local minGroupHealCount = 3
   if mq.TLO.Group.Members() < minGroupHealCount then
     logger.Debug("No enough group members %s/%s.", mq.TLO.Group.Members(), minGroupHealCount)
-    return
+    return false
   end
 
   local _, spell = next(settings.heal.ae_group or {})
   if not spell then
     logger.Debug("No ae group heal spell.")
-    return
+    return false
   end
 
   if not spell then
     logger.Debug("No ae_group heal.")
-    return
+    return false
   end
 
   local minDamagedMembers = 3
   local damagedMembers = mq.TLO.Group.Injured(spell.HealPercent)()
   if damagedMembers < minDamagedMembers then
     logger.Debug("No enough damaged group members %s/%s.", damagedMembers, minDamagedMembers)
-    return
+    return false
   end
 
 
@@ -172,25 +185,29 @@ local function checkAEGroupHeal()
   if canHealCount >= minGroupHealCount then
     if mqUtils.EnsureTarget(mq.TLO.Me.ID()) then
       spell:Cast(checkInterrupt)
+      return true
     end
   end
+
+  return false
 end
 
+---@return boolean
 local function checkHotNetBots()
   if plugin.IsLoaded("mq2netbots") == false then
     logger.Debug("mq2netbots is not loaded")
-    return
+    return false
   end
 
   local _, spell = next(settings.heal.hot or {})
   if not spell then
     logger.Debug("No hot heal.")
-    return
+    return false
   end
 
   if mq.TLO.NetBots.Counts() < 1 then
     logger.Debug("No Nebots clients.")
-    return
+    return false
   end
 
   local lowestMember = {
@@ -214,20 +231,32 @@ local function checkHotNetBots()
     if mqUtils.EnsureTarget(lowestMember.id) then
       logger.Info("Hot netbot '%s' <%s>[%d]", spell.MQSpell.Name(), mq.TLO.Target.Name(), mq.TLO.Target.PctHPs())
       spell:Cast(checkInterrupt)
+      return true
     end
   end
+
+  return false
 end
 
+---@return boolean
 local function doHealing()
   if assist.IsOrchestrator() then
-    return
+    return false
   end
 
-  checkHealMainTank()
-  checkAEGroupHeal()
-  checkHealGroup()
-  checkHealNetBots()
-  checkHotNetBots()
+  if checkHealMainTank() then
+    return true
+  elseif checkAEGroupHeal() then
+    return true
+  elseif checkHealGroup() then
+    return true
+  elseif checkHealNetBots() then
+    return true
+  elseif checkHotNetBots() then
+    return true
+  end
+
+  return false
 end
 
 return doHealing

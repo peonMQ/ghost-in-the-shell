@@ -31,11 +31,11 @@ local classActions = {
   druid = {doHealing, doBuffs, doDeBuffs, doNuking, doMeleeDps, manaregen.DoMeditate, manaregen.DoManaConversion},
   enchanter = {doMezz, doBuffs, doDeBuffs, doMeleeDps, doNuking, manaregen.DoMeditate, manaregen.DoManaConversion},
   magician = {doBuffs, doDeBuffs, doPet, doNuking, doMeleeDps, manaregen.DoMeditate, manaregen.DoManaConversion},
-  monk = {doBuffs, function() doMeleeDps(melee.DoPunchesAndKicks) end},
+  monk = {doBuffs, function() return doMeleeDps(melee.DoPunchesAndKicks) end},
   necromancer = {doBuffs, doDeBuffs, doPet, doNuking, doMeleeDps, manaregen.DoMeditate, manaregen.DoManaConversion},
   paladin = {doBuffs, doHealing, doNuking, doMeleeDps, manaregen.DoMeditate},
   ranger = {doBuffs, doHealing, doNuking, doMeleeDps, manaregen.DoMeditate},
-  rogue = {doBuffs, function() doMeleeDps(melee.DoBackStab) end},
+  rogue = {doBuffs, function() return doMeleeDps(melee.DoBackStab) end},
   ["shadow knight"] = {doBuffs, doPet, doNuking, doMeleeDps, manaregen.DoMeditate},
   shaman = {doHealing, doCuring, doBuffs, doDeBuffs, doPet, doNuking, doMeleeDps, manaregen.DoManaConversion, manaregen.DoMeditate},
   warrior = {doBuffs, doMeleeDps},
@@ -59,9 +59,11 @@ local function process()
 
   commandQueue.Process()
   if app_state.IsActive() and not movement.IsFollowing() and not follow_state:IsActive() then
-    for _,action in ipairs(botActions) do
+    for _, action in ipairs(botActions) do
       assistTick()
-      action()
+      if action() then
+        break
+      end
     end
 
     camp.Process()

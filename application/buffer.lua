@@ -56,26 +56,30 @@ local function checkCombatBuffs()
   end
 end
 
+---@return boolean
 local function checkSelfBuffs()
   local me = mq.TLO.Me
 
   for _, buffSpell in pairs(settings.buffs.self) do
     if buffSpell:CanCast() and buffSpell:WillStackOnMe() then
       castBuff(buffSpell, me.ID())
-      return
+      return true
     end
   end
+
+  return false
 end
 
+---@return boolean
 local function checkNetBotBuffs()
   if plugin.IsLoaded("mq2netbots") == false then
     logger.Debug("mq2netbots is not loaded")
-    return
+    return false
   end
 
   if mq.TLO.NetBots.Counts() < 2 then
     logger.Debug("Not enough Nebots clients, current: %d", mq.TLO.NetBots.Counts())
-    return
+    return false
   end
 
   for _, buffSpell in pairs(settings.buffs.request) do
@@ -89,7 +93,7 @@ local function checkNetBotBuffs()
             if buffSpell:WillStack(netbot) then
               local didCastBuff = castBuff(buffSpell, netbot.ID())
               if didCastBuff then
-                return
+                return true
               end
             end
           end
@@ -97,11 +101,14 @@ local function checkNetBotBuffs()
       end
     end
   end
+
+  return false
 end
 
+---@return boolean
 local function checkPetBuffs()
   if not settings.pet or not settings.pet.buffs then
-    return
+    return false
   end
 
   local me = mq.TLO.Me
@@ -116,7 +123,7 @@ local function checkPetBuffs()
             if netbot.PetBuff():find(""..buffSpell.Id) == 0 then
               local didCastBuff = castBuff(buffSpell, netbot.PetID())
               if didCastBuff then
-                return
+                return true
               end
             end
           end
@@ -125,30 +132,39 @@ local function checkPetBuffs()
         if me.Pet.ID() > 0 and mq.TLO.Spell(buffSpell.Name).StacksPet() and not me.Pet.Buff(buffSpell.Name)() then
           local didCastBuff = castBuff(buffSpell, me.Pet.ID())
           if didCastBuff then
-            return
+            return true
           end
         end
       end
     end
   end
+
+  return false
 end
 
+---@return boolean
 local function doBuffs()
   checkCombatBuffs()
   if assist.IsOrchestrator() then
-    return
+    return false
   end
 
   if not settings.buffs.requestInCombat then
     if mqUtils.NPCInRange() then
       logger.Debug("NPCs in camp, cannot buff.")
-      return
+      return false
     end
   end
 
-  checkSelfBuffs()
-  checkNetBotBuffs()
-  checkPetBuffs()
+  if checkSelfBuffs() then
+    return true
+  elseif checkNetBotBuffs() then
+    return true
+  elseif checkPetBuffs() then
+    return true
+  end
+
+  return false
 end
 
 return doBuffs

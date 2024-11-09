@@ -49,13 +49,14 @@ local function getNukeSpell(nuke_set)
   return highest_level_spell
 end
 
+---@return boolean
 local function doPBAoE()
   -- progress PBAE
   if assist.pbaoe_active then
     local nearbyPBAEilter = "npc radius 60 zradius 50 los"
     if mq.TLO.SpawnCount(nearbyPBAEilter)() == 0 then
       logger.Debug("NPC filter for PBAoE failed.")
-      return
+      return false
     end
 
     for _, pbaoe_spell in ipairs(settings.assist.pbaoe) do
@@ -63,47 +64,52 @@ local function doPBAoE()
         logger.Debug("PBAoE chosen <%s>", pbaoe_spell.Name)
         if pbaoe_spell:CanCast() then
           pbaoe_spell:Cast(checkInterruptPBAoE)
-          return
+          return true
         end
       end
     end
   end
+
+  return false
 end
 
+---@return boolean
 local function doNuking()
   if assist.IsOrchestrator() then
-    return
+    return false
   end
 
   if assist.pbaoe_active then
-    doPBAoE()
-    return
+    return doPBAoE()
   end
 
   local nukes = settings.assist.nukes[assist_state.spell_set]
   if not next(nukes or {}) then
     logger.Debug("No nuke for <%s>", assist_state.spell_set)
-    return
+    return false
   end
 
   if assist_state.current_target_id == 0 then
-    return
+    return false
   end
 
   local nukeSpell = getNukeSpell(nukes)
   if not nukeSpell then
     logger.Debug("No nuke ready for casting")
-    return
+    return false
   end
 
   local targetSpawn = mq.TLO.Spawn(assist_state.current_target_id)
   if not targetSpawn() or not nukeSpell:CanCastOnspawn(targetSpawn --[[@as spawn]]) then
-    return
+    return false
   end
 
   if mqUtils.EnsureTarget(targetSpawn.ID()) and nukeSpell:CanCast() then
     nukeSpell:Cast(checkInterrupt)
+    return true
   end
+
+  return false
 end
 
 return doNuking

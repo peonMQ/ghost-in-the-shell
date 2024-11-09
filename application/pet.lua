@@ -8,7 +8,7 @@ local assist_state = require('application/assist_state')
 
 local function doPet()
   if not mq.TLO.Me.Pet.ID() or mq.TLO.Me.Pet.ID() == 0 then
-    return
+    return false
   end
 
   if assist_state.current_pet_target_id == 0 then
@@ -16,7 +16,7 @@ local function doPet()
       mq.cmd("/pet back off")
     end
 
-    return
+    return false
   end
 
   local petTarget = mq.TLO.Pet.Target
@@ -40,6 +40,8 @@ local function doPet()
   else
     logger.Debug("Pet has target and hopefully attacking")
   end
+
+  return false
 end
 
 return doPet

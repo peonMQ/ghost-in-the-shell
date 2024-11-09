@@ -60,12 +60,13 @@ end
 
 local function onTick()
   if assist.IsOrchestrator() then
-    return
+    return false
   end
 
   setAssistTarget()
   setAssistTargetPet()
   moveBellyCasterTarget()
+  return false
 end
 
 return onTick

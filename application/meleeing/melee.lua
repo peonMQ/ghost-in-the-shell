@@ -55,23 +55,24 @@ local function reset(me)
 end
 
 ---@param meleeAbilityCallback? fun()
+---@return boolean
 local function doMeleeDps(meleeAbilityCallback)
   if assist.IsOrchestrator() then
     if mq.TLO.Stick.Active() then
       mq.cmd("/stick off")
     end
 
-    return
+    return false
   end
 
   if settings.assist.type ~= 'melee' then
-    return
+    return false
   end
 
   local me = mq.TLO.Me --[[@as character]]
   if assist_state.current_target_id == 0 then
     reset(me)
-    return
+    return false
   end
 
   doEvents()
@@ -81,7 +82,7 @@ local function doMeleeDps(meleeAbilityCallback)
       mq.cmd("/attack off")
     end
 
-    return
+    return false
   end
 
   if mqUtils.EnsureTarget(assist_state.current_target_id) then
@@ -92,10 +93,10 @@ local function doMeleeDps(meleeAbilityCallback)
           meleeAbilityCallback()
         end
 
-        return
+        return false
       else
         reset(me)
-        return
+        return false
       end
     end
 
@@ -104,6 +105,8 @@ local function doMeleeDps(meleeAbilityCallback)
       mq.cmd("/attack on")
     end
   end
+
+  return false
 end
 
 return doMeleeDps

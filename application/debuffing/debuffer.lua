@@ -27,6 +27,7 @@ local function checkInterrupt(spellId)
   end
 end
 
+---@return boolean
 local function doDebuffs()
   if assist.IsOrchestrator() then
     if cleanTimer:IsComplete() then
@@ -34,20 +35,20 @@ local function doDebuffs()
       cleanTimer:Reset()
     end
 
-    return
+    return false
   end
 
   if assist_state.current_target_id == 0 then
-    return
+    return false
   end
 
   if not assist_state.debuffs_active then
-    return
+    return false
   end
 
   local targetSpawn = mq.TLO.Spawn(assist_state.current_target_id)
   if not targetSpawn() then
-    return
+    return false
   end
 
   for _, debuffSpell in pairs(settings.assist.debuffs) do
@@ -73,11 +74,13 @@ local function doDebuffs()
             broadcast.FailAll("[%s] <%s> debuff failed with. [%s]", targetSpawn.Name(), debuffSpell.Name, castResult)
           end
 
-          return
+          return true
         end
       end
     end
   end
+
+  return false
 end
 
 return doDebuffs

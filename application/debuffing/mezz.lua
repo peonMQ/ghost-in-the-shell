@@ -78,28 +78,29 @@ local function doChainStun()
   return false
 end
 
+---@return boolean
 local function doMezz()
   if assist.IsOrchestrator() then
-    return
+    return false
   end
 
   if assist.pbaoe_active then
     doChainStun()
-    return
+    return false
   end
 
   if not assist_state.crowd_control_mode then
-    return
+    return false
   end
 
   local mezz_spell_group = spells_mesmerize[mq.TLO.Me.Class.ShortName()] and spells_mesmerize[mq.TLO.Me.Class.ShortName()][assist_state.crowd_control_mode]
   if not mezz_spell_group then
-    return
+    return false
   end
 
   local mainAssist = assist.GetMainAssist()
   if not mainAssist then
-    return
+    return false
   end
 
   local maTargetId = mq.TLO.NetBots(mainAssist).TargetID()
@@ -111,13 +112,13 @@ local function doMezz()
   local mezzTargetCount = mq.TLO.SpawnCount(spawnQueryFilter)()
 
   if mezzTargetCount <= 0 then
-    return
+    return false
   end
 
   local class_spell = spell_finder.FindGroupSpell(mezz_spell_group)
   if not class_spell then
     logger.Error("No mezz spell defined!")
-    return
+    return false
   end
 
   local mezz_spell = debuffspell:new(class_spell.Name(), settings:GetDefaultGem(mezz_spell_group), 0, 30, 3)
@@ -150,6 +151,8 @@ local function doMezz()
     repository.Clean()
     cleanTimer:Reset()
   end
+
+  return false
 end
 
 return doMezz
