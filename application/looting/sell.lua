@@ -110,7 +110,6 @@ local function sellItems()
   end
 
   local merchantName= nearestMerchant.CleanName()
-
   if not movement.MoveToLoc(nearestMerchant.X(), nearestMerchant.Y(), nearestMerchant.Z(), 20, 12) then
     logger.Debug("Unable to reach merchant <%s>", merchantName)
     return
