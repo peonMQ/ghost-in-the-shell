@@ -9,7 +9,7 @@ plugin.EnsureIsLoaded("mq2nav")
 
 ---@return spawn | nil
 local function findMerchant()
-  local merchantSpawn = mq.TLO.NearestSpawn("Merchant radius 100")
+  local merchantSpawn = mq.TLO.NearestSpawn("Merchant radius 400")
   local nav = mq.TLO.Navigation
 
   if not merchantSpawn() or not nav.PathExists("id "..merchantSpawn.ID()) then
