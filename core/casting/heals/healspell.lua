@@ -1,6 +1,7 @@
 local mq = require('mq')
 local logger = require('knightlinc/Write')
 local spell = require('core/casting/spell')
+local numbers = require('core/numbers')
 
 ---@class HealSpell : Spell
 ---@field public Id integer
@@ -76,7 +77,7 @@ function HealSpell:CanCastOnGroupMember(groupMember)
     return false
   end
 
-  if groupMember.PctHPs() > self.HealPercent then
+  if numbers.IsLargerThan(groupMember.PctHPs(), self.HealPercent) then
     return false
   end
 
