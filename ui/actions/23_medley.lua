@@ -36,52 +36,52 @@ local function renderNukeSelectorPopup()
     if imgui.Selectable("General") then
       generalMedley.tooltip = "Now playing: General"
       activeMedley, color = generalMedley, buttons.BlueButton
-      bci.ExecuteZoneCommand('/activemedley general')
+      bci.ExecuteZoneWithSelfCommand('/activemedley general')
     end
     if imgui.Selectable("Fire dragon") then
       generalMedley.tooltip = "Now playing: Fire dragon"
       activeMedley, color = generalMedley, buttons.OrangeButton
-      bci.ExecuteZoneCommand('/activemedley firedragon')
+      bci.ExecuteZoneWithSelfCommand('/activemedley firedragon')
     end
     if imgui.Selectable("Cold dragon") then
       generalMedley.tooltip = "Now playing: Cold dragon"
       activeMedley, color = generalMedley, buttons.DarkBlueButton
-      bci.ExecuteZoneCommand('/activemedley colddragon')
+      bci.ExecuteZoneWithSelfCommand('/activemedley colddragon')
     end
     if imgui.Selectable("Posion dragon") then
       generalMedley.tooltip = "Now playing: Posion resistance"
       activeMedley, color = generalMedley, buttons.OrangeButton
-      bci.ExecuteZoneCommand('/activemedley posiondragon')
+      bci.ExecuteZoneWithSelfCommand('/activemedley posiondragon')
     end
     if imgui.Selectable("Disease dragon") then
       generalMedley.tooltip = "Now playing: Disease resistance"
       activeMedley, color = generalMedley, buttons.OrangeButton
-      bci.ExecuteZoneCommand('/activemedley diseaseedragon')
+      bci.ExecuteZoneWithSelfCommand('/activemedley diseaseedragon')
     end
     if imgui.Selectable("Levitate") then
       generalMedley.tooltip = "Now playing: Levitate"
       activeMedley, color = generalMedley, buttons.FuchsiaButton
-      bci.ExecuteZoneCommand('/activemedley levitate')
+      bci.ExecuteZoneWithSelfCommand('/activemedley levitate')
     end
     if imgui.Selectable("Fire resistance") then
       generalMedley.tooltip = "Now playing: Fire resistance"
       activeMedley, color = generalMedley, buttons.OrangeButton
-      bci.ExecuteZoneCommand('/activemedley fire')
+      bci.ExecuteZoneWithSelfCommand('/activemedley fire')
     end
     if imgui.Selectable("Cold resistance") then
       generalMedley.tooltip = "Now playing: Cold resistance"
       activeMedley, color = generalMedley, buttons.DarkBlueButton
-      bci.ExecuteZoneCommand('/activemedley cold')
+      bci.ExecuteZoneWithSelfCommand('/activemedley cold')
     end
     if imgui.Selectable("Travel") then
       generalMedley.tooltip = "Now playing: Travel"
       activeMedley, color = generalMedley, buttons.BlueButton
-      bci.ExecuteZoneCommand('/activemedley travel')
+      bci.ExecuteZoneWithSelfCommand('/activemedley travel')
     end
     if imgui.Selectable("DOT") then
       generalMedley.tooltip = "Now playing: DOT"
       activeMedley, color = generalMedley, buttons.RedButton
-      bci.ExecuteZoneCommand('/activemedley dot')
+      bci.ExecuteZoneWithSelfCommand('/activemedley dot')
     end
     imgui.EndPopup()
   end
