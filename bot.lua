@@ -23,8 +23,8 @@ local camp  = require('application/camp')
 require('application/commands')
 
 ---@alias eqclass 'bard'|'cleric'|'druid'|'enchanter'|'magician'|'monk'|'necromancer'|'paladin'|'ranger'|'rogue'|'shadowknight'|'shaman'|'warrior'|'wizard'
-
----@type table<eqclass, fun()[]>
+---@alias boolFunc fun(): boolean
+---@type table<eqclass, boolFunc[]>
 local classActions = {
   bard = {doBuffs, doMeleeDps, doMedley.OnTick},
   cleric = {doHealing, doCuring, doBuffs, doNuking, doMeleeDps, manaregen.DoMeditate, manaregen.DoManaConversion},
