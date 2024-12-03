@@ -31,10 +31,6 @@ local function execute(targetId)
     return
   end
 
-  if mq.TLO.Me.Casting.ID() and mq.TLO.Me.Class.ShortName() ~= "BRD" then
-    mq.cmd("/stopcast")
-  end
-
   local stickSpawn = mq.getFilteredSpawns(function(spawn) return spawn.ID() == tonumber(targetId) and spawn.Type() == "PC" end)
   if stickSpawn[1] and mq.TLO.Navigation.PathExists("id "..stickSpawn[1].ID()) then
     follow_state:Activate('nav', stickSpawn[1].ID())
@@ -43,6 +39,10 @@ local function execute(targetId)
 end
 
 local function createCommand(targetId)
+  if mq.TLO.Me.Casting.ID() and mq.TLO.Me.Class.ShortName() ~= "BRD" then
+    mq.cmd("/stopcast")
+  end
+
   commandQueue.Enqueue(function() execute(targetId); return createPostCommand() end)
 end
 
