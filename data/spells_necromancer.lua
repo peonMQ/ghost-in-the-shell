@@ -25,10 +25,11 @@ return {
       "Wraithskin",                               -- L73 Wraithskin Rk. II (slot 1: absorb 1219 dmg, 4 mana/tick)
       "Dull Pain",                                -- L69: absorb 975 dmg, 3 mana/tick
       "Force Shield",                             -- L63: absorb 750 dmg, 2 mana/tick
-      "Manaskin/Reagent|Peridot",                 -- L52: absorb 521-600 dmg, 1 mana/tick
-      "Steelskin/Reagent|Jasper",                 -- L32: absorb 168-230 dmg
-      "Leatherskin/Reagent|Bloodstone",           -- L22: absorb 71-118 dmg
-      "Shieldskin/Reagent|Cat's Eye Agate",       -- L14: absorb 27-55 dmg
+      "Manaskin",                                 -- L52: absorb 521-600 dmg, 1 mana/tick
+      "Diamondskin",                              -- L44: absorb 245-394 dmg
+      "Steelskin",                                -- L32: absorb 168-230 dmg
+      "Leatherskin",                              -- L22: absorb 71-118 dmg
+      "Shieldskin",                               -- L14: absorb 27-55 dmg
   },
   nec_pet_haste = {
       "Sigil of the Aberrant",                    -- L77 Sigil of the Aberrant Rk. II (10% skills dmg mod, 122 str, 70% haste, 36 ac)
@@ -160,8 +161,11 @@ return {
       "Deathwhisper",                             -- epic 2.0: Guardian of Blood, swarm pet
       "Soulwhisper",                              -- epic 1.5: Servant of Blood, swarm pet
   },
-  new_oow_bp = {
+  nec_oow_bp = {
       "Blightbringer's Tunic of the Grave",       -- oow tier 2 bp: increase dot crit by 40% for 0.6 min, 5 min recast
       "Deathcaller's Robe",                       -- oow tier 1 bp: increase dot crit by 40% for 0.3 min, 5 min recast
   },
+  nec_feign = {
+    "Feign Death"                                 -- L16 Lifetap (cost 60 mana)
+  }
 }

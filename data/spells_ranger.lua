@@ -90,4 +90,14 @@ return {
       "Bladewhisper Chain Vest of Journeys",      -- oow T2 bp: slot 3: Add Proc: Major Lightning Call Effect for 0.5 min
       "Sunrider's Vest",                          -- oow T1 bp: slot 3: Add Proc: Minor Lightning Call Effect for 0.3 min
   },
+  rng_ac_dot = {
+    "Flame Lick",                                 -- L15 Flame Lick (-1-3 hp/tick, slot 10: -3 ac) Fire Beetle Eye
+  },
+  rng_runspeed = {
+      "Spirit of Eagle",                          -- L65 Spirit of Eagle (57-70% speed, 1 hour) Luclin
+      "Spirit of Wolf",                           -- L30 Spirit of Wolf (48-55% speed, 36 min) Original
+  },
+  rng_pacify = {
+      "Harmony"                                   -- L22: max level 60, 2 min, recast 12s, TargetAE
+  },
 }
