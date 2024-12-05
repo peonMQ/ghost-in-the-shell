@@ -12,6 +12,19 @@ local function execute(set_name)
     return
   end
 
+  local nukes = settings.assist.nukes[set_name]
+  if not next(nukes or {}) then
+    broadcast.FailAll("No nuke for <%s>", broadcast.ColorWrap(set_name, 'Blue'))
+    return
+  end
+
+  local highest_level_spell = nil
+  for _, nuke in pairs(nukes) do
+    if (not highest_level_spell or nuke.MQSpell.Level() > highest_level_spell.MQSpell.Level()) and nuke:MemSpell() then
+      highest_level_spell = nuke
+    end
+  end
+
   broadcast.SuccessAll("Active spell set is now %s", broadcast.ColorWrap(set_name, 'Blue'))
   assist_state.spell_set = set_name
 end
