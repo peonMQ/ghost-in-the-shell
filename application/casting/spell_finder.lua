@@ -86,9 +86,26 @@ local function find_group_spells(group_name)
   return group_spells
 end
 
+--- @param spell_or_group_name string
+--- @return spell|nil
+local function find_by_name_or_group(spell_or_group_name)
+  local spell = find_spell(spell_or_group_name)
+  if spell then
+    return spell
+  else
+    spell = find_group_spell(spell_or_group_name)
+    if spell then
+      return spell
+    end
+  end
+
+  return nil
+end
+
 return {
   FindSpell = find_spell,
   FindOrderedSpell = find_ordered_spell,
   FindGroupSpell = find_group_spell,
   FindGroupSpells = find_group_spells,
+  FindByNameOrGroup = find_by_name_or_group,
 }

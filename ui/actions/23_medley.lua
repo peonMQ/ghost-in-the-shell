@@ -49,9 +49,9 @@ local function renderNukeSelectorPopup()
       bci.ExecuteZoneWithSelfCommand('/activemedley colddragon')
     end
     if imgui.Selectable("Posion dragon") then
-      generalMedley.tooltip = "Now playing: Posion resistance"
+      generalMedley.tooltip = "Now playing: Poison resistance"
       activeMedley, color = generalMedley, buttons.OrangeButton
-      bci.ExecuteZoneWithSelfCommand('/activemedley posiondragon')
+      bci.ExecuteZoneWithSelfCommand('/activemedley poisondragon')
     end
     if imgui.Selectable("Disease dragon") then
       generalMedley.tooltip = "Now playing: Disease resistance"

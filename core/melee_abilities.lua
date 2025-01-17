@@ -42,6 +42,38 @@ local function doPunchesAndKicks()
   doPriorityAbility(kickAbilities)
 end
 
+local pickpockets = "Pick Pockets"
+local function doPickPockets()
+  local me = mq.TLO.Me
+  local target = mq.TLO.Target
+  if me.Heading.Degrees() - target.Heading.Degrees() < 45 then
+    -- doRogueStrike()
+    if me.AbilityReady(pickpockets)() then
+      if mq.TLO.Me.Combat() then
+        mq.cmd("/attack off")
+      end
+      mq.cmdf("/doability %s", pickpockets)
+      logger.Debug("Triggering ability <%s>", pickpockets)
+    end
+  end
+end
+
+local hide = "Hide"
+local function doEvade()
+  local me = mq.TLO.Me
+  local target = mq.TLO.Target
+  -- doRogueStrike()
+  if me.AbilityReady(hide)() then
+    if mq.TLO.Me.Combat() then
+      mq.cmd("/attack off")
+    end
+    doPickPockets()
+    mq.cmdf("/doability %s", hide)
+    logger.Debug("Triggering ability <%s>", hide)
+    mq.cmd("/attack on")
+  end
+end
+
 local backstab = "Backstab"
 local function doBackStab()
   local me = mq.TLO.Me
@@ -51,6 +83,7 @@ local function doBackStab()
     if me.AbilityReady(backstab)() then
       mq.cmdf("/doability %s", backstab)
       logger.Debug("Triggering ability <%s>", backstab)
+      doEvade()
     end
   end
 end

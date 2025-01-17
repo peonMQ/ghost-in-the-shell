@@ -22,8 +22,8 @@ local function execute()
 
   for spell_group, gem in pairs(settings.gems) do
       if not mq.TLO.Me.Gem(gem)() then
-        local spell = spell_finder.FindGroupSpell(spell_group)
-        if spell and spell() then
+        local spell = spell_finder.FindByNameOrGroup(spell_group)
+        if spell then
           logger.Info("Memorizing \ag%s\ax in gem %d", spell.RankName.Name(), gem)
           mq.cmdf('/memspell %d "%s"', gem, spell.RankName.Name())
           mq.delay("10s", function() return mq.TLO.Me.Gem(spell.RankName.Name())() ~= nil end)

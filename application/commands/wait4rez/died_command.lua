@@ -32,9 +32,9 @@ end
 local function execute()
   broadcast.FailAll("%s died, awaiting rez.", mq.TLO.Me.Name())
   mq.cmd("/beep")
-  waitToZone()
+  -- waitToZone()
   mq.cmd("/consent guild")
-  memorize_command()
+  -- memorize_command()
   broadcast.WarnAll("Ready for rezz.")
   repeat
     mq.delay(10)
@@ -44,6 +44,7 @@ local function execute()
   waitToZoneToCorpse()
   broadcast.SuccessAll("Ressurected, ready to loot corpse.")
   loot_corpse_command()
+  memorize_command()
 end
 
 local function createCommand()
