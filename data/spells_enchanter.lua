@@ -53,15 +53,15 @@ return {
   },
   -- targeted rune - slot 1
   enc_rune = {
-      "Rune of Erradien/Reagent|Peridot",         -- L76 Rune of Erradien (absorb rk1 5363 dmg, rk2 5631 dmg) SoF
-      "Rune of Ellowind/Reagent|Peridot",         -- L71 Rune of Ellowind (absorb 2160 dmg) SerpentSpine
-      "Rune of Salik/Reagent|Peridot",            -- L67 Rune of Salik (absorb 1105 dmg) OOW
-      "Rune of Zebuxoruk/Reagent|Peridot",        -- L61 Rune of Zebuxoruk (absorb 850 dmg) PoP
-      "Rune V/Reagent|Peridot",                   -- L52 Rune V (absorb 620-700 dmg) Kunark
-      "Rune IV/Reagent|Peridot",                  -- L44 Rune IV (absorb 305-394 dmg, 90 min) Original
-      "Rune III/Reagent|Jasper",                  -- L34 Rune III (absorb 168-230 dmg, 72 min) Original
-      "Rune II/Reagent|Bloodstone",               -- L24 Rune II (absorb 71-118 dmg, 54 min) Original
-      "Rune I/Reagent|Cat's Eye Agate",           -- L16 Rune I (absorb 27-55 dmg, 36 min) Original
+      "Rune of Erradien",                         -- L76 Rune of Erradien (absorb rk1 5363 dmg, rk2 5631 dmg) SoF
+      "Rune of Ellowind",                         -- L71 Rune of Ellowind (absorb 2160 dmg) SerpentSpine
+      "Rune of Salik",                            -- L67 Rune of Salik (absorb 1105 dmg) OOW
+      "Rune of Zebuxoruk",                        -- L61 Rune of Zebuxoruk (absorb 850 dmg) PoP
+      "Rune V",                                   -- L52 Rune V (absorb 620-700 dmg) Kunark
+      "Rune IV",                                  -- L44 Rune IV (absorb 305-394 dmg, 90 min) Original
+      "Rune III",                                 -- L34 Rune III (absorb 168-230 dmg, 72 min) Original
+      "Rune II",                                  -- L24 Rune II (absorb 71-118 dmg, 54 min) Original
+      "Rune I",                                   -- L16 Rune I (absorb 27-55 dmg, 36 min) Original
   },
   enc_group_rune = {
       "Rune of the Deep",                         -- L79: slot 1: absorb 4118 dmg, slot 2: defensive proc Blurred Shadows Rk. II
