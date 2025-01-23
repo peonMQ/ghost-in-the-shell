@@ -22,7 +22,7 @@ local follow_state  = require('application/follow_state')
 local camp  = require('application/camp')
 require('application/commands')
 
----@alias eqclass 'bard'|'cleric'|'druid'|'enchanter'|'magician'|'monk'|'necromancer'|'paladin'|'ranger'|'rogue'|'shadowknight'|'shaman'|'warrior'|'wizard'
+---@alias eqclass 'bard'|'cleric'|'druid'|'enchanter'|'magician'|'monk'|'necromancer'|'paladin'|'ranger'|'rogue'|'shadow knight'|'shaman'|'warrior'|'wizard'
 ---@alias boolFunc fun(): boolean
 ---@type table<eqclass, boolFunc[]>
 local classActions = {

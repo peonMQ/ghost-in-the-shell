@@ -13,6 +13,7 @@ local settings = require('settings/settings')
 ---@type Timer[]
 local netbotTimers = {}
 
+---@param spellId number
 local function checkInterrupt(spellId)
   local target = mq.TLO.Target
   if not target() then
