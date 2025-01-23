@@ -58,7 +58,7 @@ local function process()
   end
 
   commandQueue.Process()
-  if app_state.IsActive() and not movement.IsFollowing() and not follow_state:IsActive() then
+  if app_state.PerformActions() and not movement.IsFollowing() and not follow_state:IsActive() then
     for _, action in ipairs(botActions) do
       assistTick()
       if action() then

@@ -108,7 +108,7 @@ function Spell:Cast(cancelCallback)
   self:FlushCastEvents()
   state.Reset(self.GiveUpTimer)
 
-  local spell = mq.TLO.Spell(self.Id)
+  local spell = self.MQSpell
   if(mq.TLO.Me.CurrentMana() < spell.Mana()) then
     logger.Debug("Unable to cast <%s>, not enough mana.", self.Name)
     return castReturnTypes.OutOfMana
@@ -120,6 +120,7 @@ function Spell:Cast(cancelCallback)
   end
 
   if mq.TLO.Me.SpellInCooldown() then
+    logger.Warn("Spell in cooldown %s", mq.TLO.Me.SpellInCooldown())
     mq.delay(2500, function() return not mq.TLO.Me.SpellInCooldown() end)
   end
 
@@ -147,6 +148,7 @@ function Spell:Cast(cancelCallback)
   state.recastTime = spell.RecastTime()
   state.recoveryTime = spell.RecoveryTime()
 
+  local totalCastTime = mq.gettime()
   repeat
     mq.delay(state.retryTimer:TimeRemaining(), function() return mq.TLO.Me.SpellReady(self.Name)() end)
     mq.cmdf('/cast "%s"', self.Name)
@@ -175,8 +177,8 @@ function Spell:Cast(cancelCallback)
         state.retryTimer:TimeRemaining() > state.giveUpTimer:TimeRemaining() or
         state.giveUpTimer:IsComplete()
 
-  self:DoCastEvents()
-  logger.Debug("Cast completed for <%s> with result <%s>", self.Name, state.castReturn)
+  -- self:DoCastEvents()
+  logger.Debug("Cast completed for <%s> in <%s> with result <%s>", self.Name, (mq.gettime() - totalCastTime)/1000, state.castReturn, state.castReturn)
   return state.castReturn
 end
 

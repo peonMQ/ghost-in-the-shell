@@ -5,7 +5,8 @@ local commandQueue  = require('application/command_queue')
 ---@enum BotState
 local BotState = {
   ACTIVE = 1,
-  PAUSED = 2
+  PAUSED = 2,
+  CHAIN = 3
 }
 
 ---@class ApplicationState
@@ -17,6 +18,10 @@ local ApplicationState =  {
 }
 
 function ApplicationState.IsActive()
+  return ApplicationState.RunningState == BotState.ACTIVE
+end
+
+function ApplicationState.PerformActions()
   return ApplicationState.RunningState == BotState.ACTIVE
 end
 

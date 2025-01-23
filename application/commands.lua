@@ -8,6 +8,7 @@ local commandQueue  = require('application/command_queue')
 
 require('application/commands/buff/commands')
 require('application/commands/debuff/commands')
+require('application/commands/healing/commands')
 require('application/commands/loot/commands')
 require('application/commands/medley/commands')
 require('application/commands/movement/commands')
