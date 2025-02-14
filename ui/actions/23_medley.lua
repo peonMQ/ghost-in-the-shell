@@ -83,6 +83,11 @@ local function renderNukeSelectorPopup()
       activeMedley, color = generalMedley, buttons.RedButton
       bci.ExecuteZoneWithSelfCommand('/activemedley dot')
     end
+    if imgui.Selectable("Tanking") then
+      generalMedley.tooltip = "Now playing: Tanking"
+      activeMedley, color = generalMedley, buttons.FuchsiaButton
+      bci.ExecuteZoneWithSelfCommand('/activemedley damage_absorption')
+    end
     imgui.EndPopup()
   end
 end
