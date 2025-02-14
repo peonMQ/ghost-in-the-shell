@@ -62,6 +62,10 @@ local function doDebuffs()
           logger.Debug("Debuffing with <%s>", debuffSpell.Name)
           local castResult = debuffSpell:Cast(checkInterrupt)
           if castResult == castReturnTypes.Immune then
+            if not spellImmunity then
+              spellImmunity = {}
+              immunities[debuffSpell.Id] = spellImmunity
+            end
             spellImmunity[targetSpawn.Name()] = "immune"
           elseif castResult == castReturnTypes.Resisted then
             logger.Info("[%s] resisted <%s> %d times, retrying next run.", targetSpawn.Name(), debuffSpell.Name, debuffSpell.MaxResists)

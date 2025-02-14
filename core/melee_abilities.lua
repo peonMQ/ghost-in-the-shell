@@ -45,6 +45,10 @@ end
 local pickpockets = "Pick Pockets"
 local function doPickPockets()
   local me = mq.TLO.Me
+  if me.Skill(pickpockets)() == me.SkillCap(pickpockets) then
+    return
+  end
+
   local target = mq.TLO.Target
   if me.Heading.Degrees() - target.Heading.Degrees() < 45 then
     -- doRogueStrike()
