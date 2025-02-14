@@ -55,7 +55,6 @@ end
 ---@param cancelCallback? fun(spellId:integer)
 ---@return CastReturn
 function Item:Cast(cancelCallback)
-  self:FlushCastEvents()
   state.Reset()
 
   if mq.TLO.Window("SpellBookWnd").Open() then

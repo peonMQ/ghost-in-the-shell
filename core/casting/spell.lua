@@ -105,7 +105,6 @@ end
 ---@param cancelCallback? fun(spellId:integer)
 ---@return CastReturn
 function Spell:Cast(cancelCallback)
-  self:FlushCastEvents()
   state.Reset(self.GiveUpTimer)
 
   local spell = self.MQSpell
@@ -165,7 +164,6 @@ function Spell:Cast(cancelCallback)
 
     if (mq.TLO.Me.Stunned()) then
       mq.delay('10s', function() return mq.TLO.Me.Stunned() == false end)
-      mq.flushevents("stunned")
     end
 
     if not state.castReturn then

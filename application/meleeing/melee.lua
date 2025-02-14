@@ -8,9 +8,7 @@ local events = require('application/meleeing/events')
 local assist_state = require('application/assist_state')
 
 local function doEvents()
-  for key, value in pairs(events) do
-    value:DoEvent()
-  end
+  mq.doevents()
   mq.delay(100)
 end
 
@@ -29,16 +27,17 @@ local function stickToTarget(target, modifier)
 
   logger.Debug("Attempting to stick to target")
   mq.cmd("/squelch /face fast")
+  local stickDistance = math.floor(mq.TLO.Spawn("id "..target.ID()).MaxRangeTo()*modifier)
   if assist.GetMainTank() == mq.TLO.Me.Name() or assist.AmIOfftank() then
     mq.cmdf("/squelch /stick id %d front 4 uw", target.ID())
     mq.delay("5s", function() return stick.Stopped() end)
   else
-    local stickDistance = math.floor(mq.TLO.Spawn("id "..target.ID()).MaxRangeTo()*modifier)
     stickDistance = math.min(stickDistance, 25)
     mq.cmdf("/squelch /stick id %d snaproll %d uw", target.ID(), stickDistance)
     mq.delay("5s", function() return stick.Stopped() end)
     mq.cmdf("/squelch /stick id %d moveback behind %d uw", target.ID(), stickDistance)
   end
+  mq.delay("5s", function() return mq.TLO.Spawn("id "..target.ID()).Distance() <= stickDistance end)
 end
 
 ---@param me character

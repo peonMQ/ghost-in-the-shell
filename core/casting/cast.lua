@@ -31,21 +31,7 @@ function Cast:new (id, name)
 end
 
 function Cast:DoCastEvents()
-  for _, value in ipairs(events) do
-    value:DoEvent()
-  end
-  -- for i=1, #events do
-  --   events[i]:DoEvent()
-  -- end
-end
-
-function Cast:FlushCastEvents()
-  for _, value in ipairs(events) do
-    value:Flush()
-  end
-  -- for i=1, #events do
-  --   events[i]:Flush()
-  -- end
+  mq.doevents()
 end
 
 function Cast:Cast()

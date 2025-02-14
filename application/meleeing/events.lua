@@ -26,7 +26,6 @@ end
 
 local function toFarAwayEvent()
   if mq.TLO.Me.Combat() then
-    tooFarAWay:Flush()
     if assist.IsOrchestrator() then
       return
     end

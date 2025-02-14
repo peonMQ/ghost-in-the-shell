@@ -19,7 +19,7 @@ local function doMeditate()
     return false
   end
 
-  disableMeditateEvent:DoEvent()
+  mq.doevents()
 
   local me = mq.TLO.Me
   if me.Invis() or me.Casting() or mq.TLO.Window("SpellBookWnd").Open() or mq.TLO.Stick.Active() or mq.TLO.Navigation.Active() then

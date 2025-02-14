@@ -119,9 +119,7 @@ end
 
 local function createPostCommand()
   return coroutine.create(function ()
-    for _, value in ipairs(events) do
-      value:DoEvent()
-    end
+    mq.doevents()
 
     while mq.TLO.Me.Casting() and (state.castCompleteDue:IsRunning() or currentSongHasInvisEffect()) and not state.wasInterrupted do
       coroutine.yield()
@@ -149,9 +147,6 @@ local function queueSong(song)
     commandQueue.Enqueue(function()
       state.medleyState = MedleyStates.CASTING
       local castTime = song:Cast()
-      for _, value in ipairs(events) do
-        value:Flush()
-      end
 
       mq.delay(1)
       state.castCompleteDue:Reset(castTime + settings.medleyPadTimeMs)
@@ -207,9 +202,6 @@ end
 
 local function reset()
   mq.cmd('/stopsong')
-  for _, value in ipairs(events) do
-    value:Flush()
-  end
   state:Reset()
   state.medleyState = MedleyStates.IDLE
 end

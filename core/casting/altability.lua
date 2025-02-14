@@ -25,7 +25,6 @@ end
 ---@param cancelCallback fun(spelLId:integer)
 ---@return CastReturn
 function AltAbility:Cast(cancelCallback)
-  self:FlushCastEvents()
   state.Reset()
 
   if (mq.TLO.Window("SpellBookWnd").Open()) then

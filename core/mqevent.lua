@@ -24,12 +24,4 @@ function MQEvent:Register()
   mq.event(self.Name, self.Expression, self.Callback)
 end
 
-function MQEvent:DoEvent()
-  mq.doevents(self.Name)
-end
-
-function MQEvent:Flush()
-  mq.flushevents(self.Name)
-end
-
 return MQEvent
