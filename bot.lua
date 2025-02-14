@@ -48,6 +48,7 @@ local botActions = classActions[currentClass():lower()] or {}
 if currentClass.ShortName() == "BRD" then
   plugins.EnsureIsLoaded("mq2bardswap")
   mq.cmd('/if (!${BardSwap}) /bardswap')
+  mq.cmd('/if (!${BardSwap.MeleeSwap}) /bardswap melee')
   mq.cmd('/stopsong')
 end
 
