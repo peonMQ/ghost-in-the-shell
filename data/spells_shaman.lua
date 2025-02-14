@@ -212,4 +212,10 @@ return {
       "Cannibalize II",                           -- L39: -67 HP +30-36 Mana, Kunark
       "Cannibalize",                              -- L24: -50 HP +20-28 Mana, Original
   },
+  shm_disempower = {
+      "Cripple",                                  -- L53 Cripple (-58-105 dex, -68-115 agi, -68-115 str, -30-45 ac, cost 225 mana) Kunark
+      "Incapacitate",                             -- L40 Incapacitate (-45-55 agi, -45-55 str, -21-24 ac, cost 150 mana) Original
+      "Listless Power",                           -- L25 Listless Power (-22-35 agi, -22-35 str, -10-18 ac, cost 90 mana) Original
+      "Disempower",                               -- L16 Disempower (-9-12 sta, -13-15 str, -6-9 ac) Original
+  },
 }
