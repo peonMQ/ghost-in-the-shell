@@ -1,6 +1,6 @@
 local mq = require('mq')
 local logger = require('knightlinc/Write')
-local luaUtils = require 'utils/lua-table'
+local luaUtils = require('utils/lua-table')
 local item = require('core/casting/item')
 local zone = require('core/zone')
 
