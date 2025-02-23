@@ -162,7 +162,6 @@ return {
   },
   dru_fire_nuke = {
       -- Special L70 Dawnstrike (2125 hp, cost 482 mana. chance to proc spell buff that adjust dmg of next nuke)
-
       "Solstice Strike",                          -- L69 Solstice Strike (2201 hp, cost 494 mana)
       "Sylvan Fire",                              -- L65 Sylvan Fire (1761 hp, cost 435 mana)
       "Summer's Flame",                           -- L64 Summer's Flame (1600 hp, cost 395 mana)
