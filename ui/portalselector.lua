@@ -67,7 +67,7 @@ local function renderZoneSelector(okText, selectedZoneAction)
 
     imgui.SameLine()
 
-    if imgui.Button("Cancel") then
+    if imgui.Button("Cancel") or ImGui.IsKeyPressed(ImGuiKey.Escape) then
       resetState()
       imgui.CloseCurrentPopup()
       selectedZoneAction();
