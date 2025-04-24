@@ -37,7 +37,7 @@ local function stickToTarget(target, modifier)
     mq.delay("5s", function() return stick.Stopped() end)
     mq.cmdf("/squelch /stick id %d moveback behind %d uw", target.ID(), stickDistance)
   end
-  mq.delay("5s", function() return mq.TLO.Spawn("id "..target.ID()).Distance() <= stickDistance end)
+  mq.delay("5s", function() return not mq.TLO.Spawn("id "..target.ID())() or mq.TLO.Spawn("id "..target.ID()).Distance() <= stickDistance end)
 end
 
 ---@param me character
