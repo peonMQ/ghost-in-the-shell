@@ -6,6 +6,7 @@ local commandQueue  = require('application/command_queue')
 local spells_pet = require('data/spells_pet')
 local settings = require('settings/settings')
 local pet_spell = require('core/casting/pets/petspell')
+local item = require('core/casting/item')
 local binder = require('application/binder')
 
 
@@ -41,6 +42,16 @@ local function equipSummonFocusItem(petSummonFocusItem)
   return currentMainhand, currentOffhand
 end
 
+
+
+local function mapSpellOrItem(spellName)
+  if mq.TLO.FindItem("="..spellName)() then
+    return item:new(spellName)
+  end
+
+  return pet_spell:new(spellName, settings.gems.pet or settings:GetDefaultGem(spellName), 15)
+end
+
 local function execute()
   local me = mq.TLO.Me
   if me.Pet() ~= "NO PET" then
@@ -54,13 +65,13 @@ local function execute()
     return
   end
 
-  local spell, focusItem = spells_pet(settings.pet.type)
-  if not spell then
+  local spellName, focusItem = spells_pet(settings.pet.type)
+  if not spellName then
     logger.Debug("No pet spell found.")
     return
   end
 
-  local petSpell = pet_spell:new(spell.Name(), settings.gems.pet or settings:GetDefaultGem(spell.Name()), 15)
+  local petSpell = mapSpellOrItem(spellName)
 
   if not petSpell:CanCast() then
     logger.Info("Can not cast <%s>", petSpell.Name)

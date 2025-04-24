@@ -179,12 +179,17 @@ local petSpells = {
 }
 
 --- @param type string?
---- @return spell?, string?
+--- @return string?, string?
 local function getPetSummonSpell(type)
   local class = mq.TLO.Me.Class.ShortName()
   local petTypeSpell = petSpells[class]
   if not petTypeSpell then
     return nil, nil
+  end
+
+  local epic = mq.TLO.FindItem('Orb of Mastery')
+  if epic() and mq.TLO.Me.Level() < 62 then
+    return 'Orb of Mastery', nil
   end
 
   local petspell = nil
@@ -205,7 +210,7 @@ local function getPetSummonSpell(type)
     return nil, nil
   end
 
-  return petspell, petTypeSpell.FocusItem(type, petspell--[[@as spell]])
+  return petspell.Name(), petTypeSpell.FocusItem(type, petspell--[[@as spell]])
 end
 
 return getPetSummonSpell
