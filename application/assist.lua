@@ -42,7 +42,7 @@ local function setAssistTargetPet()
 end
 
 local function moveBellyCasterTarget()
-  if assist_state.current_target_id == 0 or mq.TLO.Me.Combat() then
+  if settings.assist.type ~= nil or assist_state.current_target_id == 0 or mq.TLO.Me.Combat() then
     return
   end
 

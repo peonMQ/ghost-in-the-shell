@@ -4,6 +4,7 @@ local broadcast = require('broadcast/broadcast')
 local plugins = require('utils/plugins')
 local commandQueue  = require('application/command_queue')
 local follow_state = require('application/follow_state')
+local assist_state = require('application/assist_state')
 local binder = require('application/binder')
 
 local function execute(targetId)
@@ -21,6 +22,8 @@ local function execute(targetId)
   if stickSpawn[1] then
     follow_state:Activate('actor', stickSpawn[1].ID())
     mq.cmdf("/actfollow %s", stickSpawn[1].Name())
+    assist_state:Reset('current_target_id')
+    assist_state:Reset('current_pet_target_id')
     mq.delay(500)
   else
     logger.Warn("Could not find spawn with id %s", targetId)

@@ -3,6 +3,7 @@ local logger = require('knightlinc/Write')
 local plugins = require('utils/plugins')
 local commandQueue  = require('application/command_queue')
 local follow_state = require('application/follow_state')
+local assist_state = require('application/assist_state')
 local binder = require('application/binder')
 
 local function createPostCommand()
@@ -35,6 +36,8 @@ local function execute(targetId)
   if stickSpawn[1] and mq.TLO.Navigation.PathExists("id "..stickSpawn[1].ID()) then
     follow_state:Activate('nav', stickSpawn[1].ID())
     mq.cmdf("/nav id %d", follow_state.spawn_id)
+    assist_state:Reset('current_target_id')
+    assist_state:Reset('current_pet_target_id')
   end
 end
 
