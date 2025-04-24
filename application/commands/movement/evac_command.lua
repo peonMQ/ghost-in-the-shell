@@ -5,6 +5,7 @@ local commandQueue  = require('application/command_queue')
 local port_spells = require "data/spells_ports"
 local settings = require('settings/settings')
 local state = require('application/casting/casting_state')
+local assist_state = require('application/assist_state')
 local spell = require('core/casting/spell')
 local binder = require('application/binder')
 
@@ -37,6 +38,8 @@ local function createCommand(zoneShortName)
     return;
   end
 
+  assist_state:Reset('current_target_id')
+  assist_state:Reset('current_pet_target_id')
   commandQueue.Clear()
   commandQueue.Enqueue(function() execute(port_spell) end)
 end
