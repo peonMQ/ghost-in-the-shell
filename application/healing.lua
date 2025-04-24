@@ -83,7 +83,7 @@ local function checkHealGroup()
   for i=1,mq.TLO.Group.Members() do
     local groupMember = mq.TLO.Group.Member(i) --[[@as groupmember]]
     if spell:CanCastOnGroupMember(groupMember) then
-      if groupMember.PctHPs() < lowestMember.percentHP then
+      if groupMember.PctHPs() and groupMember.PctHPs() < lowestMember.percentHP then
         lowestMember.id = groupMember.ID()
         lowestMember.percentHP = groupMember.PctHPs()
       end
