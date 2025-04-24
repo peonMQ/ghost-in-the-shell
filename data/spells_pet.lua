@@ -187,9 +187,11 @@ local function getPetSummonSpell(type)
     return nil, nil
   end
 
-  local epic = mq.TLO.FindItem('Orb of Mastery')
-  if epic() and mq.TLO.Me.Level() < 62 then
-    return 'Orb of Mastery', nil
+  if type == 'Epic' then
+    local epic = mq.TLO.FindItem('Orb of Mastery')
+    if epic() and mq.TLO.Me.Level() > 50 then
+      return 'Orb of Mastery', nil
+    end
   end
 
   local petspell = nil
