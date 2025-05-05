@@ -42,8 +42,6 @@ local function equipSummonFocusItem(petSummonFocusItem)
   return currentMainhand, currentOffhand
 end
 
-
-
 local function mapSpellOrItem(spellName)
   if mq.TLO.FindItem("="..spellName)() then
     return item:new(spellName)
