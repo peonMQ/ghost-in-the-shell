@@ -46,7 +46,8 @@ end
 
 ---@return boolean
 function BuffItem:DoesLevitate()
-  return string.find("Spirit of Eagle,Flight of Eagles,Levitate,Levitation,Dead Man Floating,Dead Men Floating", self.Name) ~= nil
+  local levitate_spells = "Spirit of Eagle,Flight of Eagles,Levitate,Levitation,Dead Man Floating,Dead Men Floating"
+  return string.find(levitate_spells:lower(), self.Name:lower()) ~= nil
 end
 
 ---@return boolean
