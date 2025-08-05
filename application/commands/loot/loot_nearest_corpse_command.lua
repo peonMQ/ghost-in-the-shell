@@ -4,7 +4,7 @@ local broadcast = require('broadcast/broadcast')
 local commandQueue  = require('application/command_queue')
 local settings = require('settings/settings')
 local binder = require('application/binder')
-local lootNearestCorpse = require('application/looting/loot')
+local loot = require('application/looting/loot')
 
 local function execute(seekRadius)
   local count = mq.TLO.SpawnCount(string.format("npccorpse zradius 50 radius %s", seekRadius))()
@@ -13,7 +13,7 @@ local function execute(seekRadius)
     return
   end
 
-  lootNearestCorpse(seekRadius)
+  loot.LootNearestCorpse(seekRadius)
 end
 
 local function createCommand(seekRadius)
