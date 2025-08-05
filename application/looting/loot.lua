@@ -189,10 +189,10 @@ local function lootNearestCorpse(seekRadius)
   local startX = mq.TLO.Me.X()
   local startY = mq.TLO.Me.Y()
   local startZ = mq.TLO.Me.Z()
-  local isTwisting = plugin.IsLoaded("mq2twist") and mq.TLO.Twist.Twisting()
-  if isTwisting then
-    mq.cmd("/twist stop")
-    mq.delay(20, function() return not mq.TLO.Me.Casting.ID() end)
+  local isSwapping = plugin.IsLoaded("mq2bardswap") and mq.TLO.BardSwap.Swapping()
+  if isSwapping then
+    mq.cmd("/bardswap")
+    mq.delay(100);
   end
 
   if not mq.TLO.Me.Casting.ID() then
@@ -219,6 +219,13 @@ local function lootNearestCorpse(seekRadius)
 
   mq.cmd("/hidec looted")
   movement.MoveToLoc(startX, startY, startZ, 20, 8)
+  if isSwapping then
+    mq.cmd("/bardswap")
+    mq.delay(100);
+  end
 end
 
-return lootNearestCorpse
+return {
+  LootNearestCorpse = lootNearestCorpse,
+  CanDestroyItem = canDestroyItem
+}
