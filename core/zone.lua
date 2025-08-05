@@ -13,6 +13,21 @@ local function isNoLevitate(zoneShortName)
   return zoneShortName == "airplane"
 end
 
+---@param zoneShortName string
+---@param settingsPetType MagePetTypes|nil
+---@return MagePetTypes|nil
+local function petType(zoneShortName, settingsPetType)
+  if(zoneShortName == "airplane") then
+    if mq.TLO.Me.Class.ShortName() == "MAG" then
+      if settingsPetType ~= "Air" and settingsPetType ~= "Epic" then
+        return "Air"
+      end
+    end
+  end
+
+  return settingsPetType;
+end
+
 local function currentZoneIsNoLevitate()
   local currentZone = mq.TLO.Zone.ShortName()
   return isNoLevitate(currentZone)
@@ -23,11 +38,20 @@ local function currentZoneIsIndoors()
   return isIndoors(currentZone)
 end
 
+---@param settingsPetType MagePetTypes|nil
+---@return MagePetTypes|nil
+local function currentPetType(settingsPetType)
+  local currentZone = mq.TLO.Zone.ShortName()
+  return petType(currentZone, settingsPetType)
+end
+
 return {
   Current = {
     IsNoLevitate = currentZoneIsNoLevitate,
-    IsIndoors = currentZoneIsIndoors
+    IsIndoors = currentZoneIsIndoors,
+    PetType = currentPetType
   },
   IsNoLevitate = isNoLevitate,
-  IsIndoors = isIndoors
+  IsIndoors = isIndoors,
+  PetType = petType
 }

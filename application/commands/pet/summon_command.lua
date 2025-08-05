@@ -7,6 +7,7 @@ local spells_pet = require('data/spells_pet')
 local settings = require('settings/settings')
 local pet_spell = require('core/casting/pets/petspell')
 local item = require('core/casting/item')
+local zone = require('core/zone')
 local binder = require('application/binder')
 
 
@@ -63,7 +64,8 @@ local function execute()
     return
   end
 
-  local spellName, focusItem = spells_pet(settings.pet.type)
+  local petType = zone.Current.PetType(settings.pet.type);
+  local spellName, focusItem = spells_pet(petType)
   if not spellName then
     logger.Debug("No pet spell found.")
     return

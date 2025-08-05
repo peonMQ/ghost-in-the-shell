@@ -4,7 +4,7 @@ local logger = require('knightlinc/Write')
 
 -- https://www.eqprogression.com/magician-pet-stats/
 
----@alias MagePetTypes 'Air'|'Earth'|'Fire'|'Water'
+---@alias MagePetTypes 'Air'|'Earth'|'Fire'|'Water'|'Epic'
 
 --- @param type MagePetTypes
 --- @return string[]
