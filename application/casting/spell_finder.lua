@@ -102,10 +102,53 @@ local function find_by_name_or_group(spell_or_group_name)
   return nil
 end
 
+---@generic T1, T2
+---@param name string
+---@param data T1|T2
+---@param mapSpellFunc fun(groupname: string, name: string, data: T1):T1
+---@param mapItemFunc? fun(name: string, data: T2):T2
+---@return T1|T2|nil
+local function mapSpellOrItem(name, data, mapSpellFunc, mapItemFunc)
+  if mapItemFunc and mq.TLO.FindItem("="..name)() then
+      return mapItemFunc(name, data)
+    else
+      local spell = find_spell(name)
+      if spell then
+        return mapSpellFunc(name, spell.Name(), data)
+      else
+        spell = find_group_spell(name)
+        if spell then
+          return mapSpellFunc(name, spell.Name(), data)
+        end
+      end
+    end
+
+    return nil
+end
+
+---@generic T1, T2
+---@param spelldata table<string, T1|T2>
+---@param mapSpellFunc fun(groupname: string, name: string, data: T1):T1
+---@param mapItemFunc? fun(name: string, data: T2):T2
+---@return table<string, T1|T2>
+local function mapSpellsOrItems(spelldata, mapSpellFunc, mapItemFunc)
+  local availableSpells = {}
+  for name, value in pairs(spelldata) do
+    local spell = mapSpellOrItem(name, value, mapSpellFunc, mapItemFunc)
+    if spell then
+      availableSpells[name] = spell
+    end
+  end
+
+  return availableSpells
+end
+
 return {
   FindSpell = find_spell,
   FindOrderedSpell = find_ordered_spell,
   FindGroupSpell = find_group_spell,
   FindGroupSpells = find_group_spells,
   FindByNameOrGroup = find_by_name_or_group,
+  MapSpellorItem = mapSpellOrItem,
+  MapSpellsOrItems = mapSpellsOrItems
 }

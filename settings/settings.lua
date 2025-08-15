@@ -49,6 +49,8 @@ local bot_settings_filename = string.format("%s/bots/%s_settings.lua", settings_
 
 ---@class PeerSettingsAssist
 ---@field public type AssitTypes type of assist
+---@field public require_los boolean range of assist
+---@field public range integer range of assist
 ---@field public engage_at integer engage at this HP %
 ---@field public tanks string[] ordered list of tanks
 ---@field public main_assist string[] ordered list of main assists
@@ -67,6 +69,7 @@ local bot_settings_filename = string.format("%s/bots/%s_settings.lua", settings_
 ---@class PeerSettingsPet
 ---@field public type MagePetTypes|nil
 ---@field public engage_at integer engage at this HP %
+---@field public combatbuffs table<string, BuffSpell|BuffItem> spell group of pet buffs
 ---@field public buffs table<string, BuffSpell|BuffItem> spell group of pet buffs
 ---@field public taunt boolean pet should taunt
 
@@ -101,6 +104,8 @@ local default_settings = {
   },
   assist = {
     type = nil,
+    require_los = true,
+    range = 100,
     engage_at = 90,
     tanks = {},
     main_assist = {},
@@ -122,6 +127,7 @@ local default_settings = {
     type = nil,
     engage_at = 0,
     buffs = {},
+    combatbuffs = {},
     taunt = false
   },
   medleyPadTimeMs = 0
@@ -145,39 +151,13 @@ end
 ---@param spelldata table<string, T1|T2>
 ---@param mapSpellFunc fun(groupname: string, name: string, data: T1):T1
 ---@param mapItemFunc? fun(name: string, data: T2):T2
----@return table<string, T1|T2>
-local function mapSpellOrItem(spelldata, mapSpellFunc, mapItemFunc)
-  local availableSpells = {}
-  for name, value in pairs(spelldata) do
-    if mapItemFunc and mq.TLO.FindItem("="..name)() then
-      availableSpells[name] = mapItemFunc(name, value)
-    else
-      local spell = spell_finder.FindSpell(name)
-      if spell then
-        availableSpells[name] = mapSpellFunc(name, spell.Name(), value)
-      else
-        spell = spell_finder.FindGroupSpell(name)
-        if spell then
-          availableSpells[name] = mapSpellFunc(name, spell.Name(), value)
-        end
-      end
-    end
-  end
-
-  return availableSpells
-end
-
----@generic T1, T2
----@param spelldata table<string, T1|T2>
----@param mapSpellFunc fun(groupname: string, name: string, data: T1):T1
----@param mapItemFunc? fun(name: string, data: T2):T2
 ---@return table<string, T1|T2>|nil
 local function mapOptionalSpellOrItem(spelldata, mapSpellFunc, mapItemFunc)
   if not spelldata then
     return nil
   end
 
-  return mapSpellOrItem(spelldata, mapSpellFunc, mapItemFunc)
+  return spell_finder.MapSpellsOrItems(spelldata, mapSpellFunc, mapItemFunc)
 end
 
 ---@generic T
@@ -215,7 +195,10 @@ function settings:ReloadSettings()
   if not spells_pet(self.pet.type) then
     self.pet = nil
   else
-    self.pet.buffs = mapSpellOrItem(self.pet.buffs,
+    self.pet.buffs = spell_finder.MapSpellsOrItems(self.pet.buffs,
+                                      function (groupname, name, data) return buffspell:new(name, self:GetDefaultGem(groupname), data.MinManaPercent, data.GiveUpTimer, data.ClassRestrictions) end,
+                                      function (name, data) return buffitem:new(name, data.ClassRestrictions) end)
+    self.pet.combatbuffs = spell_finder.MapSpellsOrItems(self.pet.combatbuffs,
                                       function (groupname, name, data) return buffspell:new(name, self:GetDefaultGem(groupname), data.MinManaPercent, data.GiveUpTimer, data.ClassRestrictions) end,
                                       function (name, data) return buffitem:new(name, data.ClassRestrictions) end)
   end
@@ -225,22 +208,22 @@ function settings:ReloadSettings()
   -- end
 
   logger.Debug("Loading conversion settings")
-  self.mana.conversions = mapSpellOrItem(self.mana.conversions,
+  self.mana.conversions = spell_finder.MapSpellsOrItems(self.mana.conversions,
                                           function (groupname, name, data) return conversionSpell:new(name, self:GetDefaultGem(groupname), data.StartManaPct, data.StopHPPct) end,
                                           function (name, data) return conversionItem:new(name, data.StartManaPct, data.StopHPPct) end
                                           )
 
   logger.Debug("Loading cure settings")
-  self.cures = mapSpellOrItem(self.cures, function (groupname, name, data) return curespell:new(name, self:GetDefaultGem(groupname), data.MinManaPercent, data.GiveUpTimer) end)
+  self.cures = spell_finder.MapSpellsOrItems(self.cures, function (groupname, name, data) return curespell:new(name, self:GetDefaultGem(groupname), data.MinManaPercent, data.GiveUpTimer) end)
 
   logger.Debug("Loading debuff settings")
-  self.assist.debuffs = mapSpellOrItem(self.assist.debuffs, function (groupname, name, data) return debuffSpell:new(name, self:GetDefaultGem(groupname), data.MinManaPercent, data.GiveUpTimer, data.MaxResists) end)
+  self.assist.debuffs = spell_finder.MapSpellsOrItems(self.assist.debuffs, function (groupname, name, data) return debuffSpell:new(name, self:GetDefaultGem(groupname), data.MinManaPercent, data.GiveUpTimer, data.MaxResists) end)
 
   logger.Debug("Loading nuke settings")
   local availableNukes = {}
   for key, spells in pairs(self.assist.nukes) do
     ---@type NukeSpell[]
-    local availableSpells = mapSpellOrItem(spells, function (groupname, name, data) return nukespell:new(name, self:GetDefaultGem(groupname), data.MinManaPercent, data.GiveUpTimer) end)
+    local availableSpells = spell_finder.MapSpellsOrItems(spells, function (groupname, name, data) return nukespell:new(name, self:GetDefaultGem(groupname), data.MinManaPercent, data.GiveUpTimer) end)
 
     if next(availableSpells) then
       availableNukes[key] = availableSpells
@@ -267,19 +250,19 @@ function settings:ReloadSettings()
   self.assist.aoe_stuns = availablePBAoEStuns
 
   logger.Debug("Loading self buff settings")
-  self.buffs.self = mapSpellOrItem(self.buffs.self,
+  self.buffs.self = spell_finder.MapSpellsOrItems(self.buffs.self,
                                           function (groupname, name, data) return buffspell:new(name, self:GetDefaultGem(groupname), data.MinManaPercent, data.GiveUpTimer, data.ClassRestrictions) end,
                                           function (name, data) return buffitem:new(name, data.ClassRestrictions) end
                                           )
 
   logger.Debug("Loading combat buff settings")
-  self.buffs.combat = mapSpellOrItem(self.buffs.combat,
+  self.buffs.combat = spell_finder.MapSpellsOrItems(self.buffs.combat,
                                           function (groupname, name, data) return buffspell:new(name, self:GetDefaultGem(groupname), data.MinManaPercent, data.GiveUpTimer, data.ClassRestrictions) end,
                                           function (name, data) return buffitem:new(name, data.ClassRestrictions) end
                                           )
 
   logger.Debug("Loading combat buff settings")
-  self.buffs.request = mapSpellOrItem(self.buffs.request,
+  self.buffs.request = spell_finder.MapSpellsOrItems(self.buffs.request,
                                           function (groupname, name, data) return buffspell:new(name, self:GetDefaultGem(groupname), data.MinManaPercent, data.GiveUpTimer, data.ClassRestrictions) end,
                                           function (name, data) return buffitem:new(name, data.ClassRestrictions) end
                                           )

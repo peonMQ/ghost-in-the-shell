@@ -106,6 +106,42 @@ local function checkNetBotBuffs()
 end
 
 ---@return boolean
+local function checkPetCombatBuffs()
+  if not settings.pet or not settings.pet.combatbuffs then
+    return false
+  end
+
+  local me = mq.TLO.Me
+  for _, buffSpell in pairs(settings.pet.combatbuffs) do
+    if buffSpell:CanCast() then
+      local spell = mq.TLO.Spell(buffSpell.Id)
+      if spell.TargetType() == "Single" and plugin.IsLoaded("mq2netbots") then
+        for i=1,mq.TLO.NetBots.Counts() do
+          local name = mq.TLO.NetBots.Client(i)()
+          local netbot = mq.TLO.NetBots(name)
+          if netbot.InZone() and netbot.PetID() > 0 then
+            if netbot.PetBuff():find(""..buffSpell.Id) == 0 then
+              local didCastBuff = castBuff(buffSpell, netbot.PetID())
+              if didCastBuff then
+                return true
+              end
+            end
+          end
+        end
+      elseif spell.TargetType() == "Pet" then
+        if me.Pet.ID() > 0 and mq.TLO.Spell(buffSpell.Name).StacksPet() and not me.Pet.Buff(buffSpell.Name)() then
+          local didCastBuff = castBuff(buffSpell, me.Pet.ID())
+          if didCastBuff then
+            return true
+          end
+        end
+      end
+    end
+  end
+
+  return false
+end
+---@return boolean
 local function checkPetBuffs()
   if not settings.pet or not settings.pet.buffs then
     return false
@@ -145,6 +181,7 @@ end
 ---@return boolean
 local function doBuffs()
   checkCombatBuffs()
+  checkPetCombatBuffs()
   if assist.IsOrchestrator() then
     return false
   end

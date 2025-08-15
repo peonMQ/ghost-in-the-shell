@@ -1,6 +1,8 @@
 local mq = require('mq')
 local logger = require('knightlinc/Write')
 local broadcast = require('broadcast/broadcast')
+local spells_pet = require('data/spells_pet')
+local zone = require('core/zone')
 local commandQueue  = require('application/command_queue')
 local spell_finder = require('application/casting/spell_finder')
 local settings = require('settings/settings')
@@ -21,6 +23,13 @@ local function execute()
   end
 
   for spell_group, gem in pairs(settings.gems) do
+    if spell_group == 'pet' then
+      local petType = zone.Current.PetType(settings.pet.type);
+      local spellName, _ = spells_pet(petType)
+      if spellName then
+        spell_group = spellName;
+      end
+    end
       if not mq.TLO.Me.Gem(gem)() then
         local spell = spell_finder.FindByNameOrGroup(spell_group)
         if spell then

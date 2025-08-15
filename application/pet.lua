@@ -30,7 +30,7 @@ local function doPet()
       mq.cmd("/pet attack")
       mq.delay(1)
     end
-  elseif petTarget.ID() == assist_state.current_pet_target_id then
+  elseif petTarget.ID() == assist_state.current_pet_target_id and not mq.TLO.Me.Pet.Combat() then
     mq.cmd("/pet attack")
     mq.delay(1)
   end
