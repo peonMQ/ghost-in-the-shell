@@ -26,7 +26,7 @@ local function execute(targetId)
     return
   end
 
-  follow_state.Stop()
+  follow_state:Stop()
   if not targetId then
     follow_state:Reset()
     return
@@ -35,9 +35,10 @@ local function execute(targetId)
   local stickSpawn = mq.getFilteredSpawns(function(spawn) return spawn.ID() == tonumber(targetId) and spawn.Type() == "PC" end)
   if stickSpawn[1] and mq.TLO.Navigation.PathExists("id "..stickSpawn[1].ID()) then
     follow_state:Activate('nav', stickSpawn[1].ID())
-    mq.cmdf("/nav id %d", follow_state.spawn_id)
-    assist_state:Reset('current_target_id')
-    assist_state:Reset('current_pet_target_id')
+    assist_state:Reset('current_target_id', 'current_pet_target_id')
+    if(follow_state.spawn_id ~= mq.TLO.Me.ID()) then
+      mq.cmdf("/nav id %d", follow_state.spawn_id)
+    end
   end
 end
 

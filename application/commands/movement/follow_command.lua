@@ -12,7 +12,7 @@ local function execute(targetId)
     return
   end
 
-  follow_state.Stop()
+  follow_state:Stop()
   if not targetId then
     follow_state:Reset()
     return
@@ -21,9 +21,10 @@ local function execute(targetId)
   local stickSpawn = mq.getFilteredSpawns(function(spawn)  return spawn.ID() == tonumber(targetId) and spawn.Type() == "PC" end)
   if stickSpawn[1] then
     follow_state:Activate('actor', stickSpawn[1].ID())
-    mq.cmdf("/actfollow %s", stickSpawn[1].Name())
-    assist_state:Reset('current_target_id')
-    assist_state:Reset('current_pet_target_id')
+    assist_state:Reset('current_target_id', 'current_pet_target_id')
+    if(follow_state.spawn_id ~= mq.TLO.Me.ID()) then
+      mq.cmdf("/actfollow %s", stickSpawn[1].Name())
+    end
     mq.delay(500)
   else
     logger.Warn("Could not find spawn with id %s", targetId)

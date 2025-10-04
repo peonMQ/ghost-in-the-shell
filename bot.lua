@@ -59,7 +59,7 @@ local function process()
   end
 
   commandQueue.Process()
-  if app_state.PerformActions() and not movement.IsFollowing() and not follow_state:IsActive() then
+  if app_state.PerformActions() and not movement.IsFollowing() then
     for _, action in ipairs(botActions) do
       assistTick()
       if action() then
@@ -68,7 +68,7 @@ local function process()
     end
 
     camp.Process()
-  elseif (movement.IsFollowing() or follow_state:IsActive()) and currentClass.ShortName() == "BRD" then
+  elseif movement.IsFollowing() and currentClass.ShortName() == "BRD" then
     doMedley.OnTick()
   end
 end

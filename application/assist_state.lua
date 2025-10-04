@@ -14,7 +14,7 @@ local loader = require('settings/loader')
 ---@field enraged boolean
 
 ---@class AssistState : AssistStateData
----@field Reset fun(self: AssistState, property?: Properties) reset state to default state
+---@field Reset fun(self: AssistState, ...: Properties) reset state to default state
 
 ---@class AssistStateData
 local defaultState = {
@@ -31,10 +31,12 @@ local defaultState = {
 
 local state = loader.Clone(defaultState) --[[@as AssistState]]
 
-function state:Reset(property)
+function state:Reset(...)
   for key, value in pairs(defaultState) do
-    if not property or key == property then
-      self[key] = value
+    for _, property in ipairs({...}) do
+      if not property or key == property then
+        self[key] = value
+      end
     end
   end
 

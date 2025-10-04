@@ -38,8 +38,11 @@ local function createCommand(zoneShortName)
     return;
   end
 
-  assist_state:Reset('current_target_id')
-  assist_state:Reset('current_pet_target_id')
+  if mq.TLO.Me.Casting() then
+    state.interrupt(mq.TLO.Me.Casting.ID())
+  end
+
+  assist_state:Reset('current_target_id', 'current_pet_target_id')
   commandQueue.Clear()
   commandQueue.Enqueue(function() execute(port_spell) end)
 end

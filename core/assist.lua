@@ -78,6 +78,10 @@ end
 ---@param targetSpawn spawn
 ---@return boolean
 local function isValidKillTarget(targetSpawn)
+  if not targetSpawn() then
+    return false
+  end
+
   local isNPC = targetSpawn.Type() == "NPC"
   local isPet = targetSpawn.Type() == "Pet"
   local hasLineOfSight = targetSpawn.LineOfSight()

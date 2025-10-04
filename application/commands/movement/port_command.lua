@@ -7,6 +7,7 @@ local settings = require('settings/settings')
 local state = require('application/casting/casting_state')
 local spell = require('core/casting/spell')
 local assist_state = require('application/assist_state')
+local follow_state = require('application/follow_state')
 local binder = require('application/binder')
 
 local function getPortSpell(zoneShortName, classShortName)
@@ -26,8 +27,8 @@ local function getPortSpell(zoneShortName, classShortName)
 end
 
 local function execute(zoneShortName)
-  assist_state:Reset('current_target_id')
-  assist_state:Reset('current_pet_target_id')
+  assist_state:Reset('current_target_id', 'current_pet_target_id')
+  follow_state:Stop()
 
   local classShortName = mq.TLO.Me.Class.ShortName()
   local port_spell = getPortSpell(zoneShortName, classShortName)

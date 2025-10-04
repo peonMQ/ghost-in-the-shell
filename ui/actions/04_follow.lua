@@ -27,7 +27,7 @@ local follow = {
   deactivate = function() end
 }
 
-local active, color = follow, buttons.BlueButton
+local activeButton, color = follow, buttons.BlueButton
 
 ---@type ActionButton
 local actorFollow = {
@@ -36,8 +36,8 @@ local actorFollow = {
   tooltip = "Actor Follow 'Me'",
   isDisabled = function () return false end,
   activate = function()
-    active, color = follow, buttons.BlueButton
-    bci.ExecuteZoneCommand("/stalk")
+    activeButton, color = follow, buttons.BlueButton
+    bci.ExecuteZoneWithSelfCommand("/stalk")
   end,
   deactivate = function() end
 }
@@ -49,8 +49,8 @@ local advFollow = {
   tooltip = "Adv Follow 'Me'",
   isDisabled = function () return false end,
   activate = function()
-    active, color = follow, buttons.BlueButton
-    bci.ExecuteZoneCommand("/stalkadv")
+    activeButton, color = follow, buttons.BlueButton
+    bci.ExecuteZoneWithSelfCommand("/stalkadv")
   end,
   deactivate = function() end
 }
@@ -62,8 +62,8 @@ local navFollow = {
   tooltip = "Nav Follow 'Me'",
   isDisabled = function () return false end,
   activate = function()
-    active, color = follow, buttons.BlueButton
-    bci.ExecuteZoneCommand('/navto')
+    activeButton, color = follow, buttons.BlueButton
+    bci.ExecuteZoneWithSelfCommand('/navto')
   end,
   deactivate = function() end
 }
@@ -75,30 +75,30 @@ local stickFollow = {
   tooltip = "Stick Follow 'Me'",
   isDisabled = function () return false end,
   activate = function()
-    active, color = follow, buttons.BlueButton
-    bci.ExecuteZoneCommand('/gitstick')
+    activeButton, color = follow, buttons.BlueButton
+    bci.ExecuteZoneWithSelfCommand('/gitstick')
   end,
   deactivate = function() end
 }
 
-local function renderNukeSelectorPopup()
+local function renderFollowSelectorPopup()
   if imgui.BeginPopup(popup_name) then
     imgui.SeparatorText("Follow mode");
     if plugins.IsLoaded('mqactorfollow') and imgui.Selectable("Actor") then
-      active, color = actorFollow, buttons.GreenButton
-      bci.ExecuteZoneCommand(string.format('/stalk %i', mq.TLO.Me.ID()))
+      activeButton, color = actorFollow, buttons.GreenButton
+      bci.ExecuteZoneWithSelfCommand(string.format('/stalk %i', mq.TLO.Me.ID()))
     end
     if plugins.IsLoaded('mq2advpath') and imgui.Selectable("AdvFollow") then
-      active, color = advFollow, buttons.GreenButton
-      bci.ExecuteZoneCommand(string.format('/stalkadv %i', mq.TLO.Me.ID()))
+      activeButton, color = advFollow, buttons.GreenButton
+      bci.ExecuteZoneWithSelfCommand(string.format('/stalkadv %i', mq.TLO.Me.ID()))
     end
     if plugins.IsLoaded('mq2nav') and imgui.Selectable("Nav") then
-      active, color = navFollow, buttons.GreenButton
-      bci.ExecuteZoneCommand(string.format('/navto %i', mq.TLO.Me.ID()))
+      activeButton, color = navFollow, buttons.GreenButton
+      bci.ExecuteZoneWithSelfCommand(string.format('/navto %i', mq.TLO.Me.ID()))
     end
     if plugins.IsLoaded('mq2moveutils') and imgui.Selectable("Stick") then
-      active, color = navFollow, buttons.GreenButton
-      bci.ExecuteZoneCommand(string.format('/gitstick %i', mq.TLO.Me.ID()))
+      activeButton, color = stickFollow, buttons.GreenButton
+      bci.ExecuteZoneWithSelfCommand(string.format('/gitstick %i', mq.TLO.Me.ID()))
     end
     imgui.EndPopup()
   end
@@ -107,7 +107,11 @@ end
 return {
   ---@param buttonSize ImVec2
   Render = function (buttonSize)
-    buttons.CreateButton(active, color, buttonSize)
-    renderNukeSelectorPopup()
+    if follow_state:IsActive() then
+      buttons.CreateButton(activeButton, color, buttonSize)
+    else
+      buttons.CreateButton(follow, buttons.BlueButton, buttonSize)
+    end
+    renderFollowSelectorPopup()
   end
 }

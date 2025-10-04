@@ -41,7 +41,7 @@ local function travelToo(zoneShortName)
       logger.Error("Zone shortname does not exist <%s>", zoneShortName.shortname)
     else
       easyfind.active = true
-      bci.ExecuteZoneWithSelfCommand(string.format("/travelto %s", zoneShortName.shortname))
+      bci.ExecuteZoneWithSelfCommand(string.format("/easyfindto %s", zoneShortName.shortname))
       travelToZone = zoneShortName
     end
   end
