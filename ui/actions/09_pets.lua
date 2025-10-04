@@ -17,7 +17,7 @@ local pets = {
   icon = icons.MD_PETS,
   tooltip = "Summon Pets",
   isDisabled = function () return not app_state.IsActive() end,
-  activate = function() bci.ExecuteZoneCommand('/summonpet') end,
+  activate = function() bci.ExecuteZoneWithSelfCommand('/summonpet') end,
 }
 
 return {

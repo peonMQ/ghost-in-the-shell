@@ -8,6 +8,7 @@ local filetutils = require('utils/file')
 local bci = require('broadcast/broadcastinterface')('ACTOR')
 local app_state = require('app_state')
 local follow_state = require('application/follow_state')
+local assist = require('core/assist')
 local buttons = require('ui/buttons')
 
 ---@type ActionButton
@@ -15,9 +16,9 @@ local killthis = {
   active = false,
   icon = icons.MD_GPS_FIXED,
   tooltip = "Kill Current Target",
-  isDisabled = function () return not app_state.IsActive() or not mq.TLO.Target() or mq.TLO.Target.Type() == "PC" end,
+  isDisabled = function () return not app_state.IsActive() or not mq.TLO.Target() or not assist.IsValidKillTarget(mq.TLO.Target()) end,
   activate = function()
-    bci.ExecuteZoneCommand('/killit '..mq.TLO.Target.ID())
+    bci.ExecuteZoneWithSelfCommand('/killit '..mq.TLO.Target.ID())
   end,
 }
 
