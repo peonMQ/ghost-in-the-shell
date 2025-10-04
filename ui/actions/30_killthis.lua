@@ -16,7 +16,7 @@ local killthis = {
   active = false,
   icon = icons.MD_GPS_FIXED,
   tooltip = "Kill Current Target",
-  isDisabled = function () return not app_state.IsActive() or not mq.TLO.Target() or not assist.IsValidKillTarget(mq.TLO.Target()) end,
+  isDisabled = function () return not app_state.IsActive() or not mq.TLO.Target() or not assist.IsValidKillTarget(mq.TLO.Target) end,
   activate = function()
     bci.ExecuteZoneWithSelfCommand('/killit '..mq.TLO.Target.ID())
   end,
