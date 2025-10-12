@@ -75,7 +75,7 @@ local function getMainAssist()
  return nil
 end
 
----@param targetSpawn spawn
+---@param targetSpawn MQSpawn
 ---@return boolean
 local function isValidKillTarget(targetSpawn)
   if not targetSpawn() then
