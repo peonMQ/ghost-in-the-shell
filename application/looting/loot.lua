@@ -40,10 +40,10 @@ end
 local function numberOfStacksToKeep(itemId)
   local stackItem = repository:tryGet(itemId)
   if not stackItem then
-    return 9999
+    return 1
   end
 
-  return stackItem.NumberOfStacks or 9999
+  return stackItem.NumberOfStacks or 1
 end
 
 local function alreadyHaveLoreItem(item)
@@ -82,7 +82,7 @@ local function canLootItem(item)
     logger.Debug("My inventory is full!", item.Name())
     mq.cmd("/beep")
     return false
-  elseif item.Stackable() and item.Stacks() >= numberOfStacksToKeep(item.ID()) then
+  elseif item.Stackable() and item.FreeStack() == 0 and item.Stacks() >= numberOfStacksToKeep(item.ID()) then
     return false
   end
 
@@ -98,18 +98,20 @@ local function canLootItem(item)
 end
 
 local function lootItem(slotNum)
-  local lootTimer = timer:new(3)
+  local lootTimer = timer:new(5)
   local cursor = mq.TLO.Cursor
 
-  while not cursor() and not cursor.ID() and lootTimer:IsRunning() do
+  while not cursor() and not cursor.ID() and lootTimer:IsRunning() and not mq.TLO.Window("ConfirmationDialogBox").Open() and not mq.TLO.Window("QuantityWnd").Open() do
     mq.cmdf("/nomodkey /itemnotify loot%d leftmouseup", slotNum)
     mq.delay("1s", function() return cursor() ~= nil end)
   end
 
   if mq.TLO.Window("ConfirmationDialogBox").Open() then
     mq.cmd("/notify ConfirmationDialogBox Yes_Button leftmouseup")
+    mq.delay("1s", function() return cursor() ~= nil end)
   elseif mq.TLO.Window("QuantityWnd").Open() then
     mq.cmd("/notify QuantityWnd QTYW_Accept_Button leftmouseup")
+    mq.delay("1s", function() return cursor() ~= nil end)
   end
 
   local itemId = cursor.ID()
@@ -123,32 +125,34 @@ local function lootItem(slotNum)
     while cursor() ~= nil and lootTimer:IsRunning() do
       mq.cmdf("/destroy")
       mq.delay(100, function() return cursor() == nil end)
-      if cursor() == nil then
-        broadcast.SuccessAll("Destroyed %s from slot# %s", item.Name, slotNum)
-      else
-        broadcast.FailAll("Destroying %s from slot# %s", item.Name, slotNum)
-      end
+    end
+
+    if cursor() == nil then
+      broadcast.SuccessAll("Destroyed %s from slot# %s", item.Name, slotNum)
+    else
+      broadcast.FailAll("Destroying %s from slot# %s failed", item.Name, slotNum)
     end
   else
+    broadcast.SuccessAll("Looted %s from slot# %s", item.Name, slotNum)
     mqUtils.ClearCursor()
-    logger.Info("Looted %s from slot# %s", item.Name, slotNum)
   end
 end
 
 local function lootCorpse()
   local target = mq.TLO.Target
   if not target() or target.Type() ~= "Corpse" then
-    broadcast.FailAll("No corpse on target.")
+    logger.Warn("No corpse on target.")
     return
   end
 
   local targetName = target.Name()
+  logger.Info("Starting looting from %s", targetName)
   mqUtils.ClearCursor()
   mq.cmd("/loot")
   local corpse = mq.TLO.Corpse
   mq.delay("1s", function() return corpse.Open() and corpse.Items() > 0 end)
   if not corpse.Open() then
-    broadcast.FailAll("Unable to open corpse for looting.")
+    logger.Warn("Unable to open corpse for looting.")
     return
   end
 
@@ -177,12 +181,15 @@ local function lootCorpse()
     mq.delay(10)
   end
 
+  if mq.TLO.Cursor() then
+    broadcast.FailAll("Failed clearing cursor after looting <%s>", mq.TLO.Cursor())
+  end
+
+  broadcast.SuccessAll("Ending loot on <%s>, # of items left: %d", targetName, corpse.Items() or 0)
   if mq.TLO.Corpse.Open() then
     mq.cmd("/notify LootWnd DoneButton leftmouseup")
     mq.delay("1s", function() return not mq.TLO.Corpse.Open()  end)
   end
-
-  broadcast.SuccessAll("Ending loot on <%s>, # of items left: %d", targetName, corpse.Items() or 0)
 end
 
 local function lootNearestCorpse(seekRadius)
