@@ -3,6 +3,7 @@ local logger = require('knightlinc/Write')
 local cast = require ('core/casting/cast')
 local castReturnTypes = require('core/casting/castreturn')
 local state = require('application/casting/casting_state')
+local timer = require('core/timer')
 
 ---@class Item : Cast
 ---@field public ItemName string
@@ -90,6 +91,22 @@ function Item:Cast(cancelCallback)
   self:DoCastEvents()
   logger.Debug("Item cast completed for <%s> with result <%s>", self.Name, state.castReturn)
   return state.castReturn
+end
+
+---@param maxWaitTime number
+---@return boolean
+function Item:WaitForReady(maxWaitTime)
+  local item = mq.TLO.FindItem("="..self.ItemName)
+  if not item then
+    return false
+  end
+
+  local waitReadyTimer = timer:new(maxWaitTime)
+  while item.TimerReady() > 0 and waitReadyTimer:IsRunning() do
+    mq.delay(500)
+  end
+
+  return item.TimerReady() == 0
 end
 
 return Item
