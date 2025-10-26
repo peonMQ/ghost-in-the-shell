@@ -3,6 +3,9 @@ local logger = require('knightlinc/Write')
 local luaUtils = require('utils/lua-table')
 local item = require('core/casting/item')
 local zone = require('core/zone')
+local timer = require('core/timer')
+
+local instantCastRecastTimer = timer:new(0)
 
 local SPA_MOVEMENT_RATE = 3
 ---@param buffSpell spell
@@ -55,10 +58,24 @@ function BuffItem:DoesIncreaseRunSpeed()
   return string.find("Spirit of Wolf,Spirit of Eagle,Flight of Eagles", self.Name) ~= nil
 end
 
+---@param cancelCallback? fun(spellId:integer)
+---@return CastReturn
+function BuffItem:Cast(cancelCallback)
+  if self.MQSpell.CastTime() == 0 and self.MQSpell.TargetType() == "self" then
+    instantCastRecastTimer:Reset(3000)
+  end
+
+  return item.Cast(self, cancelCallback)
+end
+
 ---@return boolean
 function BuffItem:CanCast()
   local superCanCast = item.CanCast(self)
   if not superCanCast then
+    return false
+  end
+
+  if instantCastRecastTimer:IsRunning() then
     return false
   end
 
