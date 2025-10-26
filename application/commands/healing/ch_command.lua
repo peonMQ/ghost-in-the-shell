@@ -33,12 +33,11 @@ local function checkInterrupt(spellId)
     return
   end
 
-  if mq.TLO.Me.CastTimeLeft() < 500 and target() and target.PctHPs() > 98 then
-    state.interrupt(spellId)
-  end
+  -- if mq.TLO.Me.CastTimeLeft() < 500 and target() and target.PctHPs() > 98 then
+  --   state.interrupt(spellId)
+  -- end
 end
 
-local commandRecievedTime = mq.gettime()
 local completeHeal
 if mq.TLO.Me.Class.Name() == "Cleric" then
   local spell = spell_finder.FindGroupSpell("clr_complete_heal")
@@ -47,7 +46,8 @@ if mq.TLO.Me.Class.Name() == "Cleric" then
   end
 end
 
-local function execute()
+---@param commandRecievedTime number
+local function execute(commandRecievedTime)
   logger.Warn("Starting CH %s", mq.gettime() - commandRecievedTime)
   local mainTank = assist.GetMainTank()
   if not mainTank then
@@ -69,8 +69,7 @@ end
 
 local function createCommand()
   if mq.TLO.Me.Class.Name() == "Cleric" then
-    commandRecievedTime = mq.gettime()
-    commandQueue.Enqueue(function() execute() end)
+    commandQueue.Enqueue(function() execute(mq.gettime()) end)
   else
     broadcast.Error("I recieved a command to cast complete heal on MT but I am not a cleric.")
   end
