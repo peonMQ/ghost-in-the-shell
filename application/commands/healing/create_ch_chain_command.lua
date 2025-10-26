@@ -2,6 +2,7 @@ local mq = require('mq')
 local logger = require('knightlinc/Write')
 local broadcast = require('broadcast/broadcast')
 local bci = require('broadcast/broadcastinterface')('ACTOR')
+local BotState = require('bot_states')
 local commandQueue  = require('application/command_queue')
 local binder = require('application/binder')
 
@@ -39,6 +40,7 @@ local function createChChain()
     local netbot = mq.TLO.NetBots(bot)
     if netbot.Class.Name() == "Cleric" and netbot.Zone() == mq.TLO.Zone.ID() then
       table.insert(chChain, bot)
+      bci.ExecuteCommand(string.format("/gitstoggle %d", BotState.CHAIN), { bot })
     end
   end
 
@@ -48,6 +50,10 @@ local function createChChain()
 end
 
 local function disableChChain()
+  for _, bot in ipairs(chChain) do
+      bci.ExecuteCommand(string.format("/gitstoggle %d", BotState.ACTIVE), { bot })
+  end
+
   chChainActive = false
   chChain = {}
 end
