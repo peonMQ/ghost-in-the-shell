@@ -16,6 +16,10 @@ function ApplicationState.IsActive()
   return ApplicationState.RunningState == BotState.ACTIVE
 end
 
+function ApplicationState.IsPaused()
+  return ApplicationState.RunningState == BotState.PAUSED
+end
+
 function ApplicationState.PerformActions()
   return ApplicationState.RunningState == BotState.ACTIVE
 end
