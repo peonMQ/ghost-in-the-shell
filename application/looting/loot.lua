@@ -124,7 +124,7 @@ local function lootItem(slotNum)
   if shouldDestroy then
     while cursor() ~= nil and lootTimer:IsRunning() do
       mq.cmdf("/destroy")
-      mq.delay(100, function() return cursor() == nil end)
+      mq.delay(500, function() return cursor() == nil end)
     end
 
     if cursor() == nil then
