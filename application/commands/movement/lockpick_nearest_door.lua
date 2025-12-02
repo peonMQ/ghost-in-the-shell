@@ -24,13 +24,11 @@ local function execute()
 
     if not lockpickItem() then
         broadcast.WarnAll('|- No Lockpicks set found.')
-        logger.Info('End [DoLockPick]')
         return
     end
 
     if mq.TLO.Me.Skill('Pick Lock')() == nil then
         logger.WarnAll('|- You do not have the skill: Pick Lock')
-        logger.Info('End [DoLockPick]')
         return
     end
 
@@ -40,14 +38,12 @@ local function execute()
     if mq.TLO.DoorTarget.Distance() > 20 and not movement.MoveToLoc(mq.TLO.DoorTarget.Y(), mq.TLO.DoorTarget.X(), maxMoveTime, 15) then
         logger.Error("|- I could not moveto < 20 units of %s within %ss", mq.TLO.DoorTarget.Name(), maxMoveTime)
         mq.cmd("/beep")
-        logger.Info('End [DoLockPick]')
         return
     end
 
     if (mq.TLO.DoorTarget.Distance() > 35) then
         logger.Error("|- I could not moveto < 20 units of %s within %ss", mq.TLO.DoorTarget.Name(), maxMoveTime)
         mq.cmd("/beep")
-        logger.Info('End [DoLockPick]')
         return
     end
 
