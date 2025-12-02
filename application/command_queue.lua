@@ -63,10 +63,15 @@ local function process()
   end
 end
 
+local function size()
+  return  { Queue = #queue; PostQueue = #postCommandQueue }
+end
+
 return {
     Clear = clear,
     Enqueue = enqueue,
     Process = process,
+    Size = size
 }
 
 -- table.remove performance issue

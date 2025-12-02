@@ -6,6 +6,7 @@ local app_state = require('app_state')
 local assist_state = require('application/assist_state')
 local follow_state = require('application/follow_state')
 local medley_state = require('application/medley/state')
+local commandQueue  = require('application/command_queue')
 
 local WHITE = ImVec4(1, 1, 1, 1)
 local GREEN = ImVec4(0, 1, 0, 1)
@@ -97,6 +98,15 @@ local function drawTableTree(filter)
       imgui.TableSetupColumn('Value', ImGuiTableColumnFlags.None, 2, 2)
       imgui.TableHeadersRow()
       drawNestedTableTree(follow_state, filters)
+      imgui.EndTable()
+  end
+  imgui.NewLine()
+  imgui.Text("Command queue")
+  if imgui.BeginTable('##CommandQueueTable', 2, TABLE_FLAGS) then
+      imgui.TableSetupColumn('Key', ImGuiTableColumnFlags.None, 2, 1)
+      imgui.TableSetupColumn('Value', ImGuiTableColumnFlags.None, 2, 2)
+      imgui.TableHeadersRow()
+      drawNestedTableTree(commandQueue.Size(), filters)
       imgui.EndTable()
   end
   if mq.TLO.Me.Class.ShortName() == "BRD" then
