@@ -14,7 +14,7 @@ local broadcast = require('broadcast/broadcast')
 local CONSOLE = ImGui.ConsoleWidget.new("##GITConsole")
 CONSOLE.maxBufferLines = 1000
 
-broadcast.prefix = string.format("%s  [\at%s\ax]", os.date("%X"), mq.TLO.Me.Name())
+broadcast.prefix = string.format("[%s][\at%s\ax]", os.date("%X"), mq.TLO.Me.Name())
 -- broadcast.postfix = function () return string.format("%s ", os.date("%X")) end
 broadcast.SetMode('ACTOR', CONSOLE)
 logger.console = CONSOLE
