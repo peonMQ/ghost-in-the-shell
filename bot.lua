@@ -54,7 +54,7 @@ end
 
 local function process()
   mq.doevents()
-  if not app_state.IsPaused() then
+  if app_state.IsPaused() then
     return
   end
 
