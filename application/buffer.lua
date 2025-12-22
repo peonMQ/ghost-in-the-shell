@@ -24,6 +24,11 @@ local function checkInterrupt(spellId)
     state.interrupt(spellId)
     return
   end
+
+  if (target.Distance() or 9999) > (eqSpell.Range() or 0) then
+    state.interrupt(spellId)
+    return
+  end
 end
 
 ---@param buffSpell BuffSpell|BuffItem
