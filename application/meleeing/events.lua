@@ -4,8 +4,6 @@ local assist = require('core/assist')
 local assist_state = require('application/assist_state')
 local mqEvents = require('core/mqevent')
 
-local tooFarAWay = mqEvents:new("tooFarAway", "Your target is too far away, get closer!", function() end)
-
 local function enragedOnEvent(enragedMobName)
   if mq.TLO.Target.ID() == mq.TLO.Spawn(enragedMobName).ID() then
     if mq.TLO.Me.Combat() then
