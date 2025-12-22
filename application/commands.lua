@@ -21,6 +21,7 @@ require('application/commands/assist_command')
 require('application/commands/camp_command')
 require('application/commands/memorize_command')
 require('application/commands/quit_command')
+require('application/commands/reset_assist_command')
 require('application/commands/zoned_command')
 
 local function loadPlugins(directory)
