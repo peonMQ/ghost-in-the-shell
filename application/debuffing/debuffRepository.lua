@@ -1,5 +1,6 @@
 local mq = require('mq')
 local packageMan = require('mq/PackageMan')
+local logger = require('knightlinc/Write')
 
 local sqlite3 = packageMan.Require('lsqlite3')
 local configDir = (mq.configDir.."/"):gsub("\\", "/"):gsub("%s+", "%%20")
@@ -20,53 +21,131 @@ db:exec[[
   );
 ]]
 
+local deleteStmt = assert(
+  db:prepare([[
+    DELETE FROM debuffs WHERE expireTimeStamp < ?
+  ]]),
+  db:errmsg()
+)
+
 local function clean()
-  local sql = [[
-    DELETE FROM debuffs WHERE expireTimeStamp < %d
-  ]]
+  db:exec("BEGIN IMMEDIATE")
+  while true do
+    deleteStmt:reset()
+    deleteStmt:bind_values(mq.gettime() - 20)
+    local rc = deleteStmt:step()
+    if rc == sqlite3.DONE then
+      logger.Info("Completed clearing debuffs")
+      db:exec("COMMIT")
+      return true
+    end
 
-  local deleteSQL = sql:format(mq.gettime() - 20)
-  local retries = 0
-  local result = db:exec(deleteSQL)
-  while result ~= 0 and retries < 20 do
-    mq.delay(10)
-    retries = retries + 1
-    result = db:exec(deleteSQL)
-  end
-
-  if result ~= 0 then
-    print("Failed <"..deleteSQL..">")
+    if rc == sqlite3.BUSY or rc == sqlite3.LOCKED then
+      mq.delay(5) -- short backoff
+    else
+      logger.Error("DELETE failed (%s): %s", tostring(rc), db:errmsg())
+      db:exec("COMMIT")
+      return false
+    end
   end
 end
+
+local selectStmt = assert(
+    db:prepare([[
+      SELECT *
+      FROM debuffs
+      WHERE spawnId = ?
+        AND spellCategoryId = ?
+        AND spellSubCategoryId = ?
+    ]]),
+    db:errmsg()
+  )
 
 ---@param spawnId integer
 ---@param debuffSpell DeBuffSpell
 ---@return {id: integer, spellId: integer, spellCategoryId: integer, spellSubCategoryId: integer, expireTimeStamp: integer}[]
 local function getDebuffs(spawnId, debuffSpell)
-  local sql = [[
-    SELECT * FROM debuffs a
-      WHERE a.spawnId == %d AND a.spellCategoryId = %d AND a.spellSubCategoryId = %d
-  ]]
-
+  db:exec("BEGIN IMMEDIATE")
   local debuffs = {}
-  for debuff in db:nrows(sql:format(spawnId, debuffSpell.CategoryId, debuffSpell.SubCategoryId)) do table.insert(debuffs, debuff) end
-  return debuffs
+  while true do
+    selectStmt:reset()
+    selectStmt:bind_values(
+      spawnId,
+      debuffSpell.CategoryId,
+      debuffSpell.SubCategoryId
+    )
+
+    debuffs = {}
+
+    while true do
+      local rc = selectStmt:step()
+
+      if rc == sqlite3.ROW then
+        debuffs[#debuffs + 1] = selectStmt:get_named_values()
+
+      elseif rc == sqlite3.DONE then
+        db:exec("COMMIT")
+        return debuffs
+
+      elseif rc == sqlite3.BUSY or rc == sqlite3.LOCKED then
+        mq.delay(5) -- short backoff
+        break -- retry from outer loop
+
+      else
+        logger.Error("SELECT failed (%s): %s", tostring(rc), db:errmsg())
+        db:exec("COMMIT")
+        return debuffs
+      end
+    end
+  end
 end
+
+
+local insertStmt = assert(
+  db:prepare([[
+    INSERT INTO debuffs (
+      spawnId,
+      spellId,
+      spellCategoryId,
+      spellSubCategoryId,
+      expireTimeStamp
+    ) VALUES (?, ?, ?, ?, ?)
+  ]]),
+  db:errmsg()
+)
 
 ---@param spawnId integer
 ---@param debuffSpell DeBuffSpell
 local function insert(spawnId, debuffSpell)
-  local insertStatement = string.format("INSERT INTO debuffs(spawnId, spellId, spellCategoryId, spellSubCategoryId, expireTimeStamp) VALUES(%d, %d, %d, %d, %d)", spawnId, debuffSpell.Id, debuffSpell.CategoryId, debuffSpell.SubCategoryId, mq.gettime() + debuffSpell.RefreshTimer)
-  local retries = 0
-  local result = db:exec(insertStatement)
-  while result ~= 0 and retries < 20 do
-    mq.delay(10)
-    retries = retries + 1
-    result = db:exec(insertStatement)
-  end
+  db:exec("BEGIN IMMEDIATE")
+  while true do
+    insertStmt:reset()
+    insertStmt:bind_values(
+      spawnId,
+      debuffSpell.Id,
+      debuffSpell.CategoryId,
+      debuffSpell.SubCategoryId,
+      mq.gettime() + debuffSpell.RefreshTimer
+    )
 
-  if result ~= 0 then
-    print("Failed <"..insertStatement..">")
+    local rc = insertStmt:step()
+
+    if rc == sqlite3.DONE then
+      db:exec("COMMIT")
+      return true
+
+    elseif rc == sqlite3.BUSY or rc == sqlite3.LOCKED then
+      mq.delay(10) -- short backoff
+
+    else
+      logger.Error(
+        "INSERT debuff failed (%s): %s",
+        tostring(rc),
+        db:errmsg()
+      )
+      db:exec("COMMIT")
+      return false
+    end
   end
 end
 
