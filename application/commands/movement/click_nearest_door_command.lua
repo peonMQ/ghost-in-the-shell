@@ -10,6 +10,10 @@ local function tryFindDoorName()
     return "HOWLER"
   end
 
+  if mq.TLO.Zone.ShortName() == "veeshan" then
+    return "VETELE101"
+  end
+
   return nil
 end
 
