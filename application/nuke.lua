@@ -40,7 +40,7 @@ local function getNukeSpell(nuke_set)
   -- might want to fetch nuke based on target type for 'Undead' and 'Summoned'
   local highest_level_spell = nil
   for _, nuke in pairs(nuke_set) do
-    if nuke:MemSpell() and mq.TLO.Me.SpellReady(nuke.Name)() and (not highest_level_spell or nuke.MQSpell.Level() > highest_level_spell.MQSpell.Level()) then
+    if mq.TLO.Me.SpellReady(nuke.Name)() and mq.TLO.Me.CurrentMana() < nuke.MQSpell.Mana() and (not highest_level_spell or nuke.MQSpell.Level() > highest_level_spell.MQSpell.Level()) then
       logger.Debug("Nuke chosen <%s>", nuke.Name)
       highest_level_spell = nuke
     end
