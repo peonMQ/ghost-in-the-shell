@@ -41,6 +41,13 @@ function Item:CanCast()
 
   local item = mq.TLO.FindItem("="..self.ItemName)
   if not item then
+    logger.Error("Item <%s> is not found", self.ItemName)
+    return false
+  end
+
+  -- https://docs.macroquest.org/reference/data-types/datatype-item/#spell-effect-types
+  if item.EffectType() ~= "Click Inventory" then
+    logger.Warn("Item <%s> is not clickable from inventory, anything else is not supported", self.ItemName)
     return false
   end
 
