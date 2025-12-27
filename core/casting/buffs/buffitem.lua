@@ -108,15 +108,15 @@ end
 ---@param spawn spawn
 ---@return boolean
 function BuffItem:CanCastOnSpawn(spawn)
-  if spawn.ID() == mq.TLO.Me.ID() and self.MQSpell.TargetType() == "Self" then
+  if spawn() and spawn.ID() == mq.TLO.Me.ID() and self.MQSpell.TargetType() == "Self" then
     return true
   end
 
-  if spawn.Distance() > self.MQSpell.Range() then
+  if spawn() and spawn.Distance() > self.MQSpell.Range() then
     return false
   end
 
-  if spawn.Type() == "Corpse" then
+  if spawn() and spawn.Type() == "Corpse" then
     return false
   end
 
