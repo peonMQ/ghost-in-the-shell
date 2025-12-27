@@ -10,6 +10,7 @@ local buffspell = require('core/casting/buffs/buffspell')
 local buffitem = require('core/casting/buffs/buffitem')
 local debuffSpell = require('core/casting/debuffs/debuffspell')
 local nukespell = require('core/casting/nukes/nukespell')
+local nukeitem = require('core/casting/nukes/nukeitem')
 local healSpell = require('core/casting/heals/healspell')
 local hotSpell = require('core/casting/heals/hotspell')
 local song = require('core/casting/song')
@@ -55,7 +56,7 @@ local bot_settings_filename = string.format("%s/bots/%s_settings.lua", settings_
 ---@field public engage_at integer engage at this HP %
 ---@field public tanks string[] ordered list of tanks
 ---@field public main_assist string[] ordered list of main assists
----@field public nukes table<string, table<string, NukeSpell>> spell group of nukes
+---@field public nukes table<string, table<string, NukeSpell|NukeItem>> spell group of nukes
 ---@field public pbaoe NukeSpell[] list of pbaoe nukes
 ---@field public dots table<string, DeBuffSpell> spell group of dots
 ---@field public debuffs table<string, DeBuffSpell> spell group of debuffs
@@ -225,7 +226,10 @@ function settings:ReloadSettings()
   local availableNukes = {}
   for key, spells in pairs(self.assist.nukes) do
     ---@type NukeSpell[]
-    local availableSpells = spell_finder.MapSpellsOrItems(spells, function (groupname, name, data) return nukespell:new(name, self:GetDefaultGem(groupname), data.MinManaPercent, data.GiveUpTimer) end)
+    local availableSpells = spell_finder.MapSpellsOrItems(spells
+      , function (groupname, name, data) return nukespell:new(name, self:GetDefaultGem(groupname), data.MinManaPercent, data.GiveUpTimer) end
+      , function (name, data) return nukeitem:new(name) end
+    )
 
     if next(availableSpells) then
       availableNukes[key] = availableSpells
