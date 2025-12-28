@@ -39,12 +39,20 @@ function ApplicationState.Pause()
   commandQueue.Clear()
 end
 
+---@param state string
 local function toggle(state)
-  if tonumber(state) == BotState.PAUSED then
+  local stateValue = tonumber(state)
+  if not stateValue then
+    logger.Error("Failed parsing BotState from %s", state)
+    return
+  end
+
+  local newState = BotState(tonumber(state))
+  if newState == BotState.PAUSED then
     ApplicationState.Pause()
-  elseif tonumber(state) == BotState.ACTIVE then
+  elseif newState == BotState.ACTIVE then
     ApplicationState.Activate()
-  elseif tonumber(state) == BotState.CHAIN then
+  elseif newState == BotState.CHAIN then
     ApplicationState.CHAIN()
   end
 end

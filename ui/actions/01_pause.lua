@@ -9,6 +9,7 @@ local bci = require('broadcast/broadcastinterface')('ACTOR')
 local app_state = require('app_state')
 local follow_state = require('application/follow_state')
 local buttons = require('ui/buttons')
+local BotState = require('bot_states')
 
 ---@type ActionButton
 local bots = {
@@ -22,11 +23,11 @@ local bots = {
 }
 
 bots.activate = function ()
-  bci.ExecuteZoneWithSelfCommand("/gitstoggle 1")
+  bci.ExecuteZoneWithSelfCommand(string.format("/gitstoggle %d", BotState.ACTIVE.value))
 end
 
 bots.deactivate = function ()
-  bci.ExecuteZoneWithSelfCommand("/gitstoggle 2")
+  bci.ExecuteZoneWithSelfCommand(string.format("/gitstoggle %d", BotState.PAUSED.value))
 end
 
 return {
