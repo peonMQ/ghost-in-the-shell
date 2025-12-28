@@ -212,7 +212,7 @@ local function lootNearestCorpse(seekRadius)
     if mq.TLO.Spawn(closestCorpseID)() and mqUtils.EnsureTarget(closestCorpseID) then
       local target = mq.TLO.Target
       if target.Distance() > 16 and target.DistanceZ() < 80 then
-        movement.MoveToLoc(target.X(), target.Y(), target.Z(), 20, 12)
+        movement.MoveToLoc(target.X(), target.Y(), target.Z(), 5, 12)
       end
 
       if target.Distance() and target.Distance() <= 20 and target.DistanceZ() < 40 then
@@ -229,7 +229,7 @@ local function lootNearestCorpse(seekRadius)
   end
 
   mq.cmd("/hidec looted")
-  movement.MoveToLoc(startX, startY, startZ, 20, 8)
+  movement.MoveToLoc(startX, startY, startZ, 5, 8)
   if isSwapping then
     mq.cmd("/bardswap")
     mq.delay(100);
