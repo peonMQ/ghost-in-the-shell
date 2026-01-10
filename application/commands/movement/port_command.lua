@@ -61,7 +61,7 @@ local function execute(zoneShortName)
 
   portToSpell:MemSpell(nil, 60)
   logger.Info("Teleporting to <%s>", portToSpell.Name)
-  broadcast.WarnAll("Teleporting to <%s>", portToSpell.Name)
+  broadcast.InfoAll("Teleporting to <%s>", portToSpell.Name)
   portToSpell:Cast()
 end
 
