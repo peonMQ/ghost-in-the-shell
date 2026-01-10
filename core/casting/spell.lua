@@ -176,7 +176,7 @@ function Spell:Cast(cancelCallback)
         state.giveUpTimer:IsComplete()
 
   -- self:DoCastEvents()
-  logger.Debug("Cast completed for <%s> in <%s> with result <%s>", self.Name, (mq.gettime() - totalCastTime)/1000, state.castReturn, state.castReturn)
+  logger.Debug("Cast completed for <%s> in <%s> with result <%s>", self.Name, (mq.gettime() - totalCastTime)/1000, state.castReturn)
   return state.castReturn
 end
 
