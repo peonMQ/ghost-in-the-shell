@@ -88,7 +88,11 @@ function Item:Cast(cancelCallback)
     end
 
     mq.cmdf('/useitem "%s"', self.ItemName)
-    mq.delay(5, function() return mq.TLO.Me.Casting.ID() or false end)
+    if self.MQSpell.CastTime() == 0 then
+      mq.delay(200)
+    else
+      mq.delay(2000, function() return mq.TLO.Me.Casting.ID() end)
+    end
     self:DoCastEvents()
     self:WhileCasting(cancelCallback)
   until (not state.castReturn.SpellRetry and
