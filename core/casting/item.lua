@@ -19,16 +19,16 @@ function Item:new (itemName)
     logger.Fatal("<"..itemName.."> is not in inventory.")
   end
 
-  local itemspell = item.Clicky
+  local itemspell = item.Spell
   if not itemspell() then
     logger.Fatal("<"..itemName.."> has no click effect.")
   end
 
-  local id = itemspell.SpellID()
-  local name = itemspell.Spell.Name()
+  local id = itemspell.ID()
+  local name = itemspell.Name()
   local o = setmetatable(cast:new(id, name), self)
   o.ItemName = itemName
-  o.MQSpell = itemspell.Spell --[[@as spell]];
+  o.MQSpell = itemspell --[[@as spell]];
   return o --[[@as Item]]
 end
 
