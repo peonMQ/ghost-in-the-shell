@@ -2,6 +2,7 @@ local mq = require('mq')
 local logger = require('knightlinc/Write')
 local mqutil = require('utils/mqhelpers')
 local spell = require('core/casting/spell')
+local Spell_SPA = require('data/spell_spa')
 
 ---@class ConversionSpell : Spell
 ---@field public Id integer
@@ -28,7 +29,7 @@ function ConversionSpell:CanCast()
   local me = mq.TLO.Me
   if me.Invis()
      or me.Casting()
-     or me.PctHPs() < self.StopHPPct
+     or (me.PctHPs() < self.StopHPPct or not self:HasRunBuff())
      or mq.TLO.Window("SpellBookWnd").Open()
      or mq.TLO.Stick.Active()
      or mq.TLO.Navigation.Active() then
@@ -61,6 +62,20 @@ end
 ---@return CastReturn
 function ConversionSpell:Cast(cancelCallback)
   return spell.Cast(self, cancelCallback)
+end
+
+function ConversionSpell:HasRunBuff()
+  local me = mq.TLO.Me
+  for i=1,mq.TLO.Me.MaxBuffSlots() do
+    local buff = me.Buff(i)
+    if buff() then
+      for i = 1, buff.NumEffects() + 1 do
+        if buff.Attrib(i)() == Spell_SPA.SPA_STONESKIN then
+          return true;
+        end
+      end
+    end
+  end
 end
 
 return ConversionSpell
