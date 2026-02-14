@@ -1,0 +1,108 @@
+---@meta
+--- Lua definition for MQCharinfo: documented façade over plugin.charinfo.
+--- Copy this mqcharinfo folder to your MacroQuest install's lua/ directory
+--- (e.g. MacroQuest/lua/mqcharinfo/) so require("mqcharinfo") works.
+--- Runtime behavior is identical to require("plugin.charinfo"); this module
+--- adds EmmyLua annotations for IDE support and a stable Lua-facing API.
+
+---@class CharinfoPeerSpell
+---@field Name string
+---@field ID number
+---@field Category number
+---@field Level number
+
+---@class CharinfoPeerBuffEntry
+---@field Duration number
+---@field Spell CharinfoPeerSpell
+
+---@class CharinfoPeerClass
+---@field Name string
+---@field ShortName string
+---@field ID number
+
+---@class CharinfoPeerTarget
+---@field Name string
+---@field ID number
+
+---@class CharinfoPeerZone
+---@field Name string
+---@field ShortName string
+---@field ID number
+---@field InstanceID number
+---@field X number
+---@field Y number
+---@field Z number
+---@field Heading number
+---@field Distance number|nil Client-side only; nil if peer not in same zone/instance.
+
+---@class CharinfoPeerExperience
+---@field PctExp number
+---@field PctAAExp number
+---@field PctGroupLeaderExp number
+---@field TotalAA number
+---@field AASpent number
+---@field AAUnused number
+---@field AAAssigned number
+
+---@class CharinfoPeerMakeCamp
+---@field Status number
+---@field X number
+---@field Y number
+---@field Radius number
+---@field Distance number
+
+---@class CharinfoPeerMacro
+---@field MacroState number 0=none, 1=running, 2=paused
+---@field MacroName string
+
+---@class CharinfoPeer
+---@field Name string
+---@field ID number
+---@field Level number
+---@field PctHPs number
+---@field PctMana number
+---@field TargetHP number
+---@field FreeBuffSlots number
+---@field Detrimentals number
+---@field CountPoison number
+---@field CountDisease number
+---@field CountCurse number
+---@field CountCorruption number
+---@field PetHP number
+---@field MaxEndurance number
+---@field CurrentHP number
+---@field MaxHP number
+---@field CurrentMana number
+---@field MaxMana number
+---@field CurrentEndurance number
+---@field PctEndurance number
+---@field PetID number
+---@field PetAffinity boolean
+---@field NoCure number
+---@field LifeDrain number
+---@field ManaDrain number
+---@field EnduDrain number
+---@field Version number
+---@field CombatState number
+---@field CastingSpellID number
+---@field State string[]
+---@field BuffState string[]
+---@field Buff CharinfoPeerBuffEntry[]
+---@field ShortBuff CharinfoPeerBuffEntry[]
+---@field PetBuff CharinfoPeerBuffEntry[]
+---@field Gems CharinfoPeerSpell[]
+---@field FreeInventory number[]
+---@field Class CharinfoPeerClass
+---@field Target CharinfoPeerTarget
+---@field Zone CharinfoPeerZone
+---@field Experience CharinfoPeerExperience|nil
+---@field MakeCamp CharinfoPeerMakeCamp|nil
+---@field Macro CharinfoPeerMacro|nil
+---@field Stacks fun(self: CharinfoPeer, spell: string|number): boolean
+---@field StacksPet fun(self: CharinfoPeer, spell: string|number): boolean
+
+---@class CharinfoModule
+--- Module is also callable: charinfo(name) returns the same as charinfo.GetInfo(name).
+---@field GetInfo fun(name: string): CharinfoPeer|nil
+---@field GetPeers fun(): string[]
+---@field GetPeerCnt fun(): number
