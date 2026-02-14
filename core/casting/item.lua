@@ -91,7 +91,7 @@ function Item:Cast(cancelCallback)
     if self.MQSpell.CastTime() == 0 then
       mq.delay(200)
     else
-      mq.delay(2000, function() return mq.TLO.Me.Casting.ID() end)
+      mq.delay(2000, function() return mq.TLO.Me.Casting.ID() ~= nil  end)
     end
     self:DoCastEvents()
     self:WhileCasting(cancelCallback)
