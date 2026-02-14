@@ -29,12 +29,12 @@ local function equipSummonFocusItem(petSummonFocusItem)
 
   if currentOffhand then
     mq.cmd("/unequip offhand")
-    mq.delay(250)
+    mq.delay(2000, function() return not mq.TLO.Me.Inventory("offhand")() end)
     mqUtils.ClearCursor()
   end
 
   mq.cmdf('/exchange "%s" mainhand', petSummonFocusItem)
-  mq.delay(500)
+  mq.delay(2000, function() return mq.TLO.Me.Inventory("mainhand")() == petSummonFocusItem end)
 
   if mq.TLO.Me.Inventory("mainhand")() ~= petSummonFocusItem then
     logger.Debug("Unable to equip <%s>.", petSummonFocusItem)
@@ -84,21 +84,23 @@ local function execute()
 
   if mainhand then
     mq.cmdf('/exchange "%s" mainhand', mainhand)
-    mq.delay(500)
+    mq.delay(2000, function() return mq.TLO.Me.Inventory("mainhand")() == mainhand end)
   end
 
   if offhand then
     mq.cmdf('/exchange "%s" offhand', offhand)
-    mq.delay(500)
+    mq.delay(2000, function() return mq.TLO.Me.Inventory("offhand")() == offhand end)
   end
 
-  if settings.pet.taunt then
-    mq.cmd("/squelch /pet taunt on")
-  else
-    mq.cmd("/squelch /pet taunt off")
-  end
+  if mq.TLO.Me.Pet() then
+    if settings.pet.taunt then
+      mq.cmd("/squelch /pet taunt on")
+    else
+      mq.cmd("/squelch /pet taunt off")
+    end
 
-  mq.cmd("/squelch /pet follow")
+    mq.cmd("/squelch /pet follow")
+  end
 end
 
 local function createCommand()
