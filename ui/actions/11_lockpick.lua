@@ -1,5 +1,5 @@
 local icons = require('mq/Icons')
-local bci = require('broadcast/broadcastinterface')('ACTOR')
+local bci = require('broadcast/broadcastinterface')('REMOTE')
 local app_state = require('app_state')
 local buttons = require('ui/buttons')
 

@@ -3,7 +3,7 @@ local imgui = require('ImGui')
 local icons = require('mq/Icons')
 local logger = require('knightlinc/Write')
 local debugUtils = require('utils/debug')
-local bci = require('broadcast/broadcastinterface')('ACTOR')
+local bci = require('broadcast/broadcastinterface')('REMOTE')
 local app_state = require('app_state')
 local buttons = require('ui/buttons')
 

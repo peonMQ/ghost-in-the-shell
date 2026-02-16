@@ -9,7 +9,7 @@ local assist = require('core/assist')
 local movement = require('core/movement')
 local settings = require('settings/settings')
 
-local bci = broadCastInterfaceFactory('ACTOR')
+local bci = broadCastInterfaceFactory('REMOTE')
 
 local lockpicks = "Lockpicks" -- 13010
 local mechanizedLockpicks= "Mechanized Lockpicks" --16865

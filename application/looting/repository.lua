@@ -1,6 +1,6 @@
 local mq = require('mq')
 local logger = require('knightlinc/Write')
-local bci = require('broadcast/broadcastinterface')('ACTOR')
+local bci = require('broadcast/broadcastinterface')('REMOTE')
 local luaLoader = require 'utils/loaders/lua-table'
 local debugUtils = require('utils/debug')
 local item = require('core/lootitem')

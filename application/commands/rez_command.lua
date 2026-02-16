@@ -10,7 +10,7 @@ local assist = require('core/assist')
 local spell = require('core/casting/spell')
 local item = require('core/casting/item')
 local settings = require('settings/settings')
-local bci = broadCastInterfaceFactory('ACTOR')
+local bci = broadCastInterfaceFactory('REMOTE')
 
 ---@param spawn MQSpawn
 local function ressurect(spawn)
