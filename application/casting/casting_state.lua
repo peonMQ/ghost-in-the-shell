@@ -42,7 +42,7 @@ function state.interrupt(spellId)
   mq.cmd("/stopcast")
   state.castReturn = castReturnTypes.Cancelled
   state.giveUpTimer = timer:new(0)
-  mq.delay("1s", function () return not mq.TLO.Me.Casting.ID() end)
+  mq.delay("1s", function () return not mq.TLO.Me.Casting.ID() ~= nil end)
   return state.castReturn
 end
 

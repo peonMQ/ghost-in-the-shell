@@ -45,7 +45,7 @@ function AltAbility:Cast(cancelCallback)
     end
 
     mq.cmdf("/alt activate %s", self.Id)
-    mq.delay(5, function() return mq.TLO.Me.Casting.ID() or false end)
+    mq.delay(5, function() return mq.TLO.Me.Casting.ID() ~= nil end)
     self:DoCastEvents()
     self:WhileCasting(cancelCallback)
   until (not state.castReturn.AbilityRetry and
