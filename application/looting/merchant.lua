@@ -5,8 +5,6 @@ local plugin = require('utils/plugins')
 local mqUtils = require('utils/mqhelpers')
 local timer = require('core/timer')
 
-plugin.EnsureIsLoaded("mq2nav")
-
 ---@return spawn | nil
 local function findMerchant()
   local merchantSpawn = mq.TLO.NearestSpawn("Merchant radius 400")

@@ -9,6 +9,12 @@ packageMan.Require('lua-cjson', 'cjson')
 packageMan.Require('lsqlite3')
 packageMan.Require('luafilesystem', 'lfs')
 
+local plugins = require('utils/plugins')
+local requiredPlugins = require('plugins')
+for _, requiredPlugin in ipairs(requiredPlugins) do
+  plugins.EnsureIsLoaded(requiredPlugin)
+end
+
 local broadcast = require('broadcast/broadcast')
 
 local CONSOLE = ImGui.ConsoleWidget.new("##GITConsole")
@@ -20,7 +26,6 @@ broadcast.SetMode('ACTOR', CONSOLE)
 logger.console = CONSOLE
 
 local gitsUI = require('ui/init')
-local plugins = require('utils/plugins')
 local assist = require('core/assist')
 local timer = require('core/timer')
 local actionbar = require('ui/actionbar')

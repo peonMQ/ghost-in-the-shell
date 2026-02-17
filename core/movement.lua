@@ -3,10 +3,6 @@ local logger = require('knightlinc/Write')
 local plugins = require('utils/plugins')
 local timer = require('core/timer')
 
-plugins.EnsureIsLoaded("mq2moveutils")
-plugins.EnsureIsLoaded("mq2eqbc")
-plugins.EnsureIsLoaded("mq2nav")
-
 local function arrivedAtDestination(xLoc, yLoc, distanceDelta)
   local distance = mq.TLO.Math.Distance(string.format('%d,%d', (yLoc), (xLoc)))()
   logger.Debug('%d,%d <%d>', (xLoc), (yLoc), distance)
