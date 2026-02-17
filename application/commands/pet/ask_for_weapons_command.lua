@@ -4,6 +4,7 @@ local broadcast = require('broadcast/broadcast')
 local plugins = require('utils/plugins')
 local commandQueue  = require('application/command_queue')
 local binder = require('application/binder')
+local bci = require('broadcast/broadcastinterface')('REMOTE')
 
 local function execute(characterName)
   if not mq.TLO.Me.Pet.ID() then
@@ -16,7 +17,7 @@ local function execute(characterName)
   end
 
   if plugins.IsLoaded("mq2netbots") and mq.TLO.NetBots(characterName).InZone() then
-    mq.cmdf("/bct %s //weaponizepet %d", characterName, mq.TLO.Me.Pet.ID())
+    bci.ExecuteCommand(string.format("/weaponizepet %d", mq.TLO.Me.Pet.ID()), {characterName})
   else
     logger.Debug("Cold not ask <%s> for weapons, NetBots not loaded or character not in zone.", characterName)
   end

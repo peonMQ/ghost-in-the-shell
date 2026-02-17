@@ -2,6 +2,7 @@ local mq = require('mq')
 local logger = require('knightlinc/Write')
 local plugins = require('utils/plugins')
 local timer = require('core/timer')
+local bci = require('broadcast/broadcastinterface')('REMOTE')
 
 local function arrivedAtDestination(xLoc, yLoc, distanceDelta)
   local distance = mq.TLO.Math.Distance(string.format('%d,%d', (yLoc), (xLoc)))()
@@ -18,7 +19,7 @@ local function moveToMe()
     return
   end
 
-  mq.cmdf("/bca //nav id %d", me.ID())
+  bci.ExecuteZoneCommand(string.format("/nav id %d", me.ID()))
 end
 
 local function moveToLoc(xLoc, yLoc, zLoc, maxTime, arrivalDist)
