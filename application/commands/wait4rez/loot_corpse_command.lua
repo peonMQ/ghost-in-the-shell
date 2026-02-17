@@ -17,8 +17,8 @@ local function execute()
       end
 
       mq.cmd("/loot")
-      mq.delay("3s", function() return mq.TLO.Window("LootWnd") ~= nil and mq.TLO.Window("LootWnd").Open() end)
-      mq.delay("3s", function() return mq.TLO.Corpse.Items() ~= nil end)
+      mq.delay("5s", function() return mq.TLO.Window("LootWnd") ~= nil and mq.TLO.Window("LootWnd").Open() end)
+      mq.delay("5s", function() return mq.TLO.Corpse.Items() ~= nil end)
       mq.delay(500)
       if not mq.TLO.Window("LootWnd") or not mq.TLO.Corpse.Items then
         broadcast.FailAll("Could not open loot window.")
