@@ -85,15 +85,16 @@ local function isValidKillTarget(targetSpawn)
   local isNPC = targetSpawn.Type() == "NPC"
   local isPet = targetSpawn.Type() == "Pet"
   local hasLineOfSight = targetSpawn.LineOfSight()
-  local isPetOwnerNPC = true
+  local isPetOwnerPC = true
   if isPet then
-    isPetOwnerNPC = targetSpawn.Master.Type() == "NPC"
+    isPetOwnerPC = targetSpawn.Master.Type() == "PC"
   end
 
-  if not (isNPC or (isPet and not isPetOwnerNPC))
+  if not isNPC
+     or (isPet and isPetOwnerPC)
      or (settings.assist.require_los and not hasLineOfSight)
      or targetSpawn() and targetSpawn.Distance() > settings.assist.range then
-      logger.Debug("Invalid target: %s::%s::%s::%s::%s::%s", targetSpawn.CleanName(), isNPC, isPet, isPetOwnerNPC, hasLineOfSight, targetSpawn.Distance())
+      logger.Debug("Invalid target: %s::%s::%s::%s::%s::%s", targetSpawn.CleanName(), isNPC, isPet, isPetOwnerPC, hasLineOfSight, targetSpawn.Distance())
       return false
   end
 
