@@ -7,6 +7,7 @@ local timer = require('core/timer')
 
 ---@class Item : Cast
 ---@field public ItemName string
+---@field public ItemClicky itemspell
 ---@field public MQSpell spell
 local Item = cast:base()
 
@@ -28,6 +29,7 @@ function Item:new (itemName)
   local name = itemspell.Name()
   local o = setmetatable(cast:new(id, name), self)
   o.ItemName = itemName
+  o.ItemClicky = item.Clicky
   o.MQSpell = itemspell --[[@as spell]];
   return o --[[@as Item]]
 end
@@ -51,8 +53,8 @@ function Item:CanCast()
     return false
   end
 
-  if item.RequiredLevel() > mq.TLO.Me.Level() then
-    logger.Debug("Item <%s> requires level %d, you are level %d", self.ItemName, item.RequiredLevel(), mq.TLO.Me.Level())
+  if item.Clicky.RequiredLevel() > mq.TLO.Me.Level() then
+    logger.Debug("Item <%s> requires level %d, you are level %d", self.ItemName, item.Clicky.RequiredLevel(), mq.TLO.Me.Level())
     return false
   end
 
