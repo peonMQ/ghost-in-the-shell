@@ -51,6 +51,11 @@ function Item:CanCast()
     return false
   end
 
+  if item.RequiredLevel() > mq.TLO.Me.Level() then
+    logger.Debug("Item <%s> requires level %d, you are level %d", self.ItemName, item.RequiredLevel(), mq.TLO.Me.Level())
+    return false
+  end
+
   local refreshTimer = item.TimerReady() or 1
   local me = mq.TLO.Me
   if me.Casting() or refreshTimer > 0 then
