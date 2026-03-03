@@ -59,7 +59,7 @@ end
 --- @return string # color start string or empty string if usecolors is not enabled or the color type is not found
 local function GetColorStart(paramLogLevel, colortype)
     colortype = colortype or 'default'
-    assert(type(paramLogLevel) == "string", "Start colors only take strings")
+    assert(type(paramLogLevel) == "string", "Log Level only take strings")
     assert(type(colortype) == "string", "Color Type only takes strings")
     if Write.usecolors then
         if colortype == 'default' then
@@ -89,7 +89,7 @@ end
 local function GetColorEnd(paramLogLevel, colortype)
     colortype = colortype or 'default'
     paramLogLevel = paramLogLevel or 'default'
-    assert(type(paramLogLevel) == "string", "Start colors only take strings")
+    assert(type(paramLogLevel) == "string", "Log Level only take strings")
     assert(type(colortype) == "string", "Color Type only takes strings")
     if Write.usecolors then
         if mq then
