@@ -119,7 +119,7 @@ function Spell:Cast(cancelCallback)
   end
 
   if mq.TLO.Me.SpellInCooldown() then
-    logger.Warn("Spell in cooldown %s", mq.TLO.Me.SpellInCooldown())
+    logger.Debug("Spell in cooldown %s", mq.TLO.Me.SpellInCooldown())
     mq.delay(3500, function() return not mq.TLO.Me.SpellInCooldown() end)
   end
 
