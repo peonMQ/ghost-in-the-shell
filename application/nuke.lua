@@ -52,7 +52,7 @@ end
 ---@return boolean
 local function doPBAoE()
   -- progress PBAE
-  if assist.pbaoe_active then
+  if assist_state.pbaoe_active then
     local nearbyPBAEilter = "npc radius 60 zradius 50 los"
     if mq.TLO.SpawnCount(nearbyPBAEilter)() == 0 then
       logger.Debug("NPC filter for PBAoE failed.")
@@ -79,7 +79,7 @@ local function doNuking()
     return false
   end
 
-  if assist.pbaoe_active then
+  if assist_state.pbaoe_active then
     return doPBAoE()
   end
 
