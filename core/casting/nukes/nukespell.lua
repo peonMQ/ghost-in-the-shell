@@ -23,7 +23,31 @@ function NukeSpell:new (name, defaultGem, minManaPercent, giveUpTimer)
   return o --[[@as NukeSpell]]
 end
 
+---@return boolean
+function NukeSpell:CanCast()
+  local superCanCast = spell.CanCast(self)
+  if not superCanCast then
+    return false
+  end
 
+  local me = mq.TLO.Me
+  if not me.SpellReady(self.Name)() then
+    logger.Debug("Unable to cast <%s>, spell not ready.", self.Name)
+    return false
+  end
+
+  if mq.TLO.Me.SpellInCooldown() then
+    logger.Debug("Spell in cooldown %s", mq.TLO.Me.SpellInCooldown())
+    return false
+  end
+
+  if not mq.TLO.Me.SpellReady(self.Name)() then
+    logger.Debug("Unable to cast <%s>, spell not ready.", self.Name)
+    return false
+  end
+
+  return true
+end
 
 ---@param spawn spawn
 ---@return boolean
