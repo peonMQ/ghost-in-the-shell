@@ -174,7 +174,7 @@ local function lootCorpse()
     end
   end
 
-  if corpse.Items() > 0 then
+  if corpse() and corpse.Items() > 0 then
     mq.cmd("/keypress /")
     mq.delay(10)
     typeChrs("say %s %d", mq.TLO.Target.Name(), mq.TLO.Target.ID())
