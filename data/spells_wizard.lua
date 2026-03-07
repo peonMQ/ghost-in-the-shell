@@ -107,7 +107,7 @@ return {
     "Jyll's Zephyr of Ice",                       -- L56 Jyll's Zephyr of Ice (594 hp, ICE, adj -10, aerange 25, recast 6s, cost 313 mana)
     "Jyll's Static Pulse",                        -- L53 Jyll's Static Pulse (495-510 hp, MAGIC, aerange 25, recast 6s, cost 285 mana)
     "Supernova",                                  -- L45 Supernova (854 hp, FIRE, aerange 35, recast 12s, cost 875 mana)
-    "Thunderclap",                                -- L30 Thunderclap (210-232 hp, MAGIC, aerange 20, recast 12s, cost 175 mana)
+    "Thunderclap",                                -- L34 Thunderclap (210-232 hp, MAGIC, aerange 20, recast 12s, cost 175 mana)
     "Cast Force",                                 -- L24 Cast Force (90-100 hp, MAGIC, aerange 20, recast 6s, cost 123 mana)
     "Project Lightning",                          -- L16 Project Lightning (55-62 hp, MAGIC, aerange 25, recast 6s, cost 85 mana)
     "Fingers of Fire",                            -- L05 Fingers of Fire (19-28 hp, FIRE, aerange 25, recast 6s, cost 47 mana)
