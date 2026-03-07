@@ -8,11 +8,12 @@ local events = require('application/meleeing/events')
 local assist_state = require('application/assist_state')
 local npc_belly_casters = require('data/npc_belly_casters')
 local movement = require('core/movement')
+local assist = require('core/assist')
 
 local function setAssistTarget()
   if assist_state.current_target_id > 0 then
     local targetSpawn = mq.TLO.Spawn(assist_state.current_target_id)
-    if not targetSpawn() or targetSpawn.Type() == "Corpse" then
+    if not assist.IsValidKillTarget(targetSpawn) then
       assist_state:Reset('current_target_id')
     end
   else
@@ -30,7 +31,7 @@ local function setAssistTargetPet()
 
   if assist_state.current_pet_target_id > 0 then
     local targetSpawn = mq.TLO.Spawn(assist_state.current_pet_target_id)
-    if not targetSpawn() or targetSpawn.Type() == "Corpse" then
+    if not assist.IsValidKillTarget(targetSpawn) then
       assist_state:Reset('current_pet_target_id')
     end
   else
@@ -51,10 +52,10 @@ local function moveBellyCasterTarget()
     return
   end
 
-  local stickDistance = math.floor(targetSpawn.MaxRangeTo()* 0.75)
-  stickDistance = math.min(stickDistance, 25)
-  if targetSpawn.Distance3D() > stickDistance then
-    movement.MoveToLoc(targetSpawn.X(), targetSpawn.Y(), targetSpawn.Z(), 5, stickDistance)
+  local targetDistance = math.floor(targetSpawn.MaxRangeTo()* 0.75)
+  targetDistance = math.min(targetDistance, 25)
+  if targetSpawn.Distance3D() > targetDistance then
+    movement.MoveToLoc(targetSpawn.X(), targetSpawn.Y(), targetSpawn.Z(), 5, targetDistance)
   end
 end
 

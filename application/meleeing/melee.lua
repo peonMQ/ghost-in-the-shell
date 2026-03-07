@@ -5,6 +5,7 @@ local mqUtils = require('utils/mqhelpers')
 local assist = require('core/assist')
 local settings = require('settings/settings')
 local events = require('application/meleeing/events')
+local app_assist = require('application/assist')
 local assist_state = require('application/assist_state')
 
 local function doEvents()
@@ -36,8 +37,8 @@ local function stickToTarget(target, modifier)
     mq.cmdf("/squelch /stick id %d snaproll %d uw", target.ID(), stickDistance)
     mq.delay("5s", function() return stick.Stopped() end)
     mq.cmdf("/squelch /stick id %d moveback behind %d uw", target.ID(), stickDistance)
+    mq.delay("5s", function() return stick.Stopped() end)
   end
-  mq.delay("5s", function() return not mq.TLO.Spawn("id "..target.ID())() or mq.TLO.Spawn("id "..target.ID()).Distance() <= stickDistance end)
 end
 
 ---@param me character
@@ -68,6 +69,7 @@ local function doMeleeDps(meleeAbilityCallback)
     return false
   end
 
+  app_assist()
   local me = mq.TLO.Me --[[@as character]]
   if assist_state.current_target_id == 0 then
     reset(me)

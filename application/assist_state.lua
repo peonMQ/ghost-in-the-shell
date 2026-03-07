@@ -2,7 +2,7 @@ local loader = require('settings/loader')
 
 ---@alias AssistMode 'normal'|'powerlevel'
 ---@alias CrowdControlMode 'single_mez'|'ae_mez'|'unresistable_mez'|nil
----@alias Properties 'current_target_id'|'current_pet_target_id'|'spell_set'
+---@alias Properties 'current_target_id'|'current_pet_target_id'|'spell_set'|'enable_offtanking'
 
 ---@class AssistStateData
 ---@field mode AssistMode what kind of assist mode are we in
@@ -10,6 +10,7 @@ local loader = require('settings/loader')
 ---@field medley string the medley
 ---@field pbaoe_active boolean toggle pbaoe
 ---@field crowd_control_mode CrowdControlMode auto mezz mode
+---@field current_target_id number
 ---@field current_pet_target_id number
 ---@field enraged boolean
 
