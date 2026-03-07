@@ -240,9 +240,12 @@ function settings:ReloadSettings()
   logger.Debug("Loading pbaoe settings")
   local pbaoe_group_name = string.format("%s_pbae_nuke", mq.TLO.Me.Class.ShortName():lower())
   local availablePBAoEs = {}
-  for _, spellName in ipairs(spell_finder.FindGroupSpells(pbaoe_group_name)) do
+  for index, spellName in ipairs(spell_finder.FindGroupSpells(pbaoe_group_name)) do
     local pbaoe_spell = nukespell:new(spellName, self:GetDefaultGem(pbaoe_group_name), 0, 0)
     table.insert(availablePBAoEs, pbaoe_spell)
+    if index >= 2 then
+      break
+    end
   end
   self.assist.pbaoe = availablePBAoEs
 
