@@ -102,7 +102,7 @@ local function canLootItem(item)
 end
 
 local function lootItem(slotNum)
-  local lootTimer = timer:new(5)
+  local lootTimer = timer:new(20)
   local cursor = mq.TLO.Cursor
 
   while not cursor() and not cursor.ID() and lootTimer:IsRunning() and not mq.TLO.Window("ConfirmationDialogBox").Open() and not mq.TLO.Window("QuantityWnd").Open() do
@@ -126,7 +126,8 @@ local function lootItem(slotNum)
 
   local shouldDestroy, item = canDestroyItem(itemId, cursor.Name())
   if shouldDestroy then
-    while cursor() ~= nil and lootTimer:IsRunning() do
+    local deleteTimer = timer:new(3)
+    while cursor() ~= nil and deleteTimer:IsRunning() do
       mq.cmdf("/destroy")
       mq.delay(500, function() return cursor() == nil end)
     end
@@ -135,6 +136,7 @@ local function lootItem(slotNum)
       broadcast.SuccessAll("Destroyed %s from slot# %s", item.Name, slotNum)
     else
       broadcast.FailAll("Destroying %s from slot# %s failed", item.Name, slotNum)
+      mq.cmd("/beep")
     end
   else
     broadcast.SuccessAll("Looted %s from slot# %s", item.Name, slotNum)
@@ -164,17 +166,18 @@ local function lootCorpse()
     logger.Debug("Looting <%s> with # of items: %d", mq.TLO.Target.Name(), corpse.Items())
     for i=1,corpse.Items() do
       local itemToLoot = corpse.Item(i) --[[@as item]]
-      logger.Debug("Looting %s from slot %d of %d", itemToLoot.Name(), i, corpse.Items())
-
-      if canLootItem(itemToLoot) then
-        lootItem(i)
-        mq.delay(10)
+      if itemToLoot() then
+        logger.Debug("Looting %s from slot %d of %d", itemToLoot.Name(), i, corpse.Items())
+        if canLootItem(itemToLoot) then
+          lootItem(i)
+          mq.delay(10)
+        end
       end
       logger.Debug("Done looting slot <%d>", i)
     end
   end
 
-  if corpse() and corpse.Items() > 0 then
+  if corpse() and corpse.Items() and corpse.Items() > 0 then
     mq.cmd("/keypress /")
     mq.delay(10)
     typeChrs("say %s %d", mq.TLO.Target.Name(), mq.TLO.Target.ID())
