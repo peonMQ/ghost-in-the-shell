@@ -95,7 +95,7 @@ function Item:Cast(cancelCallback)
     end
 
     mq.cmdf('/useitem "%s"', self.ItemName)
-    if self.MQSpell.CastTime() == 0 then
+    if self.MQSpell.CastTime() == 0 and self.ItemName ~= "Manastone" then
       mq.delay(200)
     else
       mq.delay(2000, function() return mq.TLO.Me.Casting.ID() ~= nil  end)

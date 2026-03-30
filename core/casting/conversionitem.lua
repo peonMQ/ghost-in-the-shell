@@ -29,7 +29,7 @@ function ConversionItem:CanCast()
   local me = mq.TLO.Me
   if me.Invis()
      or me.Casting()
-     or (me.PctHPs() < self.StopHPPct or not self:HasRuneBuff())
+     or (me.PctHPs() < self.StopHPPct and not self:HasRuneBuff())
      or mq.TLO.Window("SpellBookWnd").Open()
      or mq.TLO.Stick.Active()
      or mq.TLO.Navigation.Active() then
