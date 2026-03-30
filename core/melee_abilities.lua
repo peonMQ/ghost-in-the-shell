@@ -1,6 +1,12 @@
 --- @type Mq
 local mq = require('mq')
 local logger = require('knightlinc/Write')
+local broadcast = require('broadcast/broadcast')
+local mqUtils = require('utils/mqhelpers')
+local loot = require('application/looting/loot')
+local timer = require('core/timer')
+
+local deletePickpocketTimer = timer:new(1.5)
 
 --[[
   Kick - Regular attack, cannot damage magical mobs unless you are wearing magic boots.
@@ -47,6 +53,27 @@ local function doPickPockets()
   local me = mq.TLO.Me
   if me.Skill(pickpockets)() == me.SkillCap(pickpockets) then
     return
+  end
+
+  local cursor = mq.TLO.Cursor
+  if cursor() then
+    local shouldDestroy, item = loot.CanDestroyItem(cursor.ID(), cursor.Name())
+    if shouldDestroy then
+      deletePickpocketTimer:Reset()
+      while cursor() ~= nil and deletePickpocketTimer:IsRunning() do
+        mq.cmdf("/destroy")
+        mq.delay(250, function() return cursor() == nil end)
+      end
+
+      if cursor() == nil then
+        broadcast.SuccessAll("Destroyed %s from cursor", item.Name)
+      else
+        broadcast.FailAll("Destroying %s from cursor failed", item.Name)
+      end
+    else
+      broadcast.SuccessAll("Looted %s from cursor", item.Name)
+      mqUtils.ClearCursor()
+    end
   end
 
   local target = mq.TLO.Target
