@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+     "eqemu": {
+      "type": "sse",
+      "url": "http://localhost:8888/sse"
+    }
+  }
+}
