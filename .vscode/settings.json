@@ -3,7 +3,7 @@
   "files.exclude": {
       "broadcast/": true,
       "utils/": true,
-      "plugins/": true
+      "definitions/": true
   },
   "workbench.colorCustomizations": {
       "editorBracketHighlight.foreground1": "#5caeef",
@@ -21,14 +21,15 @@
   "Lua.workspace.library": [
     "./broadcast",
     "./utils",
-    "./plugins",
-    "C:/Games/MacroQuest_v0.0.36-emu/lua/mq",
-    "c:\\Users\\asp\\AppData\\Roaming\\Code\\User\\globalStorage\\zenithcodeforge.mq-defs\\file-downloader-downloads\\macroquest\\mq-definitions-master",
-    "c:\\Users\\asp\\AppData\\Roaming\\Code\\User\\globalStorage\\zenithcodeforge.mq-defs\\file-downloader-downloads\\macroquest-plugins\\mq-plugin-definitions-main"
+    "./definitions",
+    // "C:/Games/MacroQuest_v0.0.44-emu/lua/mq",
+    "C:/Development/PeonMQ/mq-plugin-definitions2",
+    "c:\\Users\\asp\\AppData\\Roaming\\Code\\User\\globalStorage\\zenithcodeforge.mq-defs\\file-downloader-downloads\\macroquest\\mq-definitions-master"
   ],
-  "mq-defs.etag": "W/\"bb0f95a100c3af3c2f8ccfe23c910c1158a40c73b6d61d6f52060bebaee5d653\"",
+  "mq-defs.branch": "master",
+  "mq-defs.etag": "W/\"1cc79d8d7ff6995106260496216a6552a29930c91a506c465606eafb20574dd0\"",
   "Lua.diagnostics.groupFileStatus": {
     "type-check": "Any"
   },
-  "mq-defs.plugins.etag": "W/\"b1c6913cbbe81aa74cf2504de18ae4592b2aac5f252bb52105b6d6c3f8980e46\""
+  "mq-defs.shaKey": "67f2248687e943a156cb697f1fbf462c38a1e44a"
 }
