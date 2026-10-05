@@ -26,6 +26,11 @@ require('application/commands/zoned_command')
 
 local function loadPlugins(directory)
   logger.Debug("Loading from: %s", directory)
+  if lfs.attributes(appPath..'/'..directory, "mode") ~= "directory" then
+    logger.Debug("No plugin directory: %s", directory)
+    return
+  end
+
   for file in lfs.dir(appPath..'/'..directory) do
     if file ~= "." and file ~= ".." then
       local fileAttributes = lfs.attributes(appPath..'/'..directory.."/"..file,"mode")
@@ -34,7 +39,11 @@ local function loadPlugins(directory)
         local filename, extension = file:match("^(.+)%.(.+)$")
         logger.Info("Loading plugin: %s", directory.."/"..file)
         local command = require(directory.."/"..filename)
-        command(commandQueue)
+        if type(command) == "function" then
+          command(commandQueue)
+        else
+          logger.Warn("Plugin %s does not return a function, skipping", directory.."/"..file)
+        end
       elseif fileAttributes == "directory" then
         loadPlugins(directory.."/"..file)
       end
