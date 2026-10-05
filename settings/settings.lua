@@ -1,7 +1,6 @@
 local mq = require('mq')
 local logger = require('knightlinc/Write')
 local lua_utils = require('utils/debug')
-local luapaths = require('utils/lua-paths')
 local spell_finder = require('application/casting/spell_finder')
 local conversionSpell = require('core/casting/conversionspell')
 local conversionItem = require('core/casting/conversionitem')
@@ -22,11 +21,7 @@ local loader = require('settings/loader')
 local class_buffs = require('data/class_buffs')
 local spells_pet = require('data/spells_pet')
 
-local runningDir = luapaths.RunningDir:new()
-local currentScript = runningDir:Parent():GetRelativeToMQLuaPath("")
-
-local server_shortname = mq.TLO.MacroQuest.Server()
-local settings_path = string.format("%s/%s/%s", mq.configDir, currentScript, server_shortname)
+local settings_path = require('settings/paths').ServerConfigPath
 local server_settings_filename = string.format("%s/server_settings.lua",settings_path)
 local class_settings_filename = string.format("%s/%s_settings.lua", settings_path, mq.TLO.Me.Class.Name():lower():gsub("%s+", ""))
 local bot_settings_filename = string.format("%s/bots/%s_settings.lua", settings_path, mq.TLO.Me.Name():lower())

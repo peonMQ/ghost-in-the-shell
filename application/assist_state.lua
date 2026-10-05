@@ -13,6 +13,7 @@ local loader = require('settings/loader')
 ---@field current_target_id number
 ---@field current_pet_target_id number
 ---@field enraged boolean
+---@field enable_offtanking boolean
 
 ---@class AssistState : AssistStateData
 ---@field Reset fun(self: AssistState, ...: Properties) reset state to default state
@@ -27,7 +28,8 @@ local defaultState = {
   mezz_mode = nil,
   current_target_id = 0,
   current_pet_target_id = 0,
-  enraged = false
+  enraged = false,
+  enable_offtanking = false
 }
 
 local state = loader.Clone(defaultState) --[[@as AssistState]]

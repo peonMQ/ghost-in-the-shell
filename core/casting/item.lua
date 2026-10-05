@@ -31,6 +31,15 @@ function Item:new (itemName)
   o.ItemName = itemName
   o.ItemClicky = item.Clicky
   o.MQSpell = itemspell --[[@as spell]];
+
+  -- https://docs.macroquest.org/reference/data-types/datatype-item/#spell-effect-types
+  if item.EffectType() ~= "Click Inventory" then
+    logger.Warn("Item <%s> is not clickable from inventory, anything else is not supported", self.ItemName)
+  end
+
+  if item.Clicky.RequiredLevel() > mq.TLO.Me.Level() then
+    logger.Warn("Item <%s> requires level %d, you are level %d", self.ItemName, item.Clicky.RequiredLevel(), mq.TLO.Me.Level())
+  end
   return o --[[@as Item]]
 end
 

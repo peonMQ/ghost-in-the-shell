@@ -5,13 +5,11 @@ local luaLoader = require 'utils/loaders/lua-table'
 local debugUtils = require('utils/debug')
 local item = require('core/lootitem')
 local binder = require('application/binder')
-
-local configDir = mq.configDir
-local serverName = mq.TLO.MacroQuest.Server()
+local file = require('utils/file')
+local paths = require('settings/paths')
 
 local function getFilePath()
-  local fileName = "loot_settings.lua"
-  return string.format("%s/gits/%s/data/%s", configDir, serverName, fileName)
+  return paths.GetDataDirFile("loot_settings.lua")
 end
 
 ---@param items LootItem[]
@@ -24,6 +22,7 @@ local function save(items)
       return a.Name < b.Name
     end)
   local filePath = getFilePath()
+  file.EnsurePathExists(paths.DataDir)
   luaLoader.SaveTable(filePath, items)
   bci.ExecuteAllCommand("/loot_reload")
 end
