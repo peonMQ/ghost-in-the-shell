@@ -101,6 +101,11 @@ return function(commandQueue)
 end
 ```
 
+Plugins are maintained in the sibling repo `../ghost-in-the-shell-plugins` and deployed by copying
+its `plugins/` folder here. Its AGENTS.md covers the plugin conventions. Plugins call GITS modules
+directly (`application/binder`, `core/assist`, `settings/settings`...), so renaming or changing
+those modules can break plugins. Grep that repo before changing them.
+
 The folder is optional. If it's missing, nothing loads. Files that don't return a function are
 skipped with a warning. MQ plugin TLO type stubs live in `definitions/` (editor only), not here.
 

@@ -36,7 +36,7 @@ Loosely based on E3, with design and data borrowed from
 | `ui/` | ImGui console window + action bar (driver only) |
 | `knightlinc/Write.lua` | Logger |
 | `utils/`, `broadcast/` | **Git submodules** (peonMQ/utils, peonMQ/broadcast). Edit upstream, not here |
-| `plugins/` | GITS runtime plugins (optional, not in repo). See docs/architecture.md |
+| `plugins/` | GITS runtime plugins (optional, not in repo). They live in the sibling repo `../ghost-in-the-shell-plugins`, which has its own AGENTS.md. See docs/architecture.md |
 | `definitions/` | LuaLS type stubs (`---@meta`) for MQ plugin TLOs. Editor-only, not shipped |
 
 Deeper docs:
