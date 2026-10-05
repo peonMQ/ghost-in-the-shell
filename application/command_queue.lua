@@ -34,12 +34,23 @@ local function clear()
     postCommandQueue = {}
 end
 
+-- Resumes post commands in insertion order; they share game state, so order matters.
 local function postProcess()
+  local alive = {}
   for idx, co in ipairs(postCommandQueue) do
-    if not coroutine.resume(co) then
-      logger.Debug("Removing postcommand from handler <%d>", idx)
-      table.remove(postCommandQueue, idx)
+    local ok, err = coroutine.resume(co)
+    if not ok then
+      logger.Error("Postcommand <%d> failed: %s", idx, debug.traceback(co, err))
+    elseif coroutine.status(co) == "dead" then
+      logger.Debug("Postcommand <%d> finished", idx)
+    else
+      table.insert(alive, co)
     end
+  end
+
+  -- clear() during a resume (e.g. pause) must win over the rebuilt list
+  if #postCommandQueue > 0 then
+    postCommandQueue = alive
   end
 
   return next(postCommandQueue)
